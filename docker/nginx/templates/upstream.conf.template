@@ -1,0 +1,5 @@
+# Author: Karmil Asgarally - INTELLEKTRA © 2026
+# Meteor upstream
+upstream meteor_app {
+  server meteor:3000;
+}

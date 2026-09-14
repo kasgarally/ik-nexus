@@ -1,0 +1,116 @@
+# --- OS ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Editors & IDEs ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.history/
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
+
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.pem
+*.key
+*.p12
+secrets/
+credentials.json
+
+# --- Logs & debug ---
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# --- Dependencies ---
+node_modules/
+jspm_packages/
+bower_components/
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# --- Build & cache ---
+dist/
+build/
+out/
+output/
+coverage/
+.cache/
+.turbo/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+.vite/
+.rspack-cache/
+.rsdoctor
+_build
+*/build-assets
+*/build-chunks
+*.tsbuildinfo
+
+# --- Meteor ---
+.meteor/local
+
+# --- Testing ---
+.nyc_output/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Package manager lock leftovers ---
+.npm/
+.eslintcache
+.stylelintcache
+
+# --- Docker TLS material (keep .gitkeep) ---
+docker/certs/**/*.pem
+docker/certs/**/*.crt
+docker/certs/**/*.key
+
+# --- Misc ---
+*.tmp
+*.temp
+*.bak
+*.orig
+.direnv/
+.terraform/
+*.tfstate
+*.tfstate.*
