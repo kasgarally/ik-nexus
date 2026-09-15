@@ -8,8 +8,22 @@ export default {
   nav: {
     home: 'Accueil',
     filesTest: 'Test fichiers',
+    listsTest: 'Test listes',
     workspace: 'Avec contexte',
     signin: 'Connexion',
+  },
+  listsTest: {
+    title: 'Test listes',
+    body: 'Les éditeurs d’installation passent par lists.insert / update / remove. La carte de saisie est un futur formulaire risque : le v-select affiche le titre localisé et stocke le code.',
+    credentials: 'Connectez-vous avec {email} / {password} (admin de démo local).',
+    setupHint: 'Ajoutez, modifiez ou supprimez les éléments de ce listKey. Les lignes inactives restent ici mais disparaissent du v-select.',
+    setupCategory: 'Installation : demo.category',
+    setupLikelihood: 'Installation : demo.likelihood',
+    captureTitle: 'Formulaire de saisie (v-select)',
+    captureHint: 'Changez la langue dans la barre. Les libellés changent ; les codes restent.',
+    category: 'Catégorie',
+    likelihood: 'Probabilité',
+    selected: 'Codes sélectionnés : {category} / {likelihood}',
   },
   filesTest: {
     title: 'Test fichiers',
@@ -37,6 +51,9 @@ export default {
     email: 'E-mail',
     password: 'Mot de passe',
     submit: 'Se connecter',
+    signOut: 'Se déconnecter',
+    signedIn: 'Connecté en tant que {email}.',
+    demoHint: "L’admin de démo local est admin{'@'}localhost / admin.",
     back: 'Retour à l’application',
   },
   context1: {

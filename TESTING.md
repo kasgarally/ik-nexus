@@ -244,7 +244,7 @@ Reporter is `list` plus HTML under `reports/playwright/`. Specs run serially (`f
 
 ### Playwright coverage today
 
-[`e2e/files-gallery.spec.js`](e2e/files-gallery.spec.js): open `/files-test`, upload [`e2e/fixtures/lightbox-probe.png`](e2e/fixtures/lightbox-probe.png) on the **images** card (not the documents field), wait for a thumbnail, open the lightbox, assert `img.file-lightbox-image` is visible and has a non-zero box.
+[`e2e/files-gallery.spec.js`](e2e/files-gallery.spec.js): open `/files-test`, upload [`e2e/fixtures/lightbox-probe.png`](e2e/fixtures/lightbox-probe.png) on the **images** card (not the documents field), wait for a thumbnail, open the lightbox, assert `img.file-lightbox-image` is visible and has a non-zero box. `/lists-test` has no Playwright spec yet.
 
 ### Playwright commands
 

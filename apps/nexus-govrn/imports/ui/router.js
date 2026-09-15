@@ -7,6 +7,7 @@ import Auth from './Auth.vue'
 import Context from './Context.vue'
 import Entry from './Entry.vue'
 import FilesTest from './FilesTest.vue'
+import ListsTest from './ListsTest.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -27,6 +28,12 @@ export const router = createRouter({
       path: '/files-test',
       name: 'filesTest',
       component: FilesTest,
+      meta: { layout: 'web' },
+    },
+    {
+      path: '/lists-test',
+      name: 'listsTest',
+      component: ListsTest,
       meta: { layout: 'web' },
     },
     {

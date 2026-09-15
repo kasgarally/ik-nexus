@@ -8,8 +8,22 @@ export default {
   nav: {
     home: 'Home',
     filesTest: 'Files test',
+    listsTest: 'Lists test',
     workspace: 'With context',
     signin: 'Sign in',
+  },
+  listsTest: {
+    title: 'Lists test',
+    body: 'Setup editors write through lists.insert / update / remove. The capture card is a later risk form: v-select shows the locale title and stores the code.',
+    credentials: 'Sign in as {email} / {password} (local demo admin).',
+    setupHint: 'Add, edit, or delete items for this listKey. Inactive rows stay here but disappear from the v-select.',
+    setupCategory: 'Setup: demo.category',
+    setupLikelihood: 'Setup: demo.likelihood',
+    captureTitle: 'Capture form (v-select)',
+    captureHint: 'Change language in the app bar. Labels update; the stored codes stay the same.',
+    category: 'Category',
+    likelihood: 'Likelihood',
+    selected: 'Selected codes: {category} / {likelihood}',
   },
   filesTest: {
     title: 'Files test',
@@ -37,6 +51,9 @@ export default {
     email: 'Email',
     password: 'Password',
     submit: 'Sign in',
+    signOut: 'Sign out',
+    signedIn: 'Signed in as {email}.',
+    demoHint: "Local demo admin is admin{'@'}localhost / admin.",
     back: 'Back to app',
   },
   context1: {

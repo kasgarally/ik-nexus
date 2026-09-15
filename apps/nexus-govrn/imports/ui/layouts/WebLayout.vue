@@ -33,6 +33,7 @@ function toggleTheme() {
     <v-list nav>
       <v-list-item prepend-icon="mdi-home" :title="t('nav.home')" value="home" to="/" />
       <v-list-item prepend-icon="mdi-paperclip" :title="t('nav.filesTest')" value="filesTest" to="/files-test" />
+      <v-list-item prepend-icon="mdi-format-list-bulleted" :title="t('nav.listsTest')" value="listsTest" to="/lists-test" />
       <v-list-item
         prepend-icon="mdi-view-split-vertical"
         :title="t('nav.workspace')"

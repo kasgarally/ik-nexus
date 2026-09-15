@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor'
 import { MongoInternals } from 'meteor/mongo'
 import { WebApp } from 'meteor/webapp'
 import { Applog } from '@nexus/applog'
+import { seedDemoAdmin } from '/imports/api/demoAdmin.js'
 import { seedFilesDemoParents } from '/imports/api/filesDemoParents.js'
 import { registerNexusApplog } from '/imports/api/nexusApplog.js'
 import { registerNexusFiles } from '/imports/api/nexusFiles.js'
@@ -16,5 +17,8 @@ registerNexusLists()
 registerNexusApplog()
 
 Meteor.startup(async () => {
-  await Applog.runAsSystem(() => seedFilesDemoParents())
+  await Applog.runAsSystem(async () => {
+    await seedFilesDemoParents()
+    await seedDemoAdmin()
+  })
 })

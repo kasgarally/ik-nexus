@@ -8,8 +8,22 @@ export default {
   nav: {
     home: 'الرئيسية',
     filesTest: 'اختبار الملفات',
+    listsTest: 'اختبار القوائم',
     workspace: 'مع السياق',
     signin: 'تسجيل الدخول',
+  },
+  listsTest: {
+    title: 'اختبار القوائم',
+    body: 'محررات الإعداد تكتب عبر lists.insert / update / remove. بطاقة الإدخال هي نموذج مخاطر لاحق: يعرض v-select العنوان حسب اللغة ويخزّن الرمز.',
+    credentials: 'سجّل الدخول بـ {email} / {password} (مسؤول تجريبي محلي).',
+    setupHint: 'أضف أو عدّل أو احذف عناصر هذا listKey. الصفوف غير النشطة تبقى هنا وتختفي من v-select.',
+    setupCategory: 'إعداد: demo.category',
+    setupLikelihood: 'إعداد: demo.likelihood',
+    captureTitle: 'نموذج الإدخال (v-select)',
+    captureHint: 'غيّر اللغة من الشريط. تتغير التسميات وتبقى الرموز.',
+    category: 'الفئة',
+    likelihood: 'الاحتمال',
+    selected: 'الرموز المختارة: {category} / {likelihood}',
   },
   filesTest: {
     title: 'اختبار الملفات',
@@ -37,6 +51,9 @@ export default {
     email: 'البريد الإلكتروني',
     password: 'كلمة المرور',
     submit: 'دخول',
+    signOut: 'تسجيل الخروج',
+    signedIn: 'مسجّل الدخول كـ {email}.',
+    demoHint: "المسؤول التجريبي المحلي هو admin{'@'}localhost / admin.",
     back: 'العودة إلى التطبيق',
   },
   context1: {

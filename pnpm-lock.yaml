@@ -47,6 +47,9 @@ importers:
       '@nexus/files':
         specifier: workspace:*
         version: link:../files
+      '@nexus/lists':
+        specifier: workspace:*
+        version: link:../lists
       vue:
         specifier: ^3.5.42
         version: 3.5.42

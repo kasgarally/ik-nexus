@@ -15,6 +15,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Create the i18n instance](#create-the-i18n-instance)
 - [Use LocaleSelect](#use-localeselect)
 - [File upload components](#file-upload-components)
+- [List components](#list-components)
 - [Docker](#docker)
 - [Testing](#testing)
 - [Later: publish to npm](#later-publish-to-npm)
@@ -24,10 +25,12 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `LocaleSelect` — language menu (EN / FR / AR, RTL for Arabic)
 - `FileUpload` — many files (`document` list or `images` grid + lightbox)
 - `FileReplace` — one file (`document` field or clickable `avatar`); uploads the new file, then deletes the previous
-- `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` strings and Vuetify `$vuetify` catalogs
-- Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `useOwnerFiles`
+- `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` / `lists.*` strings and Vuetify `$vuetify` catalogs
+- `ListItemsEditor` — table of items for one `listKey`, add/edit modal, delete confirm
+- `ListSelect` — `v-select` of active items; `v-model` is the stable `code`
+- Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `useOwnerFiles`, `useListItems`
 
-Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`.
+Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`.
 
 ## Folder layout
 
@@ -42,6 +45,10 @@ src/
     files/FileRow.vue
     files/FileLightbox.vue
     files/useOwnerFiles.js
+    lists/ListItemForm.vue
+    lists/ListItemsEditor.vue
+    lists/ListSelect.vue
+    lists/useListItems.js
 ```
 
 Public imports stay `@nexus/ui`.
@@ -60,7 +67,8 @@ That does not install or hoist Meteor apps. Do not add `apps/` to [`pnpm-workspa
 
 ```json
 "@nexus/ui": "file:../../packages/ui",
-"@nexus/files": "file:../../packages/files"
+"@nexus/files": "file:../../packages/files",
+"@nexus/lists": "file:../../packages/lists"
 ```
 
 Then `meteor npm install`. Point Rspack at the package source so `vue-loader` compiles the SFCs:
@@ -75,7 +83,7 @@ resolve: {
 
 Do not alias `vuetify` to its package root — that breaks `vuetify/styles` and other subpaths.
 
-The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md).
+The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md). Call `Lists.registerWithMeteor` before `ListItemsEditor` / `ListSelect`. See [`packages/lists/README.md`](../lists/README.md).
 
 ## Create the i18n instance
 
@@ -143,6 +151,23 @@ flowchart LR
 ```
 
 `FileReplace` uploads the new file first, then hard-deletes every other file for that owner so a failed upload keeps the previous file.
+
+## List components
+
+```js
+import { ListItemsEditor, ListSelect } from '@nexus/ui'
+```
+
+```html
+<ListItemsEditor list-key="risks.category" />
+<ListSelect v-model="category" list-key="risks.category" />
+```
+
+`ListItemsEditor` is the setup page: table for one `listKey`, Add opens a modal (`code`, `title.en` / `fr` / `ar`, `sortOrder`, `active`). Edit uses the same modal; `code` is locked. Delete asks for confirmation.
+
+`ListSelect` is for capture forms. It shows **active** items only. The bound value is `code`, not `_id` or a translated title. Changing locale updates labels.
+
+Later product routes such as `/risks/setup/categories` pass `list-key="risks.category"` into the same editor.
 
 ## Docker
 
