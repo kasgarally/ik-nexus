@@ -1,6 +1,13 @@
-@import "tailwindcss";
+/**
+ * Author: Karmil Asgarally - INTELLEKTRA © 2026
+ * Global client styles
+ */
+html,
+body,
+#app {
+  min-height: 100%;
+}
 
 body {
-    padding: 10px;
-    font-family: sans-serif;
+  margin: 0;
 }

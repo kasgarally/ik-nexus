@@ -1,19 +1,19 @@
+/**
+ * Author: Karmil Asgarally - INTELLEKTRA © 2026
+ * Meteor Rspack client bundler
+ */
+const path = require('path');
 const { defineConfig } = require('@meteorjs/rspack');
 const { VueLoaderPlugin } = require('vue-loader');
 
-/**
- * Rspack configuration for Meteor projects.
- *
- * Provides typed flags on the `Meteor` object, such as:
- * - `Meteor.isClient` / `Meteor.isServer`
- * - `Meteor.isDevelopment` / `Meteor.isProduction`
- * - …and other flags available
- *
- * Use these flags to adjust your build settings based on environment.
- */
 module.exports = defineConfig(Meteor => {
   return {
     ...Meteor.isClient && {
+      resolve: {
+        alias: {
+          '@mdi/font': path.resolve(__dirname, 'node_modules/@mdi/font'),
+        },
+      },
       plugins: [new VueLoaderPlugin()],
       module: {
         rules: [
@@ -21,14 +21,16 @@ module.exports = defineConfig(Meteor => {
             test: /\.vue$/,
             loader: 'vue-loader',
             options: {
-              // Note, for the majority of features to be available, make sure this option is `true`
               experimentalInlineMatchResource: true,
             },
           },
           {
             test: /\.css$/,
-            use: ["postcss-loader"],
-            type: "css",
+            type: 'css',
+          },
+          {
+            test: /\.(woff2?|eot|ttf|otf)$/i,
+            type: 'asset/resource',
           },
         ],
       },

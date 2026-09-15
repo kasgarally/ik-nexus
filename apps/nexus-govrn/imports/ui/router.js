@@ -1,6 +1,11 @@
+/**
+ * Author: Karmil Asgarally - INTELLEKTRA © 2026
+ * Vue Router routes
+ */
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from './views/Home.vue'
-import About from './views/About.vue'
+import Auth from './Auth.vue'
+import Context from './Context.vue'
+import Entry from './Entry.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -8,12 +13,23 @@ export const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: Home,
+      component: Entry,
+      meta: { layout: 'web' },
     },
     {
-      path: '/about',
-      name: 'about',
-      component: About,
+      path: '/signin',
+      name: 'signin',
+      component: Auth,
+      meta: { layout: 'auth' },
+    },
+    {
+      path: '/workspace',
+      name: 'workspace',
+      components: {
+        default: Entry,
+        context: Context,
+      },
+      meta: { layout: 'web', context: true },
     },
   ],
 })

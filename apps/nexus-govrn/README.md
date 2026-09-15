@@ -16,4 +16,4 @@ This is a simple example of how to use Vue3 with Meteor.
 - [Vue Router](https://next.router.vuejs.org/)
 - [Meteor](https://www.meteor.com/)
 - [Vue Meteor Tracker](https://github.com/meteor-vue/vue-meteor-tracker)
-- [Tailwind CSS](https://tailwindcss.com/)
+- [Vuetify](https://vuetifyjs.com/)

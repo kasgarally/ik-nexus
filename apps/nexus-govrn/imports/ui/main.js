@@ -1,14 +1,29 @@
+/**
+ * Author: Karmil Asgarally - INTELLEKTRA © 2026
+ * Vue client bootstrap
+ */
 import { Meteor } from 'meteor/meteor'
 import { createApp } from 'vue'
+import { createVuetify } from 'vuetify'
+import { createPinia } from 'pinia'
 import { VueMeteor } from 'vue-meteor-tracker'
-
-import './main.css'
+import { i18n } from './i18n/index.js'
+import { router } from './router.js'
+import { vuetifyConfig } from './vuetify.config.js'
 import App from './App.vue'
-import { router } from './router'
+
+import 'vuetify/styles'
+import './main.css'
+
+const app = createApp(App)
+const vuetify = createVuetify(vuetifyConfig)
+
+app.use(VueMeteor)
+app.use(i18n)
+app.use(router)
+app.use(createPinia())
+app.use(vuetify)
 
 Meteor.startup(() => {
-  const app = createApp(App)
-  app.use(router)
-  app.use(VueMeteor)
   app.mount('#app')
 })
