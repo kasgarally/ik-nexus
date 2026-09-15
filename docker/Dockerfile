@@ -12,6 +12,9 @@ RUN test -n "${APP_NAME}"
 # Give meteor build more heap; raise Docker Desktop memory if this still OOMs.
 ENV TOOL_NODE_FLAGS="--max-old-space-size=4096"
 
+# Shared packages resolve at /packages (file:../../packages/ui from /opt/src).
+COPY packages /packages
+
 # Cache npm install unless package files change.
 COPY apps/${APP_NAME}/package.json apps/${APP_NAME}/package-lock.json $APP_SOURCE_FOLDER/
 RUN bash $SCRIPTS_FOLDER/build-app-npm-dependencies.sh

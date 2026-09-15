@@ -5,12 +5,6 @@
 export default {
   brand: 'Nexus GovRN',
   themeToggle: 'Toggle theme',
-  locale: {
-    label: 'Language',
-    en: 'English',
-    fr: 'French',
-    ar: 'Arabic',
-  },
   nav: {
     home: 'Home',
     workspace: 'With context',

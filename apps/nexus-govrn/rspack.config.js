@@ -10,6 +10,10 @@ module.exports = defineConfig(Meteor => {
   return {
     ...Meteor.isClient && {
       resolve: {
+        // file: installs @nexus/ui as a junction to packages/ui. Leave it
+        // unresolved as a real path so vue / vue-i18n / vuetify walk up
+        // through node_modules/@nexus/ui to this app's node_modules.
+        symlinks: false,
         alias: {
           '@mdi/font': path.resolve(__dirname, 'node_modules/@mdi/font'),
         },
@@ -20,6 +24,11 @@ module.exports = defineConfig(Meteor => {
           {
             test: /\.vue$/,
             loader: 'vue-loader',
+            include: [
+              path.resolve(__dirname),
+              path.resolve(__dirname, 'node_modules/@nexus/ui'),
+              path.resolve(__dirname, '../../packages/ui'),
+            ],
             options: {
               experimentalInlineMatchResource: true,
             },

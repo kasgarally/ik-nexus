@@ -5,12 +5,6 @@
 export default {
   brand: 'Nexus GovRN',
   themeToggle: 'تبديل المظهر',
-  locale: {
-    label: 'اللغة',
-    en: 'الإنجليزية',
-    fr: 'الفرنسية',
-    ar: 'العربية',
-  },
   nav: {
     home: 'الرئيسية',
     workspace: 'مع السياق',

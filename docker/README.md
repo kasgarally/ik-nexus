@@ -12,6 +12,7 @@ Commands go through a Node runner and root npm scripts. The same commands work o
 
 - [Commands](#commands)
 - [How the Meteor image is built](#how-the-meteor-image-is-built)
+  - [Shared packages](#shared-packages)
   - [Multi-stage Dockerfile](#multi-stage-dockerfile)
     - [Stage 1 — builder](#stage-1--builder-geoffreyboothmeteor-base351)
     - [Stage 2 — runtime](#stage-2--runtime-node24150-alpine)
@@ -57,11 +58,15 @@ flowchart LR
 
 Compose wires it like this ([`docker-compose.yml`](docker-compose.yml)):
 
-- **context:** `..` (repository root) so the Dockerfile can `COPY apps/${APP_NAME}`
+- **context:** `..` (repository root) so the Dockerfile can `COPY apps/${APP_NAME}` and `COPY packages`
 - **dockerfile:** `docker/Dockerfile`
 - **build-arg:** `APP_NAME` from `docker/apps/<name>.env`
 
 [`.dockerignore`](../.dockerignore) at the repo root keeps `.git`, `.meteor/local`, `node_modules`, Rspack/Meteor cache dirs, and TLS PEMs out of the build context. The builder reinstalls npm deps inside the image.
+
+### Shared packages
+
+Apps depend on [`@nexus/ui`](../packages/ui) with `"@nexus/ui": "file:../../packages/ui"`. The Meteor app is copied to `/opt/src`, so that relative path resolves to **`/packages/ui`**. The Dockerfile copies the repo `packages/` tree there **before** `meteor npm ci`, otherwise the file dependency is missing and the install fails.
 
 ### Multi-stage Dockerfile
 
@@ -71,11 +76,12 @@ Two stages. The heavy Meteor toolchain never reaches the image that actually run
 flowchart TB
   subgraph builder [Stage 1: builder]
     base[geoffreybooth/meteor-base 3.5.1]
+    shared[COPY packages to /packages]
     pkgs[COPY package.json and lockfile]
     npmCi[meteor npm ci]
     src[COPY apps/APP_NAME]
     meteorBuild["meteor build --directory /opt/bundle"]
-    base --> pkgs --> npmCi --> src --> meteorBuild
+    base --> shared --> pkgs --> npmCi --> src --> meteorBuild
   end
 
   subgraph runtime [Stage 2: runtime]
@@ -104,9 +110,10 @@ Steps:
 
 1. Fail fast if `APP_NAME` is empty.
 2. Raise Node heap (`TOOL_NODE_FLAGS=--max-old-space-size=4096`). Give Docker Desktop at least 4 GB RAM (8 GB is safer) if `meteor build` OOMs (exit 137).
-3. Copy only `apps/${APP_NAME}/package.json` and `package-lock.json`, then run meteor-base’s `build-app-npm-dependencies.sh` (`meteor npm ci`). That layer caches until dependencies change. **DevDependencies stay** — Rspack and Vue loader run at **build** time.
-4. Copy the rest of `apps/${APP_NAME}` into `/opt/src`.
-5. Run a **full client + server** build:
+3. Copy `packages/` to `/packages` so `file:../../packages/ui` from `/opt/src` resolves.
+4. Copy only `apps/${APP_NAME}/package.json` and `package-lock.json`, then run meteor-base’s `build-app-npm-dependencies.sh` (`meteor npm ci`). That layer caches until dependencies change. **DevDependencies stay** — Rspack and Vue loader run at **build** time.
+5. Copy the rest of `apps/${APP_NAME}` into `/opt/src`.
+6. Run a **full client + server** build:
 
 ```text
 meteor build --directory /opt/bundle

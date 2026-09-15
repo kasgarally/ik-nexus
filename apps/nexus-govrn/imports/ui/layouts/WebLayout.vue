@@ -6,8 +6,8 @@ Web app layout with optional context panel
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
+import { LocaleSelect } from '@nexus/ui'
 import { useDisplay, useTheme } from 'vuetify'
-import LocaleSelect from '../components/LocaleSelect.vue'
 
 const route = useRoute()
 const theme = useTheme()

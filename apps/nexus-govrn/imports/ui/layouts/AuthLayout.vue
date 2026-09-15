@@ -3,9 +3,9 @@ Author: Karmil Asgarally - INTELLEKTRA © 2026
 Sign-in layout
 -->
 <script setup>
+import { LocaleSelect } from '@nexus/ui'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from 'vuetify'
-import LocaleSelect from '../components/LocaleSelect.vue'
 
 const theme = useTheme()
 const { t } = useI18n()
