@@ -13,7 +13,14 @@ export const STORAGE_KIND = 'gridfs'
 export const DEFAULT_MAX_BYTES = 25 * 1024 * 1024
 export const DEFAULT_CHUNK_BYTES = 256 * 1024
 
-export const ALLOWED_MIME_TYPES = Object.freeze([
+export const IMAGE_MIME_TYPES = Object.freeze([
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'image/webp',
+])
+
+export const DOCUMENT_MIME_TYPES = Object.freeze([
   'application/pdf',
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -21,12 +28,13 @@ export const ALLOWED_MIME_TYPES = Object.freeze([
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   'application/vnd.ms-powerpoint',
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'image/png',
-  'image/jpeg',
-  'image/gif',
-  'image/webp',
   'text/plain',
   'text/csv',
+])
+
+export const ALLOWED_MIME_TYPES = Object.freeze([
+  ...DOCUMENT_MIME_TYPES,
+  ...IMAGE_MIME_TYPES,
 ])
 
 export const METHOD_START = 'nexusFiles.start'
@@ -34,3 +42,4 @@ export const METHOD_PUSH_CHUNK = 'nexusFiles.pushChunk'
 export const METHOD_FINISH = 'nexusFiles.finish'
 export const METHOD_REMOVE = 'nexusFiles.remove'
 export const PUBLICATION_FOR_OWNER = 'nexusFiles.forOwner'
+export const DOWNLOAD_PATH_PREFIX = '/nexus-files'

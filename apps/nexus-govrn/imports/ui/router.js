@@ -6,6 +6,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Auth from './Auth.vue'
 import Context from './Context.vue'
 import Entry from './Entry.vue'
+import FilesTest from './FilesTest.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -21,6 +22,12 @@ export const router = createRouter({
       name: 'signin',
       component: Auth,
       meta: { layout: 'auth' },
+    },
+    {
+      path: '/files-test',
+      name: 'filesTest',
+      component: FilesTest,
+      meta: { layout: 'web' },
     },
     {
       path: '/workspace',

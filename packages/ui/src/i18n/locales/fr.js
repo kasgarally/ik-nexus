@@ -9,4 +9,16 @@ export default {
     fr: 'Français',
     ar: 'Arabe',
   },
+  files: {
+    upload: 'Téléverser des fichiers',
+    replace: 'Remplacer le fichier',
+    open: 'Ouvrir',
+    remove: 'Supprimer',
+    empty: 'Aucun fichier',
+    uploading: 'Téléversement…',
+    failed: 'Échec du téléversement',
+    close: 'Fermer',
+    next: 'Image suivante',
+    previous: 'Image précédente',
+  },
 }

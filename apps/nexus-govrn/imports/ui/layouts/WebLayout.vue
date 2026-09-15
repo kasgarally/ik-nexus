@@ -32,6 +32,7 @@ function toggleTheme() {
   <v-navigation-drawer v-model="drawer">
     <v-list nav>
       <v-list-item prepend-icon="mdi-home" :title="t('nav.home')" value="home" to="/" />
+      <v-list-item prepend-icon="mdi-paperclip" :title="t('nav.filesTest')" value="filesTest" to="/files-test" />
       <v-list-item
         prepend-icon="mdi-view-split-vertical"
         :title="t('nav.workspace')"

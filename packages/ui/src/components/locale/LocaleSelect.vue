@@ -11,7 +11,7 @@ import {
   NEXUS_LOCALE_STORAGE_KEY,
   setAppLocale,
   supportedLocales,
-} from '../i18n/createNexusI18n.js'
+} from '../../i18n/createNexusI18n.js'
 
 const { locale, t } = useI18n()
 const storageKey = inject(NEXUS_LOCALE_STORAGE_KEY, DEFAULT_STORAGE_KEY)

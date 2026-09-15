@@ -13,18 +13,19 @@ export function registerPublication({ Meteor, check, Roles, filesCollection }) {
     check(ownerType, String)
     check(ownerId, String)
 
-    if (!this.userId) {
-      return this.ready()
-    }
-
     const owner = getRegisteredOwner(ownerType)
     if (!owner) {
       return this.ready()
     }
 
-    const canDownload = await userHasRole(Roles, this.userId, owner.roles.download)
-    if (!canDownload) {
-      return this.ready()
+    if (!owner.allowAnonymous) {
+      if (!this.userId) {
+        return this.ready()
+      }
+      const canDownload = await userHasRole(Roles, this.userId, owner.roles.download)
+      if (!canDownload) {
+        return this.ready()
+      }
     }
 
     return filesCollection.find({ ownerType, ownerId })

@@ -7,18 +7,12 @@
  */
 import { GRIDFS_BUCKET, METADATA_COLLECTION } from './constants.js'
 import { GridFSAdapter } from './gridfs.js'
+import { registerDownloadRoute } from './http.js'
 import { registerMethods } from './methods.js'
 import { registerPublication } from './publish.js'
 
-const REQUIRED_APIS = [
-  'Meteor',
-  'Mongo',
-  'MongoInternals',
-  'check',
-  'Match',
-  'Random',
-  'Roles',
-]
+const REQUIRED_ALWAYS = ['Meteor', 'Mongo', 'check', 'Match', 'Random', 'Roles']
+const REQUIRED_SERVER = ['MongoInternals', 'WebApp']
 
 let meteorApis = null
 let filesCollection = null
@@ -53,6 +47,11 @@ export function registerWithMeteor(apis) {
     Roles: apis.Roles,
     filesCollection,
   })
+  registerDownloadRoute({
+    WebApp: apis.WebApp,
+    filesCollection,
+    storageAdapter,
+  })
 
   apis.Meteor.startup(() => {
     ensureIndexes(filesCollection)
@@ -85,7 +84,12 @@ function assertRequiredApis(apis) {
     throw new Error('registerWithMeteor requires an object of Meteor APIs')
   }
 
-  const missing = REQUIRED_APIS.filter((name) => apis[name] == null)
+  const required = [...REQUIRED_ALWAYS]
+  if (apis.Meteor?.isServer) {
+    required.push(...REQUIRED_SERVER)
+  }
+
+  const missing = required.filter((name) => apis[name] == null)
   if (missing.length > 0) {
     throw new Error(`registerWithMeteor is missing: ${missing.join(', ')}`)
   }
@@ -93,8 +97,9 @@ function assertRequiredApis(apis) {
 
 function createGridFSAdapter(MongoInternals) {
   const GridFSBucket = MongoInternals.NpmModule?.GridFSBucket
+  const ObjectId = MongoInternals.NpmModule?.ObjectId
   const db = MongoInternals.defaultRemoteCollectionDriver().mongo.db
-  return new GridFSAdapter({ db, GridFSBucket, bucketName: GRIDFS_BUCKET })
+  return new GridFSAdapter({ db, GridFSBucket, ObjectId, bucketName: GRIDFS_BUCKET })
 }
 
 function ensureIndexes(collection) {

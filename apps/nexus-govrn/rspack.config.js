@@ -16,6 +16,7 @@ module.exports = defineConfig(Meteor => {
         symlinks: false,
         alias: {
           '@mdi/font': path.resolve(__dirname, 'node_modules/@mdi/font'),
+          '@nexus/files': path.resolve(__dirname, 'node_modules/@nexus/files'),
         },
       },
       plugins: [new VueLoaderPlugin()],

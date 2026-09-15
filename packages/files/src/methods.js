@@ -37,9 +37,9 @@ export function registerMethods({
         size: Number,
       })
 
-      const userId = requireLoggedIn(Meteor, this.userId)
       const owner = requireRegisteredOwner(Meteor, params.ownerType)
-      await requireRole(Meteor, Roles, userId, owner.roles.upload)
+      const userId = requireCaller(Meteor, this.userId, owner)
+      await requireOwnerRole(Meteor, Roles, userId, owner, owner.roles.upload)
       await requireParentExists(Meteor, owner.collection, params.ownerId)
       rejectInvalidFile(Meteor, params)
 
@@ -65,8 +65,7 @@ export function registerMethods({
         chunk: Match.Any,
       })
 
-      const userId = requireLoggedIn(Meteor, this.userId)
-      const session = requireSessionOwner(Meteor, params.uploadId, userId)
+      const session = requireSessionOwner(Meteor, params.uploadId, this.userId)
       const chunkBytes = toChunkBytes(Meteor, params.chunk)
 
       session.chunks.push(chunkBytes)
@@ -81,8 +80,7 @@ export function registerMethods({
     async [METHOD_FINISH](params) {
       check(params, { uploadId: String })
 
-      const userId = requireLoggedIn(Meteor, this.userId)
-      const session = requireSessionOwner(Meteor, params.uploadId, userId)
+      const session = requireSessionOwner(Meteor, params.uploadId, this.userId)
 
       if (session.receivedBytes !== session.size) {
         uploadSessions.delete(session.uploadId)
@@ -111,7 +109,7 @@ export function registerMethods({
         size: session.size,
         storage: STORAGE_KIND,
         gridFsId,
-        uploadedBy: userId,
+        uploadedBy: session.userId ?? null,
         createdAt: new Date(),
       }
 
@@ -122,14 +120,14 @@ export function registerMethods({
     async [METHOD_REMOVE](params) {
       check(params, { fileId: String })
 
-      const userId = requireLoggedIn(Meteor, this.userId)
       const fileDocument = await findDocument(filesCollection, params.fileId)
       if (!fileDocument) {
         throw new Meteor.Error('file-not-found', 'No nexus_files document for that id')
       }
 
       const owner = requireRegisteredOwner(Meteor, fileDocument.ownerType)
-      await requireRole(Meteor, Roles, userId, owner.roles.remove)
+      const userId = requireCaller(Meteor, this.userId, owner)
+      await requireOwnerRole(Meteor, Roles, userId, owner, owner.roles.remove)
 
       // Blob first so a failed metadata delete can be retried without leaving a live file.
       await storageAdapter.remove(fileDocument.gridFsId)
@@ -146,7 +144,10 @@ export async function userHasRole(Roles, userId, role) {
   return Roles.userIsInRole(userId, role)
 }
 
-function requireLoggedIn(Meteor, userId) {
+function requireCaller(Meteor, userId, owner) {
+  if (owner.allowAnonymous) {
+    return userId ?? null
+  }
   if (!userId) {
     throw new Meteor.Error('not-logged-in', 'You must be logged in to use nexusFiles')
   }
@@ -161,7 +162,10 @@ function requireRegisteredOwner(Meteor, ownerType) {
   return owner
 }
 
-async function requireRole(Meteor, Roles, userId, role) {
+async function requireOwnerRole(Meteor, Roles, userId, owner, role) {
+  if (owner.allowAnonymous) {
+    return
+  }
   const allowed = await userHasRole(Roles, userId, role)
   if (!allowed) {
     throw new Meteor.Error('not-authorized', `Missing role ${role}`)
@@ -195,7 +199,15 @@ function rejectInvalidFile(Meteor, { name, mime, size }) {
 
 function requireSessionOwner(Meteor, uploadId, userId) {
   const session = uploadSessions.get(uploadId)
-  if (!session || session.userId !== userId) {
+  if (!session) {
+    throw new Meteor.Error('unknown-upload', 'No in-memory upload session for this uploadId')
+  }
+
+  // Anonymous sessions are bound to uploadId only. Logged-in sessions stay user-bound.
+  if (session.userId == null) {
+    return session
+  }
+  if (session.userId !== userId) {
     throw new Meteor.Error('unknown-upload', 'No in-memory upload session for this user')
   }
   return session

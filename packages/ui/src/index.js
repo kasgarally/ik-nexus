@@ -2,7 +2,10 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * @nexus/ui public exports
  */
-export { default as LocaleSelect } from './components/LocaleSelect.vue'
+export { default as FileReplace } from './components/files/FileReplace.vue'
+export { default as FileUpload } from './components/files/FileUpload.vue'
+export { useOwnerFiles } from './components/files/useOwnerFiles.js'
+export { default as LocaleSelect } from './components/locale/LocaleSelect.vue'
 export {
   applyDocumentLocale,
   createNexusI18n,

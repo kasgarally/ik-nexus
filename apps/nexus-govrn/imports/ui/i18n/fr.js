@@ -7,8 +7,21 @@ export default {
   themeToggle: 'Changer de thème',
   nav: {
     home: 'Accueil',
+    filesTest: 'Test fichiers',
     workspace: 'Avec contexte',
     signin: 'Connexion',
+  },
+  filesTest: {
+    title: 'Test fichiers',
+    body: 'Quatre variantes. Le remplacement téléverse d’abord le nouveau fichier, puis supprime l’ancien. La galerie ouvre une lightbox.',
+    oneDocTitle: '1. Document unique',
+    oneDocHint: 'Champ trombone pour PDF, Office, txt ou csv. Le nom et le lien sont en dessous. Pas d’aperçu image.',
+    oneAvatarTitle: '2. Image avatar',
+    oneAvatarHint: 'Cliquez sur l’image (ou le cercle vide) pour choisir une photo. Forme et taille en pixels sont des props.',
+    manyDocTitle: '3. Plusieurs documents',
+    manyDocHint: 'Ajoutez plusieurs documents. Ils restent dans une liste.',
+    manyImagesTitle: '4. Galerie d’images',
+    manyImagesHint: 'Ajoutez plusieurs images. Cliquez une miniature pour la lightbox.',
   },
   home: {
     title: 'Bienvenue',

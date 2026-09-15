@@ -9,4 +9,16 @@ export default {
     fr: 'French',
     ar: 'Arabic',
   },
+  files: {
+    upload: 'Upload files',
+    replace: 'Replace file',
+    open: 'Open',
+    remove: 'Remove',
+    empty: 'No files yet',
+    uploading: 'Uploading…',
+    failed: 'Upload failed',
+    close: 'Close',
+    next: 'Next image',
+    previous: 'Previous image',
+  },
 }

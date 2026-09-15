@@ -257,7 +257,7 @@ flowchart LR
 ## Consume a package from a Meteor app
 
 ```js
-import { LocaleSelect, createNexusI18n } from '@nexus/ui'
+import { FileReplace, FileUpload, LocaleSelect, createNexusI18n } from '@nexus/ui'
 import { Files } from '@nexus/files'
 ```
 
@@ -267,7 +267,7 @@ If Rspack cannot compile the `.vue` files, include the package in `vue-loader` (
 
 ## Dependencies and peerDependencies
 
-`@nexus/ui` declares **peer** Vue, vue-i18n, and Vuetify. The **app** installs the concrete versions. That is how two products can pin different majors.
+`@nexus/ui` declares **peer** Vue, vue-i18n, Vuetify, `vue-meteor-tracker`, and `@nexus/files`. The **app** installs the concrete versions. That is how two products can pin different majors.
 
 pnpm 10 may still materialize those peers into the **workspace** store (`autoInstallPeers` defaults to true). That copy lives under the repo-root `node_modules` / `.pnpm` store. It is for developing the library. It is **not** GovRN’s Vue.
 

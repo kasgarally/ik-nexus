@@ -7,8 +7,21 @@ export default {
   themeToggle: 'Toggle theme',
   nav: {
     home: 'Home',
+    filesTest: 'Files test',
     workspace: 'With context',
     signin: 'Sign in',
+  },
+  filesTest: {
+    title: 'Files test',
+    body: 'Four variants. Single-file replace uploads the new file first, then deletes the previous one. Image galleries open a lightbox.',
+    oneDocTitle: '1. Single document',
+    oneDocHint: 'Paperclip field for PDF, Office, txt, or csv. The file name and link sit below. No image preview.',
+    oneAvatarTitle: '2. Avatar image',
+    oneAvatarHint: 'Click the image (or the empty circle) to pick a photo. Shape and pixel size are props.',
+    manyDocTitle: '3. Many documents',
+    manyDocHint: 'Add several documents. They stay in a list below.',
+    manyImagesTitle: '4. Image gallery',
+    manyImagesHint: 'Add several images. Click a thumbnail to open the lightbox.',
   },
   home: {
     title: 'Welcome',

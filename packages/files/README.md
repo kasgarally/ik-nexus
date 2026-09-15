@@ -17,8 +17,10 @@ Do **not** run `pnpm` inside `apps/`. This package is a `packages/*` workspace m
 - [Install in an app later](#install-in-an-app-later)
 - [Collection names](#collection-names)
 - [Roles](#roles)
+- [Anonymous access](#anonymous-access)
 - [registerWithMeteor and defineOwner](#registerwithmeteor-and-defineowner)
 - [DDP API](#ddp-api)
+- [HTTP download](#http-download)
 - [Limits](#limits)
 - [Storage adapter](#storage-adapter)
 - [Docker](#docker)
@@ -29,7 +31,8 @@ Do **not** run `pnpm` inside `apps/`. This package is a `packages/*` workspace m
 - Metadata collection `nexus_files` and GridFS bucket `nexus_fs`
 - DDP methods `nexusFiles.start` / `pushChunk` / `finish` / `remove`
 - Publication `nexusFiles.forOwner` (metadata only, never chunks)
-- Client helper `Files.upload({ ownerType, ownerId, file })` (no Vue)
+- Client helpers `Files.upload`, `Files.remove`, `Files.downloadUrl`, `Files.subscribeForOwner`
+- HTTP `GET /nexus-files/:fileId` (inline stream for a new tab)
 - `Files.defineOwner` so each parent collection (risks, incidents, …) opts in
 
 This package must **not** import `meteor/*`. The app injects Meteor APIs.
@@ -69,7 +72,7 @@ These names do not change per app. One GridFS bucket per Meteor app is shared by
 - `ownerType`, `ownerId`
 - `name`, `mime`, `size`
 - `storage: 'gridfs'`
-- `gridFsId`
+- `gridFsId` — hex string of the id in `nexus_fs.files` (not a Meteor.ObjectID)
 - `uploadedBy`, `createdAt`
 
 ## Roles
@@ -84,6 +87,10 @@ meteor-roles strings, registered by the app:
 
 Example for risks: `files.risks.upload`, `files.risks.download`, `files.risks.remove`.
 
+## Anonymous access
+
+`defineOwner({ allowAnonymous: true })` skips login and role checks on DDP and HTTP. Parent existence, MIME, and size still apply. Role strings stay required so you can turn the flag off later. Default is `false`.
+
 ## registerWithMeteor and defineOwner
 
 ```js
@@ -93,6 +100,7 @@ import { Mongo, MongoInternals } from 'meteor/mongo'
 import { Roles } from 'meteor/roles'
 import { check, Match } from 'meteor/check'
 import { Random } from 'meteor/random'
+import { WebApp } from 'meteor/webapp'
 import { Risks } from '/imports/api/risks'
 
 Files.registerWithMeteor({
@@ -103,11 +111,13 @@ Files.registerWithMeteor({
   Match,
   Random,
   Roles,
+  WebApp,
 })
 
 Files.defineOwner({
   type: 'risks',
   collection: Risks,
+  allowAnonymous: false,
   roles: {
     upload: 'files.risks.upload',
     download: 'files.risks.download',
@@ -115,6 +125,8 @@ Files.defineOwner({
   },
 })
 ```
+
+`MongoInternals` and `WebApp` are required on the **server** only. The client calls `registerWithMeteor` without them.
 
 The parent document must already exist (`collection.findOne(ownerId)`) before `nexusFiles.start` accepts an upload.
 
@@ -151,19 +163,26 @@ flowchart TB
 
 | Method / publication | Who | Check |
 |----------------------|-----|--------|
-| `nexusFiles.start` | logged-in | parent exists; `files.<type>.upload`; mime/size |
-| `nexusFiles.pushChunk` | same user as session | session owner; binary chunk |
-| `nexusFiles.finish` | same user | write GridFS; insert `nexus_files` |
-| `nexusFiles.remove` | logged-in | `files.<type>.remove`; hard-delete blob + row |
-| `nexusFiles.forOwner` | logged-in | `files.<type>.download`; **metadata only** |
+| `nexusFiles.start` | logged-in (or anonymous owner) | parent exists; role or `allowAnonymous`; mime/size |
+| `nexusFiles.pushChunk` | same session | session owner; binary chunk |
+| `nexusFiles.finish` | same session | write GridFS; insert `nexus_files` |
+| `nexusFiles.remove` | logged-in (or anonymous owner) | role or `allowAnonymous`; hard-delete blob + row |
+| `nexusFiles.forOwner` | logged-in (or anonymous owner) | role or `allowAnonymous`; **metadata only** |
 
 ```js
 import { Files } from '@nexus/files'
 
 await Files.upload({ ownerType: 'risks', ownerId: riskId, file })
+await Files.remove(fileId)
+Files.subscribeForOwner('risks', riskId)
+window.open(Files.downloadUrl(fileId), '_blank', 'noopener')
 ```
 
 `file` is a browser `File` or a `Uint8Array` (then pass `name` and `mime` too).
+
+## HTTP download
+
+`GET /nexus-files/:fileId` streams the GridFS blob with `Content-Disposition: inline` so the browser can open it in a new tab. Authenticated HTTP comes later; today only `allowAnonymous` owners are served.
 
 ```mermaid
 sequenceDiagram

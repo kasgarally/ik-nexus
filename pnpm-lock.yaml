@@ -12,12 +12,18 @@ importers:
 
   packages/ui:
     dependencies:
+      '@nexus/files':
+        specifier: workspace:*
+        version: link:../files
       vue:
         specifier: ^3.5.0
         version: 3.5.42
       vue-i18n:
         specifier: ^11.0.0
         version: 11.4.10(vue@3.5.42)
+      vue-meteor-tracker:
+        specifier: ^3.0.0-beta.7
+        version: 3.0.0-beta.7(vue@3.5.42)
       vuetify:
         specifier: ^4.0.0
         version: 4.2.1(vue-i18n@11.4.10(vue@3.5.42))(vue@3.5.42)
@@ -157,6 +163,12 @@ packages:
     engines: {node: '>= 22'}
     peerDependencies:
       vue: ^3.0.0
+
+  vue-meteor-tracker@3.0.0-beta.7:
+    resolution: {integrity: sha512-5sOdpl+VBy4BxWtEAoV5KJb218ZnX3/ml5Du8LUbI/BMZdu8LTjGVsIigzykxxRumbM/jZ72mqDHHwyLNvhQkA==}
+    engines: {node: '>14.5.0'}
+    peerDependencies:
+      vue: ^2.7.0 || ^3.0.0
 
   vue@3.5.42:
     resolution: {integrity: sha512-4RyHQTbQvOPs3MfvUO1Sg0YRrKNnA0mAVtvpd12Tg1fKDN7OHBUl1IqSn8zGJjK9nI3NkNp8cgTpVrSZC5TTcA==}
@@ -306,6 +318,10 @@ snapshots:
       '@intlify/devtools-types': 11.4.10
       '@intlify/shared': 11.4.10
       '@vue/devtools-api': 6.6.4
+      vue: 3.5.42
+
+  vue-meteor-tracker@3.0.0-beta.7(vue@3.5.42):
+    dependencies:
       vue: 3.5.42
 
   vue@3.5.42:
