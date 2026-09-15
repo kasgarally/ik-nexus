@@ -138,10 +138,7 @@ export function registerMethods({
 }
 
 export async function userHasRole(Roles, userId, role) {
-  if (typeof Roles.userIsInRoleAsync === 'function') {
-    return Roles.userIsInRoleAsync(userId, role)
-  }
-  return Roles.userIsInRole(userId, role)
+  return Roles.userIsInRoleAsync(userId, role)
 }
 
 function requireCaller(Meteor, userId, owner) {
@@ -234,22 +231,13 @@ function concatChunks(chunks, totalSize) {
 }
 
 async function findDocument(collection, id) {
-  if (typeof collection.findOneAsync === 'function') {
-    return collection.findOneAsync(id)
-  }
-  return collection.findOne(id)
+  return collection.findOneAsync(id)
 }
 
 async function insertDocument(collection, document) {
-  if (typeof collection.insertAsync === 'function') {
-    return collection.insertAsync(document)
-  }
-  return collection.insert(document)
+  return collection.insertAsync(document)
 }
 
 async function removeDocument(collection, id) {
-  if (typeof collection.removeAsync === 'function') {
-    return collection.removeAsync(id)
-  }
-  return collection.remove(id)
+  return collection.removeAsync(id)
 }

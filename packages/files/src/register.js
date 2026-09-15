@@ -103,10 +103,9 @@ function createGridFSAdapter(MongoInternals) {
 }
 
 function ensureIndexes(collection) {
-  const rawCollection = collection.rawCollection()
   return Promise.all([
-    rawCollection.createIndex({ ownerType: 1, ownerId: 1 }),
-    rawCollection.createIndex({ uploadedBy: 1 }),
-    rawCollection.createIndex({ createdAt: -1 }),
+    collection.createIndexAsync({ ownerType: 1, ownerId: 1 }),
+    collection.createIndexAsync({ uploadedBy: 1 }),
+    collection.createIndexAsync({ createdAt: -1 }),
   ])
 }

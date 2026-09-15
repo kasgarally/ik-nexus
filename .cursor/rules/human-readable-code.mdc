@@ -21,16 +21,16 @@ Write code a colleague can read without a walkthrough. Prefer clarity over cleve
 - No leftover TODOs, placeholders, or commented-out dead code in finished work.
 
 ```javascript
-// BAD — dense, unnamed, unexplained
+// BAD — dense, unnamed, unexplained, sync Mongo
 const ok = (u, t) => Roles.userIsInRole(u, `files.${t}.upload`) && !!owners.get(t)?.c.findOne(id)
 
-// GOOD — named steps, why is stated
+// GOOD — named steps, why is stated, Meteor async collection APIs
 // Roles and parent existence are both required before any GridFS write.
-function canUploadToOwner({ userId, ownerType, ownerId }) {
+async function canUploadToOwner({ userId, ownerType, ownerId }) {
   const owner = getRegisteredOwner(ownerType)
   if (!owner) return false
-  const hasUploadRole = Roles.userIsInRole(userId, owner.roles.upload)
-  const parentExists = Boolean(owner.collection.findOne(ownerId))
+  const hasUploadRole = await Roles.userIsInRoleAsync(userId, owner.roles.upload)
+  const parentExists = Boolean(await owner.collection.findOneAsync(ownerId))
   return hasUploadRole && parentExists
 }
 ```

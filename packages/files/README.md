@@ -35,6 +35,7 @@ Do **not** run `pnpm` inside `apps/`. This package is a `packages/*` workspace m
 - Client helpers `Files.upload`, `Files.remove`, `Files.downloadUrl`, `Files.subscribeForOwner`
 - HTTP `GET /nexus-files/:fileId` (inline stream for a new tab)
 - `Files.defineOwner` so each parent collection (risks, incidents, …) opts in
+- Meteor 3 async collection APIs (`findOneAsync`, `insertAsync`, `removeAsync`, `fetchAsync`). `find()` stays for cursors.
 
 This package must **not** import `meteor/*`. The app injects Meteor APIs.
 
@@ -129,7 +130,7 @@ Files.defineOwner({
 
 `MongoInternals` and `WebApp` are required on the **server** only. The client calls `registerWithMeteor` without them.
 
-The parent document must already exist (`collection.findOne(ownerId)`) before `nexusFiles.start` accepts an upload.
+The parent document must already exist (`await collection.findOneAsync(ownerId)`) before `nexusFiles.start` accepts an upload.
 
 ```mermaid
 flowchart TB
@@ -195,7 +196,7 @@ sequenceDiagram
   participant Meta
   Client->>Methods: nexusFiles.start
   Methods->>Roles: files.risks.upload
-  Methods->>Parent: findOne ownerId
+  Methods->>Parent: findOneAsync ownerId
   Methods-->>Client: uploadId
   loop chunks
     Client->>Methods: nexusFiles.pushChunk

@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 import { defineOwner, getRegisteredOwner, listOwnerTypes } from '../src/owners.js'
 
 function fakeCollection() {
-  return { findOne: () => null }
+  return { findOneAsync: async () => null }
 }
 
 function validRoles() {

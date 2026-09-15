@@ -11,6 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.23.5",
     "@mdi/font": "^7.4.47",
+    "@nexus/applog": "file:../../packages/applog",
     "@nexus/files": "file:../../packages/files",
     "@nexus/ui": "file:../../packages/ui",
     "@swc/helpers": "^0.5.17",

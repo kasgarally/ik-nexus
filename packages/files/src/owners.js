@@ -13,9 +13,7 @@ export function defineOwner({ type, collection, roles, allowAnonymous = false })
     throw new Error('defineOwner requires a string type')
   }
 
-  const canLookupParent =
-    collection &&
-    (typeof collection.findOne === 'function' || typeof collection.findOneAsync === 'function')
+  const canLookupParent = collection && typeof collection.findOneAsync === 'function'
 
   if (!canLookupParent) {
     throw new Error(`defineOwner(${type}) requires a Meteor collection`)

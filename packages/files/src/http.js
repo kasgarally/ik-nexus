@@ -105,8 +105,5 @@ function safeContentFilename(name) {
 }
 
 async function findDocument(collection, id) {
-  if (typeof collection.findOneAsync === 'function') {
-    return collection.findOneAsync(id)
-  }
-  return collection.findOne(id)
+  return collection.findOneAsync(id)
 }

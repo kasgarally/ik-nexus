@@ -12,12 +12,16 @@ function clientApis(overrides = {}) {
         constructor(name) {
           this.name = name
         }
+
+        createIndexAsync() {
+          return Promise.resolve()
+        }
       },
     },
     check: () => {},
     Match: { Any: 'Any' },
     Random: { id: () => 'rid' },
-    Roles: { userIsInRole: () => false },
+    Roles: { userIsInRoleAsync: async () => false },
     ...overrides,
   }
 }

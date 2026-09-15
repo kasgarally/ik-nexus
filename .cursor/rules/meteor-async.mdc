@@ -1,0 +1,34 @@
+---
+description: Use Meteor async collection APIs (insertAsync, findOneAsync); find() only for cursors
+alwaysApply: true
+---
+
+<!--
+Author: Karmil Asgarally - INTELLEKTRA © 2026
+Meteor async Mongo APIs
+-->
+
+# Meteor async Mongo
+
+Use Meteor 3’s async collection methods everywhere in this monorepo (`packages/*` and `apps/*`). Do not add sync fallbacks.
+
+- Writes: `insertAsync`, `updateAsync`, `removeAsync` — never `insert`, `update`, `remove`.
+- One document: `findOneAsync` — never `findOne`.
+- Many documents: `collection.find(selector)` still returns a **cursor**. Read it with `fetchAsync()` (or return the cursor from a publication). Never `fetch()`.
+- Indexes: `createIndexAsync`.
+- DDP: `Meteor.callAsync` — never `Meteor.call` for new code.
+- Roles: `userIsInRoleAsync` — never `userIsInRole`.
+- `@nexus/applog` wraps only the `*Async` write methods.
+- Exception: `collection.allow` / `collection.deny` still use the rule names `insert`, `update`, `remove`. Those are not collection write methods.
+
+```javascript
+// BAD
+const parent = collection.findOne(ownerId)
+collection.insert(doc)
+
+// GOOD
+const parent = await collection.findOneAsync(ownerId)
+await collection.insertAsync(doc)
+const rows = await collection.find({ ownerId }).fetchAsync()
+return filesCollection.find({ ownerType, ownerId })
+```

@@ -21,8 +21,9 @@ export function useOwnerFiles({ ownerType, ownerId }) {
   let subscriptionHandle = null
   let observer = null
 
-  function refreshDocuments(type, id) {
-    documents.value = Files.collection.find({ ownerType: type, ownerId: id }).fetch()
+  async function refreshDocuments(type, id) {
+    const cursor = Files.collection.find({ ownerType: type, ownerId: id })
+    documents.value = await cursor.fetchAsync()
   }
 
   function stopWatching() {
@@ -43,23 +44,23 @@ export function useOwnerFiles({ ownerType, ownerId }) {
     }
 
     const cursor = Files.collection.find({ ownerType: type, ownerId: id })
-    documents.value = cursor.fetch()
+    void refreshDocuments(type, id)
     observer = cursor.observe({
       added() {
-        refreshDocuments(type, id)
+        void refreshDocuments(type, id)
       },
       changed() {
-        refreshDocuments(type, id)
+        void refreshDocuments(type, id)
       },
       removed() {
-        refreshDocuments(type, id)
+        void refreshDocuments(type, id)
       },
     })
 
     subscriptionHandle = Files.subscribeForOwner(type, id, {
       onReady() {
         ready.value = true
-        refreshDocuments(type, id)
+        void refreshDocuments(type, id)
       },
     })
   }

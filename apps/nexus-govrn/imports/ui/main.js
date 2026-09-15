@@ -3,6 +3,7 @@
  * Vue client bootstrap
  */
 import { Meteor } from 'meteor/meteor'
+import { registerNexusApplog } from '/imports/api/nexusApplog.js'
 import { registerNexusFiles } from '/imports/api/nexusFiles.js'
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
@@ -17,6 +18,7 @@ import 'vuetify/styles'
 import './main.css'
 
 registerNexusFiles()
+registerNexusApplog()
 
 const app = createApp(App)
 const vuetify = createVuetify(vuetifyConfig)

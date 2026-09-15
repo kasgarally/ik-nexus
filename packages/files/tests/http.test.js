@@ -67,7 +67,7 @@ describe('@nexus/files HTTP download route', () => {
   it('returns 401 when the owner is not anonymous', async () => {
     defineOwner({
       type: 'http-auth-owner',
-      collection: { findOne: () => ({ _id: 'parent' }) },
+      collection: { findOneAsync: async () => ({ _id: 'parent' }) },
       allowAnonymous: false,
       roles: { upload: 'u', download: 'd', remove: 'r' },
     })
@@ -90,7 +90,7 @@ describe('@nexus/files HTTP download route', () => {
   it('returns 200 inline for an anonymous owner file', async () => {
     defineOwner({
       type: 'http-anon-owner',
-      collection: { findOne: () => ({ _id: 'parent' }) },
+      collection: { findOneAsync: async () => ({ _id: 'parent' }) },
       allowAnonymous: true,
       roles: { upload: 'u', download: 'd', remove: 'r' },
     })
