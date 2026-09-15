@@ -47,8 +47,8 @@ function showNext() {
     z-index="2400"
     @update:model-value="emit('update:modelValue', $event)"
   >
-    <div class="file-lightbox d-flex flex-column align-center ga-4 pa-4">
-      <div class="d-flex ga-2">
+    <div class="file-lightbox" @click.stop>
+      <div class="d-flex justify-center ga-2 mb-4">
         <v-btn
           icon="mdi-chevron-left"
           variant="text"
@@ -73,15 +73,33 @@ function showNext() {
           @click="showNext"
         />
       </div>
-      <v-img
+      <img
         v-if="current"
+        :key="current._id"
+        class="file-lightbox-image"
         :src="imageUrl"
         :alt="current.name"
-        max-width="90vw"
-        max-height="80vh"
-        contain
-      />
-      <p v-if="current" class="text-white">{{ current.name }}</p>
+      >
+      <p v-if="current" class="text-white text-center mt-3">{{ current.name }}</p>
     </div>
   </v-overlay>
 </template>
+
+<style scoped>
+.file-lightbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100vw;
+  padding: 16px;
+}
+
+.file-lightbox-image {
+  display: block;
+  max-width: 90vw;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+</style>
