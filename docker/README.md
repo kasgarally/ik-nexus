@@ -8,6 +8,21 @@ Each Meteor app under `apps/` gets one Compose stack: NGINX in front, the produc
 
 Commands go through a Node runner and root npm scripts. The same commands work on Windows, Linux, and macOS. You only need Node and Docker. There is no PowerShell-only path.
 
+## Contents
+
+- [Commands](#commands)
+- [How the Meteor image is built](#how-the-meteor-image-is-built)
+  - [Multi-stage Dockerfile](#multi-stage-dockerfile)
+    - [Stage 1 — builder](#stage-1--builder-geoffreyboothmeteor-base351)
+    - [Stage 2 — runtime](#stage-2--runtime-node24150-alpine)
+  - [How the image sits in the stack](#how-the-image-sits-in-the-stack)
+- [Mongo data and volumes](#mongo-data-and-volumes)
+  - [Adding another Meteor app](#adding-another-meteor-app)
+- [Why 8081 works and 8443 does not (until you add certs)](#why-8081-works-and-8443-does-not-until-you-add-certs)
+- [Local HTTPS (self-signed)](#local-https-self-signed)
+  - [Manual OpenSSL (if you prefer)](#manual-openssl-if-you-prefer)
+- [Production / DigitalOcean](#production--digitalocean)
+
 ## Commands
 
 ```bash
@@ -15,7 +30,7 @@ npm run docker:up -- nexus-govrn
 npm run docker:build -- nexus-govrn
 npm run docker:ps -- nexus-govrn
 npm run docker:down -- nexus-govrn
-npm run docker:down -- nexus-govrn --volumes   # also wipe Mongo data
+npm run docker:down -- nexus-govrn --volumes   # wipe the mongo-data volume (see below)
 npm run docker:certs -- nexus-govrn            # local self-signed TLS for :8443
 ```
 
@@ -140,6 +155,33 @@ flowchart LR
 ```
 
 NGINX is a separate image. It proxies HTTP/HTTPS and WebSockets to `meteor:3000`. Mongo is official `mongo:7` as a single-node replica set (`rs0`) so Meteor 3.5 change streams work. Mongo data lives on the `mongo-data` volume; port 27017 is not published.
+
+## Mongo data and volumes
+
+Compose names the volume `<app>_mongo-data` (for this app: `nexus-govrn_mongo-data`). `docker:down` **without** `--volumes` stops the stack and keeps that volume. The next `docker:up` reattaches it, so documents survive a recreate.
+
+`PERSIST-TEST` is **not** in application code. It is a manual mongosh insert used to prove the volume persists. Meteor only seeds the `links` collection when it is empty, with these four tutorial rows:
+
+- Do the Tutorial
+- Follow the Guide
+- Read the Docs
+- Discussions
+
+To drop `PERSIST-TEST` (and only it), with the stack up:
+
+```bash
+docker exec nexus-govrn-mongo-1 mongosh nexus-govrn --eval "db.links.deleteOne({title:'PERSIST-TEST'})"
+```
+
+To wipe **all** Mongo data for the app, destroy the volume:
+
+```bash
+npm run docker:down -- nexus-govrn --volumes
+```
+
+The next `npm run docker:up -- nexus-govrn` creates an empty volume. Startup then re-seeds just those four tutorial links. Any other documents (including `PERSIST-TEST`) are gone.
+
+`--volumes` only removes Compose-managed volumes for that stack. It does not delete images, cert PEMs, or other apps’ volumes.
 
 ### Adding another Meteor app
 

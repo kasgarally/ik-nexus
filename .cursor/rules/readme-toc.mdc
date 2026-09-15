@@ -1,0 +1,36 @@
+---
+description: Require a table of contents in every README and keep it current
+globs: "**/README.md,**/readme.md"
+alwaysApply: true
+---
+
+<!--
+Author: Karmil Asgarally - INTELLEKTRA © 2026
+README table of contents
+-->
+
+# README table of contents
+
+Every `README.md` (any path, any case) must have a **Contents** section near the top: after the H1 and any short intro, before the first real section.
+
+When you create, edit, or restructure a README, **update the Contents list in the same change**. Add, remove, rename, or re-nest links so they match the current headings. Never leave a stale TOC.
+
+- Link every `##`, `###`, and `####` heading (skip the H1 and the Contents heading itself).
+- Nest list items to match heading depth.
+- Use GitHub-style slugs: lowercase, punctuation stripped, spaces to hyphens.
+- Do not invent sections that are not in the file.
+
+```markdown
+# Docker stacks
+
+Short intro.
+
+## Contents
+
+- [Commands](#commands)
+- [How the Meteor image is built](#how-the-meteor-image-is-built)
+  - [Multi-stage Dockerfile](#multi-stage-dockerfile)
+- [Mongo data and volumes](#mongo-data-and-volumes)
+
+## Commands
+```
