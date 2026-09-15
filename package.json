@@ -2,6 +2,7 @@
   "name": "ik-nexus",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "docker": "node docker/stack.mjs",
     "docker:apps": "node docker/stack.mjs apps",

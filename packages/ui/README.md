@@ -9,6 +9,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 ## Contents
 
 - [What this package owns](#what-this-package-owns)
+- [Develop in this repo](#develop-in-this-repo)
 - [Install in an app](#install-in-an-app)
 - [Create the i18n instance](#create-the-i18n-instance)
 - [Use LocaleSelect](#use-localeselect)
@@ -22,6 +23,16 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`
 
 Layouts and Vuetify theme/defaults stay in each app.
+
+## Develop in this repo
+
+`@nexus/ui` is a pnpm workspace member (`packages/*` only). From the **repo root**:
+
+```bash
+pnpm install
+```
+
+That does not install or hoist Meteor apps. Do not add `apps/` to [`pnpm-workspace.yaml`](../../pnpm-workspace.yaml).
 
 ## Install in an app
 

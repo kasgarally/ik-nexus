@@ -1,0 +1,4 @@
+# Author: Karmil Asgarally - INTELLEKTRA © 2026
+# Shared JS workspace (packages/* only)
+packages:
+  - "packages/*"

@@ -13,6 +13,7 @@ Commands go through a Node runner and root npm scripts. The same commands work o
 - [Commands](#commands)
 - [How the Meteor image is built](#how-the-meteor-image-is-built)
   - [Shared packages](#shared-packages)
+  - [pnpm is host-only](#pnpm-is-host-only)
   - [Multi-stage Dockerfile](#multi-stage-dockerfile)
     - [Stage 1 — builder](#stage-1--builder-geoffreyboothmeteor-base351)
     - [Stage 2 — runtime](#stage-2--runtime-node24150-alpine)
@@ -67,6 +68,10 @@ Compose wires it like this ([`docker-compose.yml`](docker-compose.yml)):
 ### Shared packages
 
 Apps depend on [`@nexus/ui`](../packages/ui) with `"@nexus/ui": "file:../../packages/ui"`. The Meteor app is copied to `/opt/src`, so that relative path resolves to **`/packages/ui`**. The Dockerfile copies the repo `packages/` tree there **before** `meteor npm ci`, otherwise the file dependency is missing and the install fails.
+
+### pnpm is host-only
+
+The host repo uses pnpm for [`packages/*`](../packages/ui) only. The Meteor image does **not**. It still runs `meteor npm ci` against the app’s `package-lock.json` and the `file:` copy at `/packages`. Do not switch the Dockerfile to `pnpm`.
 
 ### Multi-stage Dockerfile
 
