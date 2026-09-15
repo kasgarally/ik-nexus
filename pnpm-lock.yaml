@@ -40,22 +40,24 @@ importers:
 
   packages/files: {}
 
+  packages/lists: {}
+
   packages/ui:
     dependencies:
       '@nexus/files':
         specifier: workspace:*
         version: link:../files
       vue:
-        specifier: ^3.5.0
+        specifier: ^3.5.42
         version: 3.5.42
       vue-i18n:
-        specifier: ^11.0.0
+        specifier: ^11.4.10
         version: 11.4.10(vue@3.5.42)
       vue-meteor-tracker:
         specifier: ^3.0.0-beta.7
         version: 3.0.0-beta.7(vue@3.5.42)
       vuetify:
-        specifier: ^4.0.0
+        specifier: ^4.2.1
         version: 4.2.1(vue-i18n@11.4.10(vue@3.5.42))(vue@3.5.42)
 
 packages:

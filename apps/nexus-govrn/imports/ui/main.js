@@ -5,6 +5,7 @@
 import { Meteor } from 'meteor/meteor'
 import { registerNexusApplog } from '/imports/api/nexusApplog.js'
 import { registerNexusFiles } from '/imports/api/nexusFiles.js'
+import { registerNexusLists } from '/imports/api/nexusLists.js'
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
 import { createPinia } from 'pinia'
@@ -18,6 +19,7 @@ import 'vuetify/styles'
 import './main.css'
 
 registerNexusFiles()
+registerNexusLists()
 registerNexusApplog()
 
 const app = createApp(App)

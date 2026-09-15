@@ -13,6 +13,7 @@
     "@mdi/font": "^7.4.47",
     "@nexus/applog": "file:../../packages/applog",
     "@nexus/files": "file:../../packages/files",
+    "@nexus/lists": "file:../../packages/lists",
     "@nexus/ui": "file:../../packages/ui",
     "@swc/helpers": "^0.5.17",
     "meteor-node-stubs": "^1.2.30",
