@@ -63,6 +63,7 @@ describe('@nexus/ui createNexusI18n', () => {
       },
     })
     expect(i18n.global.t('files.upload')).toBe('Upload files')
+    expect(i18n.global.t('setup.title')).toBe('Set up this application')
     expect(i18n.global.t('filesTest.title')).toBe('Files test')
     expect(i18n.global.getLocaleMessage('en').$vuetify).toBeTypeOf('object')
   })

@@ -15,7 +15,9 @@ export const ACTION_REMOVE = 'remove'
 
 export const ACTOR_USER = 'user'
 export const ACTOR_ANONYMOUS = 'anonymous'
-export const ACTOR_SYSTEM = 'system'
+export const ACTOR_SYSTEM = 'SYSTEM'
+export const ACTOR_SYSTEM_ID = 'SYSTEM'
+export const ACTOR_AGENT = 'agent'
 
 export const DEFAULT_REDACT_KEYS = Object.freeze([
   'password',

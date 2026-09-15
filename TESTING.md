@@ -54,9 +54,11 @@ flowchart TB
     vitest[Vitest]
     filesPkg["@nexus/files"]
     uiPkg["@nexus/ui"]
+    setupPkg["@nexus/setup"]
     futurePkg["future packages"]
     vitest --> filesPkg
     vitest --> uiPkg
+    vitest --> setupPkg
     vitest --> futurePkg
   end
   subgraph meteorLayer [each Meteor app via meteor npm]
@@ -109,7 +111,7 @@ From the **repository root** unless noted.
 |------|---------|
 | All package unit/component tests | `pnpm test` |
 | Same as above | `pnpm test:packages` |
-| One package | `pnpm --filter @nexus/files test` or `pnpm --filter @nexus/ui test` |
+| One package | `pnpm --filter @nexus/files test`, `pnpm --filter @nexus/ui test`, or `pnpm --filter @nexus/setup test` |
 | Package tests, watch mode | `pnpm test:watch` |
 | GovRN Meteor runtime | `cd apps/nexus-govrn` then `meteor npm test` |
 | GovRN mocha, watch | `cd apps/nexus-govrn` then `meteor npm run test-app` |
@@ -143,10 +145,19 @@ Environment is `happy-dom` so Vue SFCs can mount. [`vitest.setup.js`](vitest.set
 - HTTP GET path parse and 404 / 401 / 200
 - `downloadUrl` encoding and `remove` DDP wiring
 
+**`@nexus/setup`** — `packages/setup/tests/`
+
+- Image data-URL allowlist and size limit
+- `registerWithMeteor` required APIs, “already called”, `nexus_setup` deny
+- `setup.isComplete` / `setup.complete` (roles, no password on the document, `setup-already-complete`)
+- Client helpers (`setup.complete`, `setup.public`, login fallback)
+- `setup.public` projects only `companyName` / `logoDataUrl` / `iconDataUrl`
+
 **`@nexus/ui`** — `packages/ui/tests/`
 
-- `createNexusI18n`, stored locale, `lang` / `dir` for AR vs FR
+- `createNexusI18n`, stored locale, `lang` / `dir` for AR vs FR, core `setup.title`
 - `FileLightbox`: native `img.file-lightbox-image`, `90vw` / `80vh` constraints, prev/next/close
+- `SetupWizard`: no `meteor/*`, company/admin gates, complete then login, review error, non-image logo
 
 Meteor is **mocked**. These tests never boot Mongo or DDP.
 
@@ -158,6 +169,7 @@ pnpm test
 pnpm test:watch
 pnpm --filter @nexus/files test
 pnpm --filter @nexus/ui test
+pnpm --filter @nexus/setup test
 ```
 
 ### Package file layout
@@ -244,7 +256,7 @@ Reporter is `list` plus HTML under `reports/playwright/`. Specs run serially (`f
 
 ### Playwright coverage today
 
-[`e2e/files-gallery.spec.js`](e2e/files-gallery.spec.js): open `/files-test`, upload [`e2e/fixtures/lightbox-probe.png`](e2e/fixtures/lightbox-probe.png) on the **images** card (not the documents field), wait for a thumbnail, open the lightbox, assert `img.file-lightbox-image` is visible and has a non-zero box. `/lists-test` has no Playwright spec yet.
+[`e2e/files-gallery.spec.js`](e2e/files-gallery.spec.js): open `/files-test`, upload [`e2e/fixtures/lightbox-probe.png`](e2e/fixtures/lightbox-probe.png) on the **images** card (not the documents field), wait for a thumbnail, open the lightbox, assert `img.file-lightbox-image` is visible and has a non-zero box. `/lists-test` and first-run `/onboarding` have no Playwright spec yet.
 
 ### Playwright commands
 

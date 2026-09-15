@@ -1,6 +1,6 @@
 <!--
 Author: Karmil Asgarally - INTELLEKTRA © 2026
-Sign-in layout
+Wide first-run layout without a drawer
 -->
 <script setup>
 import { computed } from 'vue'
@@ -30,8 +30,8 @@ function toggleTheme() {
     <v-btn icon="mdi-theme-light-dark" :aria-label="t('themeToggle')" @click="toggleTheme" />
   </v-app-bar>
 
-  <v-main class="d-flex align-center justify-center">
-    <v-container class="py-12" style="max-width: 480px">
+  <v-main>
+    <v-container class="py-8" style="max-width: 960px">
       <router-view />
     </v-container>
   </v-main>

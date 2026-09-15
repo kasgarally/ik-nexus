@@ -28,7 +28,9 @@ The collection name is fixed (`nexus_applog`), like `nexus_files`. There is no U
 - Metadata collection `nexus_applog` (append-only)
 - `Applog.registerCollection` — wraps `insertAsync` / `updateAsync` / `removeAsync` on opted-in collections (not the deprecated sync `insert` / `update` / `remove`)
 - `Applog.record` — domain events (export, approve, login, role change)
-- `Applog.runAsSystem` — mark startup/seed writes as `actorKind: 'system'`
+- `Applog.runAsSystem` — mark startup/seed/first-run writes as `actorId: 'SYSTEM'`, `actorKind: 'SYSTEM'`
+- `Applog.runAsAgent(agentId, fn)` — later: AI agents (`actorKind: 'agent'`, `actorId` is the agent `_id`)
+- `Applog.runAs({ actorId, actorKind }, fn)` — nested actor frame for any kind
 - Publication `applog.recent` for `superadmin` and `admin` only
 - Client helper `Applog.subscribeRecent`
 
@@ -108,8 +110,8 @@ await Applog.record({
 | Field | Meaning |
 |-------|---------|
 | `createdAt` | Server timestamp |
-| `actorId` | `Meteor.userId()` or `null` |
-| `actorKind` | `user`, `anonymous`, or `system` |
+| `actorId` | User `_id`, agent `_id`, the sentinel `SYSTEM`, or `null` (anonymous) |
+| `actorKind` | `user`, `anonymous`, `SYSTEM`, or `agent` |
 | `action` | `create`, `update`, `remove`, or a custom string |
 | `collection` | Registered name |
 | `docId` | Target document id |
@@ -138,11 +140,24 @@ Client inserts/updates/removes on `nexus_applog` are denied.
 
 ## Actor kinds
 
-| Kind | When |
-|------|------|
-| `user` | `Meteor.userId()` is set |
-| `anonymous` | Method/write with no user (for example anonymous file upload) |
-| `system` | Code inside `Applog.runAsSystem(() => …)` (seeds, migrations) |
+| Kind | `actorId` | When |
+|------|-----------|------|
+| `user` | Meteor user `_id` | `Meteor.userId()` is set and no `runAs*` frame is open |
+| `anonymous` | `null` | Method/write with no user (for example anonymous file upload) |
+| `SYSTEM` | `SYSTEM` | Code inside `Applog.runAsSystem(() => …)` — seeds, migrations, first-run `setup.complete` |
+| `agent` | Agent document `_id` | Code inside `Applog.runAsAgent(agentId, () => …)` (reserved for later AI agents) |
+
+```javascript
+await Applog.runAsSystem(async () => {
+  await Setup.collection.insertAsync(demoSetup)
+})
+
+await Applog.runAsAgent(agent._id, async () => {
+  await Risks.updateAsync(riskId, { $set: { status: 'reviewed' } })
+})
+```
+
+`runAs` frames nest. The innermost frame wins over `Meteor.userId()`.
 
 ## What this package does not do
 

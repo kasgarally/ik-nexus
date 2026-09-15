@@ -42,6 +42,8 @@ importers:
 
   packages/lists: {}
 
+  packages/setup: {}
+
   packages/ui:
     dependencies:
       '@nexus/files':
@@ -50,6 +52,9 @@ importers:
       '@nexus/lists':
         specifier: workspace:*
         version: link:../lists
+      '@nexus/setup':
+        specifier: workspace:*
+        version: link:../setup
       vue:
         specifier: ^3.5.42
         version: 3.5.42

@@ -10,6 +10,7 @@ export { default as ListItemsEditor } from './components/lists/ListItemsEditor.v
 export { default as ListSelect } from './components/lists/ListSelect.vue'
 export { useListItems } from './components/lists/useListItems.js'
 export { default as LocaleSelect } from './components/locale/LocaleSelect.vue'
+export { default as SetupWizard } from './components/setup/SetupWizard.vue'
 export {
   applyDocumentLocale,
   createNexusI18n,

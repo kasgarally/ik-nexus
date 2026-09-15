@@ -1,0 +1,12 @@
+{
+  // Author: Karmil Asgarally - INTELLEKTRA © 2026
+  // Meteor.settings for nexus-govrn. Run `meteor npm run settings:build`
+  // (or `meteor npm start`) to write settings.json. Company fields live
+  // in imports/api/demoSeedData.js (dev seed) or nexus_setup (wizard).
+
+  "public": {
+    // Seeds company + admin@localhost on a blank database.
+    // Production: omit this key or set false.
+    "devSeedAdmin": true
+  }
+}

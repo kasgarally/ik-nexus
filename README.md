@@ -27,13 +27,13 @@ This repo has three isolated install trees. Do not put Meteor apps or `services/
 
 ## Shared JS
 
-Reusable Vue components (`LocaleSelect`, `FileUpload`, `FileReplace`) and i18n bootstrap live in [`packages/ui`](packages/ui) (`@nexus/ui`). GridFS uploads live in [`packages/files`](packages/files) (`@nexus/files`). Application audit (who changed which document when) lives in [`packages/applog`](packages/applog) (`@nexus/applog`). Translatable select-list items live in [`packages/lists`](packages/lists) (`@nexus/lists`). The pnpm workspace is **`packages/*` only** ([`pnpm-workspace.yaml`](pnpm-workspace.yaml)). Future JS libs (API clients, shared helpers) go here too.
+Reusable Vue components (`LocaleSelect`, `FileUpload`, `FileReplace`, `SetupWizard`) and i18n bootstrap live in [`packages/ui`](packages/ui) (`@nexus/ui`). GridFS uploads live in [`packages/files`](packages/files) (`@nexus/files`). Application audit (who changed which document when) lives in [`packages/applog`](packages/applog) (`@nexus/applog`). Translatable select-list items live in [`packages/lists`](packages/lists) (`@nexus/lists`). First-run install lives in [`packages/setup`](packages/setup) (`@nexus/setup`). The pnpm workspace is **`packages/*` only** ([`pnpm-workspace.yaml`](pnpm-workspace.yaml)). Future JS libs (API clients, shared helpers) go here too.
 
 ```bash
 pnpm install
 ```
 
-Apps consume shared packages with `file:../../packages/ui`, `file:../../packages/files`, `file:../../packages/applog`, or `file:../../packages/lists`, not `workspace:`. After a future npm publish, change that dep string only.
+Apps consume shared packages with `file:../../packages/ui`, `file:../../packages/files`, `file:../../packages/applog`, `file:../../packages/lists`, or `file:../../packages/setup`, not `workspace:`. After a future npm publish, change that dep string only.
 
 ## pnpm
 
@@ -42,6 +42,8 @@ How to install the pinned tool, daily commands, filters, and what not to do: [`P
 ## Meteor apps
 
 Each product under `apps/` keeps its own Vue / Vuetify / Meteor versions and runs `meteor npm` locally. See [nexus-govrn](apps/nexus-govrn).
+
+Author `settings.jsonc` in the app. The shared [`scripts/build-settings.mjs`](scripts/build-settings.mjs) strips comments and writes `settings.json` (gitignored). From an app directory: `node ../../scripts/build-settings.mjs`.
 
 ## Services
 

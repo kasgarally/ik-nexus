@@ -8,12 +8,15 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { LocaleSelect } from '@nexus/ui'
 import { useDisplay, useTheme } from 'vuetify'
+import { usePublicSetup } from '../usePublicSetup.js'
 
 const route = useRoute()
 const theme = useTheme()
 const { lgAndUp } = useDisplay()
 const { t } = useI18n()
 const drawer = ref(lgAndUp.value)
+const { companyName, iconDataUrl } = usePublicSetup()
+const title = computed(() => companyName.value || t('brand'))
 
 const hasContext = computed(() => {
   if (route.meta.context) {
@@ -46,7 +49,10 @@ function toggleTheme() {
 
   <v-app-bar>
     <v-app-bar-nav-icon @click="drawer = !drawer" />
-    <v-app-bar-title>{{ t('brand') }}</v-app-bar-title>
+    <v-avatar v-if="iconDataUrl" size="32" class="me-2">
+      <v-img :src="iconDataUrl" :alt="title" />
+    </v-avatar>
+    <v-app-bar-title>{{ title }}</v-app-bar-title>
     <v-spacer />
     <LocaleSelect class="me-2" />
     <v-btn icon="mdi-theme-light-dark" :aria-label="t('themeToggle')" @click="toggleTheme" />

@@ -2,9 +2,9 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * vue-i18n factory with Vuetify catalogs
  *
- * Core keys (locale.*) and $vuetify live here. Each app passes its own
- * message packs and a storageKey. app.use(i18n) also provides that key
- * so LocaleSelect never imports an app path.
+ * Core keys (locale.* / files.* / lists.* / setup.*) and $vuetify live here.
+ * Each app passes its own message packs and a storageKey. app.use(i18n)
+ * also provides that key so LocaleSelect never imports an app path.
  */
 import { createI18n } from 'vue-i18n'
 import { ar as vuetifyAr, en as vuetifyEn, fr as vuetifyFr } from 'vuetify/locale'

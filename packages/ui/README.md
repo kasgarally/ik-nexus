@@ -16,6 +16,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Use LocaleSelect](#use-localeselect)
 - [File upload components](#file-upload-components)
 - [List components](#list-components)
+- [Setup wizard](#setup-wizard)
 - [Docker](#docker)
 - [Testing](#testing)
 - [Later: publish to npm](#later-publish-to-npm)
@@ -25,12 +26,13 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `LocaleSelect` — language menu (EN / FR / AR, RTL for Arabic)
 - `FileUpload` — many files (`document` list or `images` grid + lightbox)
 - `FileReplace` — one file (`document` field or clickable `avatar`); uploads the new file, then deletes the previous
-- `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` / `lists.*` strings and Vuetify `$vuetify` catalogs
+- `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` / `lists.*` / `setup.*` strings and Vuetify `$vuetify` catalogs
 - `ListItemsEditor` — table of items for one `listKey`, add/edit modal, delete confirm
 - `ListSelect` — `v-select` of active items; `v-model` is the stable `code`
+- `SetupWizard` — first-run `v-stepper-vertical` (company, address, branding, first admin, review)
 - Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `useOwnerFiles`, `useListItems`
 
-Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`.
+Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`. First-run install lives in `@nexus/setup`.
 
 ## Folder layout
 
@@ -49,6 +51,7 @@ src/
     lists/ListItemsEditor.vue
     lists/ListSelect.vue
     lists/useListItems.js
+    setup/SetupWizard.vue
 ```
 
 Public imports stay `@nexus/ui`.
@@ -68,7 +71,8 @@ That does not install or hoist Meteor apps. Do not add `apps/` to [`pnpm-workspa
 ```json
 "@nexus/ui": "file:../../packages/ui",
 "@nexus/files": "file:../../packages/files",
-"@nexus/lists": "file:../../packages/lists"
+"@nexus/lists": "file:../../packages/lists",
+"@nexus/setup": "file:../../packages/setup"
 ```
 
 Then `meteor npm install`. Point Rspack at the package source so `vue-loader` compiles the SFCs:
@@ -83,7 +87,7 @@ resolve: {
 
 Do not alias `vuetify` to its package root — that breaks `vuetify/styles` and other subpaths.
 
-The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md). Call `Lists.registerWithMeteor` before `ListItemsEditor` / `ListSelect`. See [`packages/lists/README.md`](../lists/README.md).
+The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md). Call `Lists.registerWithMeteor` before `ListItemsEditor` / `ListSelect`. See [`packages/lists/README.md`](../lists/README.md). Call `Setup.registerWithMeteor` before `SetupWizard`. See [`packages/setup/README.md`](../setup/README.md).
 
 ## Create the i18n instance
 
@@ -169,13 +173,25 @@ import { ListItemsEditor, ListSelect } from '@nexus/ui'
 
 Later product routes such as `/risks/setup/categories` pass `list-key="risks.category"` into the same editor.
 
+## Setup wizard
+
+```js
+import { SetupWizard } from '@nexus/ui'
+```
+
+```html
+<SetupWizard @completed="onCompleted" />
+```
+
+Five vertical steps: company (name required), address, logo/icon file inputs as data URLs, first admin, then review and submit. On success the wizard calls `Setup.complete`, signs in with `Setup.loginWithPassword`, and emits `completed`. There is no `meteor/*` in the SFC.
+
 ## Docker
 
 The image copies `packages/` to `/packages` before `meteor npm ci`. From `/opt/src`, `file:../../packages/ui` is `/packages/ui`. See [docker/README.md](../../docker/README.md#shared-packages).
 
 ## Testing
 
-From the repo root: `pnpm --filter @nexus/ui test`. Suite lives in `tests/`. See [`TESTING.md`](../../TESTING.md).
+From the repo root: `pnpm --filter @nexus/ui test`. Suite lives in `tests/` (`createNexusI18n`, `FileLightbox`, `SetupWizard`). See [`TESTING.md`](../../TESTING.md).
 
 ## Later: publish to npm
 

@@ -11,13 +11,14 @@ export async function writeAuditRow({
   docId,
   fields = [],
   document,
+  actorId: actorIdOverride,
   actorKind: actorKindOverride,
 }) {
   const { Meteor } = getMeteorApis()
   const actor = readCurrentActor(Meteor)
   const row = {
     createdAt: new Date(),
-    actorId: actor.actorId,
+    actorId: actorIdOverride === undefined ? actor.actorId : actorIdOverride,
     actorKind: actorKindOverride || actor.actorKind,
     action,
     collection,

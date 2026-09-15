@@ -3,15 +3,23 @@
  * Vue Router routes
  */
 import { createRouter, createWebHistory } from 'vue-router'
+import { Setup } from '@nexus/setup'
 import Auth from './Auth.vue'
 import Context from './Context.vue'
 import Entry from './Entry.vue'
 import FilesTest from './FilesTest.vue'
 import ListsTest from './ListsTest.vue'
+import Onboarding from './Onboarding.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/onboarding',
+      name: 'onboarding',
+      component: Onboarding,
+      meta: { layout: 'setup' },
+    },
     {
       path: '/',
       name: 'home',
@@ -46,4 +54,21 @@ export const router = createRouter({
       meta: { layout: 'web', context: true },
     },
   ],
+})
+
+router.beforeEach(async (to) => {
+  try {
+    const { complete } = await Setup.isComplete()
+    if (!complete && to.path !== '/onboarding') {
+      return { path: '/onboarding' }
+    }
+    if (complete && to.path === '/onboarding') {
+      return { path: '/' }
+    }
+  } catch {
+    if (to.path !== '/onboarding') {
+      return { path: '/onboarding' }
+    }
+  }
+  return true
 })

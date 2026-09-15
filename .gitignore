@@ -73,6 +73,8 @@ _build
 
 # --- Meteor ---
 .meteor/local
+# Generated from settings.jsonc (may hold secrets later)
+apps/*/settings.json
 
 # --- Testing ---
 .nyc_output/
