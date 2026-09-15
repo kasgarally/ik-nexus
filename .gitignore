@@ -76,6 +76,14 @@ _build
 
 # --- Testing ---
 .nyc_output/
+.vitest/
+reports/vitest/*
+!reports/vitest/.gitkeep
+reports/playwright/*
+!reports/playwright/.gitkeep
+test-results/
+blob-report/
+playwright-report/
 
 # --- Python ---
 __pycache__/

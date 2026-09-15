@@ -314,6 +314,8 @@ npm run docker:build -- nexus-govrn
 
 You can run the same via `pnpm run docker:build -- nexus-govrn`. Extra `--` is still required so the app name reaches the Node runner. Using `npm run` here avoids mixing mental models: Docker ≠ workspace.
 
+Package and Playwright tests **do** use pnpm at the root: `pnpm test` (Vitest) and `pnpm test:e2e`. Meteor mocha stays `meteor npm test` inside the app. See [`TESTING.md`](TESTING.md).
+
 ## Docker
 
 The Meteor production image does **not** run pnpm. [`docker/Dockerfile`](docker/Dockerfile):

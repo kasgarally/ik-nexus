@@ -17,6 +17,9 @@ module.exports = defineConfig(Meteor => {
         alias: {
           '@mdi/font': path.resolve(__dirname, 'node_modules/@mdi/font'),
           '@nexus/files': path.resolve(__dirname, 'node_modules/@nexus/files'),
+          // meteor test-client-rspack asks for this path; it is not a package
+          'node_modules/buffer/': path.resolve(__dirname, 'imports/bufferStub.js'),
+          'node_modules/buffer': path.resolve(__dirname, 'imports/bufferStub.js'),
         },
       },
       plugins: [new VueLoaderPlugin()],

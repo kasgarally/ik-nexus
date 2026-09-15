@@ -4,15 +4,15 @@
   "scripts": {
     "start": "meteor run",
     "build": "meteor build ../output/vue --directory",
-    "test": "meteor test --once --driver-package meteortesting:mocha",
-    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
+    "test": "node tests/run-mocha.mjs",
+    "test-app": "node tests/run-mocha.mjs --watch",
     "visualize": "meteor --production --extra-packages bundle-visualizer"
   },
   "dependencies": {
     "@babel/runtime": "^7.23.5",
+    "@mdi/font": "^7.4.47",
     "@nexus/files": "file:../../packages/files",
     "@nexus/ui": "file:../../packages/ui",
-    "@mdi/font": "^7.4.47",
     "@swc/helpers": "^0.5.17",
     "meteor-node-stubs": "^1.2.30",
     "pinia": "^4.0.3",
@@ -28,6 +28,7 @@
     "@rspack/cli": "^1.7.1",
     "@rspack/core": "^1.7.1",
     "@types/meteor": "^2.9.7",
+    "cross-env": "^10.1.0",
     "vue-loader": "^17.4.2"
   },
   "meteor": {
@@ -36,6 +37,8 @@
       "client": "client/main.js",
       "server": "server/main.js"
     },
-    "testModule": "tests/main.js"
+    "testModule": {
+      "server": "tests/main.js"
+    }
   }
 }

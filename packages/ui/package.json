@@ -11,6 +11,9 @@
   "files": [
     "src"
   ],
+  "scripts": {
+    "test": "node ../../scripts/run-vitest.mjs packages/ui/tests"
+  },
   "peerDependencies": {
     "@nexus/files": "workspace:*",
     "vue": "^3.5.0",

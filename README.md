@@ -13,6 +13,7 @@ NEXUS™ Platform
 - [Meteor apps](#meteor-apps)
 - [Services](#services)
 - [Docker](#docker)
+- [Testing](#testing)
 
 ## Install worlds
 
@@ -49,3 +50,7 @@ Python/Arelle XBRL containers, DevOps sidecars, and other non-JS tooling live un
 ## Docker
 
 Docker build, run, and TLS setup: [docker/README.md](docker/README.md). The Meteor image still uses `meteor npm ci` and `file:` — pnpm is host-only for `packages/*`.
+
+## Testing
+
+Three layers: Vitest for `packages/*`, Meteor mocha for GovRN runtime (methods / HTTP / GridFS), Playwright for `/files-test`. Commands, report paths, and CI: [`TESTING.md`](TESTING.md).

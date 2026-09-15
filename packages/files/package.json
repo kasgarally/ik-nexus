@@ -10,5 +10,8 @@
   },
   "files": [
     "src"
-  ]
+  ],
+  "scripts": {
+    "test": "node ../../scripts/run-vitest.mjs packages/files/tests"
+  }
 }

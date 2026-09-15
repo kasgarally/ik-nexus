@@ -16,6 +16,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Use LocaleSelect](#use-localeselect)
 - [File upload components](#file-upload-components)
 - [Docker](#docker)
+- [Testing](#testing)
 - [Later: publish to npm](#later-publish-to-npm)
 
 ## What this package owns
@@ -146,6 +147,10 @@ flowchart LR
 ## Docker
 
 The image copies `packages/` to `/packages` before `meteor npm ci`. From `/opt/src`, `file:../../packages/ui` is `/packages/ui`. See [docker/README.md](../../docker/README.md#shared-packages).
+
+## Testing
+
+From the repo root: `pnpm --filter @nexus/ui test`. Suite lives in `tests/`. See [`TESTING.md`](../../TESTING.md).
 
 ## Later: publish to npm
 

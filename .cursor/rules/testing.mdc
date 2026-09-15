@@ -1,0 +1,33 @@
+---
+description: Never invent tests unless asked; then pick Vitest, Meteor mocha, or Playwright
+alwaysApply: true
+---
+
+<!--
+Author: Karmil Asgarally - INTELLEKTRA © 2026
+Testing protocol for packages and Meteor apps
+-->
+
+# Testing
+
+Do **not** create, generate, or expand test files unless the user explicitly asks (for example “add tests”, “write mocha for Risks”, “cover this with Playwright”). Feature work, refactors, and sub-app iterations (Risks, Controls, …) ship **without** new tests. Do not add a suite “while we are here” or “so we do not forget”.
+
+When the user **does** ask, pick one layer. Do not invent a fourth runner.
+
+- **`packages/*`** — Vitest in `packages/<name>/tests/*.test.js`. Titles describe the behavior. `pnpm test` must print every name (verbose) and write `reports/vitest/index.html`.
+- **Meteor runtime** (methods, pubs, collections, HTTP, GridFS) — mocha under `apps/<app>/tests/` imported from `tests/main.js`. Use `--full-app` and `SERVER_TEST_REPORTER=spec`. Never keep a placeholder such as `package.json has correct name`.
+- **User-visible flow** — Playwright in `e2e/*.spec.js`. HTML report in `reports/playwright/`.
+- **New sub-app**, and only after the user asks — mocha for that app’s methods/pubs; Playwright for its screens; extract shared logic to `packages/*` and Vitest it.
+
+```javascript
+// BAD — silent pass, tells a human nothing
+it('works', () => { expect(true).toBe(true) })
+
+// GOOD — names the contract that must not regress
+it('returns 404 for a missing /nexus-files id', async () => {
+  const response = await fetch(Meteor.absoluteUrl('nexus-files/missing'))
+  expect(response.status).toBe(404)
+})
+```
+
+Same file-header and human-readable-name rules as production code. Commands and report paths: `TESTING.md`.

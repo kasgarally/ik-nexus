@@ -12,6 +12,21 @@
     "docker:restart": "node docker/stack.mjs restart",
     "docker:logs": "node docker/stack.mjs logs",
     "docker:ps": "node docker/stack.mjs ps",
-    "docker:certs": "node docker/stack.mjs certs"
+    "docker:certs": "node docker/stack.mjs certs",
+    "test": "node scripts/run-vitest.mjs",
+    "test:packages": "node scripts/run-vitest.mjs",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vitest/ui": "^5.0.1",
+    "@vue/test-utils": "^2.5.0",
+    "happy-dom": "^20.14.5",
+    "vitest": "^5.0.1",
+    "vue": "^3.5.42",
+    "vue-i18n": "^11.4.10",
+    "vuetify": "^4.2.1"
   }
 }

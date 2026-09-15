@@ -1,20 +1,5 @@
-import assert from 'assert';
-
-describe('nexus-govrn', function () {
-  it('package.json has correct name', async function () {
-    const { name } = await import('../package.json');
-    assert.strictEqual(name, 'nexus-govrn')
-  })
-
-  if (Meteor.isClient) {
-    it('client is not server', function () {
-      assert.strictEqual(Meteor.isServer, false);
-    })
-  }
-
-  if (Meteor.isServer) {
-    it('server is not client', function () {
-      assert.strictEqual(Meteor.isClient, false);
-    })
-  }
-})
+/**
+ * Author: Karmil Asgarally - INTELLEKTRA © 2026
+ * Meteor mocha server entry — runtime suites only
+ */
+import './server/files.runtime.test.js'

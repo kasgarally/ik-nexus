@@ -24,6 +24,7 @@ Do **not** run `pnpm` inside `apps/`. This package is a `packages/*` workspace m
 - [Limits](#limits)
 - [Storage adapter](#storage-adapter)
 - [Docker](#docker)
+- [Testing](#testing)
 - [Later: publish to npm](#later-publish-to-npm)
 
 ## What this package owns
@@ -219,6 +220,10 @@ v1 is `GridFSAdapter` (`mongodb.GridFSBucket` on the injected `MongoInternals` d
 ## Docker
 
 The image copies `packages/` to `/packages` before `meteor npm ci`. From `/opt/src`, `file:../../packages/files` is `/packages/files`. See [docker/README.md](../../docker/README.md#shared-packages).
+
+## Testing
+
+From the repo root: `pnpm --filter @nexus/files test`. Suite lives in `tests/`. Runtime DDP/HTTP cases stay in GovRN mocha. See [`TESTING.md`](../../TESTING.md).
 
 ## Later: publish to npm
 
