@@ -1,0 +1,14 @@
+{
+  "name": "@nexus/files",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Opinionated GridFS file storage for NEXUS Meteor apps",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ]
+}

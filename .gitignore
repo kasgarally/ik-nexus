@@ -10,19 +10,14 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # --- Editors & IDEs ---
+# Shared Cursor + VS Code config is committed (.cursor/, .vscode/).
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
 *.sublime-project
 *.sublime-workspace
-*.code-workspace
 .history/
-.cursor/*
-!.cursor/rules/
-!.cursor/rules/**
-
 # --- Environment & secrets ---
 .env
 .env.*

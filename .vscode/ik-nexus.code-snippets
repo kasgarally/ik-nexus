@@ -1,0 +1,49 @@
+// Author: Karmil Asgarally - INTELLEKTRA © 2026
+// Workspace snippets for file headers and README Contents
+{
+  "File header JS": {
+    "scope": "javascript,typescript",
+    "prefix": "header",
+    "body": [
+      "/**",
+      " * Author: Karmil Asgarally - INTELLEKTRA © 2026",
+      " * ${1:Description}",
+      " */",
+      "$0"
+    ],
+    "description": "INTELLEKTRA file header (JS/TS)"
+  },
+  "File header markup": {
+    "scope": "html,vue,markdown,mdc",
+    "prefix": "header",
+    "body": [
+      "<!--",
+      "Author: Karmil Asgarally - INTELLEKTRA © 2026",
+      "${1:Description}",
+      "-->",
+      "$0"
+    ],
+    "description": "INTELLEKTRA file header (HTML/Vue/Markdown)"
+  },
+  "File header hash": {
+    "scope": "dockerfile,shellscript,yaml,ignore",
+    "prefix": "header",
+    "body": [
+      "# Author: Karmil Asgarally - INTELLEKTRA © 2026",
+      "# ${1:Description}",
+      "$0"
+    ],
+    "description": "INTELLEKTRA file header (# comments)"
+  },
+  "README Contents": {
+    "scope": "markdown",
+    "prefix": "contents",
+    "body": [
+      "## Contents",
+      "",
+      "- [${1:Section}](#${2:section})",
+      "$0"
+    ],
+    "description": "README Contents section"
+  }
+}

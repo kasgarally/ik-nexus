@@ -26,13 +26,13 @@ This repo has three isolated install trees. Do not put Meteor apps or `services/
 
 ## Shared JS
 
-Reusable Vue components and i18n bootstrap live in [`packages/ui`](packages/ui) (`@nexus/ui`). The pnpm workspace is **`packages/*` only** ([`pnpm-workspace.yaml`](pnpm-workspace.yaml)). Future JS libs (API clients, shared helpers) go here too.
+Reusable Vue components and i18n bootstrap live in [`packages/ui`](packages/ui) (`@nexus/ui`). GridFS uploads live in [`packages/files`](packages/files) (`@nexus/files`). The pnpm workspace is **`packages/*` only** ([`pnpm-workspace.yaml`](pnpm-workspace.yaml)). Future JS libs (API clients, shared helpers) go here too.
 
 ```bash
 pnpm install
 ```
 
-Apps consume shared packages with `file:../../packages/ui`, not `workspace:`. After a future npm publish, change that dep string only.
+Apps consume shared packages with `file:../../packages/ui` or `file:../../packages/files`, not `workspace:`. After a future npm publish, change that dep string only.
 
 ## pnpm
 

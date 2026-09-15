@@ -26,7 +26,7 @@ This repo uses **pnpm 10** for **shared JavaScript packages only**. Meteor produ
 
 ## Why pnpm, and why not everywhere
 
-pnpm gives `packages/*` a single lockfile, fast installs, and first-class workspace members (`@nexus/ui` today; more JS libs later).
+pnpm gives `packages/*` a single lockfile, fast installs, and first-class workspace members (`@nexus/ui`, `@nexus/files`; more JS libs later).
 
 Meteor 3 does **not** play well with a hoisted monorepo. It installs through `meteor npm` and resolves Vue/Vuetify from **that app’s** `node_modules`. If GovRN were a pnpm workspace member, those deps would hoist (or live in a content-addressable store) and Rspack / `meteor npm ci` would miss them or load two copies.
 
@@ -47,8 +47,10 @@ flowchart TB
   subgraph pnpmWs ["pnpm at repo root"]
     lockfile["pnpm-lock.yaml"]
     ui["packages/ui @nexus/ui"]
+    files["packages/files @nexus/files"]
     futureJs["packages/* future JS"]
     lockfile --- ui
+    lockfile --- files
     lockfile --- futureJs
   end
   subgraph meteorApps ["meteor npm per app"]
@@ -60,6 +62,7 @@ flowchart TB
     servicesDir["services/ Python Arelle"]
   end
   govrn -->|"file:../../packages/ui"| ui
+  govrn -.->|"file: later"| files
   otherApp -->|"file:../../packages/ui"| ui
   dockerStack -->|"COPY packages then meteor npm ci"| govrn
 ```
@@ -75,7 +78,7 @@ packages:
   - "packages/*"
 ```
 
-Today that is [`packages/ui`](packages/ui) (`@nexus/ui`). Tomorrow: API clients, shared helpers, config. Each new folder under `packages/` with a `package.json` joins the workspace automatically.
+Today that is [`packages/ui`](packages/ui) (`@nexus/ui`) and [`packages/files`](packages/files) (`@nexus/files`). Tomorrow: API clients, shared helpers, config. Each new folder under `packages/` with a `package.json` joins the workspace automatically.
 
 **Not** workspace members:
 
@@ -124,9 +127,9 @@ pnpm install
 That:
 
 1. Reads `pnpm-workspace.yaml`
-2. Links `@nexus/ui`
+2. Links `@nexus/ui` and `@nexus/files`
 3. Writes / updates **only** [`pnpm-lock.yaml`](pnpm-lock.yaml)
-4. Puts workspace `node_modules` at the repo root (and under `packages/ui` as needed)
+4. Puts workspace `node_modules` at the repo root (and under `packages/*` as needed)
 
 It does **not** install Vue into GovRN. It does **not** touch `apps/nexus-govrn/package-lock.json`.
 
@@ -211,6 +214,7 @@ pnpm names come from each package’s `"name"` field, not the folder name.
 | Folder | Package name | Filter |
 |--------|----------------|--------|
 | `packages/ui` | `@nexus/ui` | `--filter @nexus/ui` |
+| `packages/files` | `@nexus/files` | `--filter @nexus/files` |
 
 ```bash
 pnpm --filter @nexus/ui list
@@ -254,9 +258,10 @@ flowchart LR
 
 ```js
 import { LocaleSelect, createNexusI18n } from '@nexus/ui'
+import { Files } from '@nexus/files'
 ```
 
-The import path stays `@nexus/ui` after an npm publish. Only the dependency string in the app `package.json` changes (`file:` → a version).
+The import path stays `@nexus/ui` / `@nexus/files` after an npm publish. Only the dependency string in the app `package.json` changes (`file:` → a version). GridFS wiring is documented in [`packages/files/README.md`](packages/files/README.md).
 
 If Rspack cannot compile the `.vue` files, include the package in `vue-loader` (GovRN already includes `node_modules/@nexus/ui` and `../../packages/ui`). Do not alias `vuetify` to its package root — subpaths like `vuetify/styles` break.
 

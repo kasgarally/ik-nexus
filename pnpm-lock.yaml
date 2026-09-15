@@ -8,6 +8,8 @@ importers:
 
   .: {}
 
+  packages/files: {}
+
   packages/ui:
     dependencies:
       vue:
