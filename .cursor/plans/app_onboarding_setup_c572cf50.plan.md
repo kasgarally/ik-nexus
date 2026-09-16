@@ -9,7 +9,7 @@ todos:
     content: "Create @nexus/setup: nexus_setup singleton, complete/isComplete, public pub, deny, indexes"
     status: completed
   - id: setup-wizard-ui
-    content: Add SetupWizard v-stepper-vertical + setup.* i18n and @nexus/setup peer
+    content: Add NSetupWizard v-stepper-vertical + setup.* i18n and @nexus/setup peer
     status: completed
   - id: govrn-gate
     content: Wire package, /onboarding setup layout, router gate, conditional demo admin seed, Applog
@@ -84,7 +84,7 @@ Logo/icon: **data URLs** (not GridFS). Method rejects non-image prefixes and pay
 
 ## Shared wizard ([`packages/ui`](packages/ui))
 
-`SetupWizard` — `v-stepper-vertical` (Vuetify 4). Peer `@nexus/setup`. Core i18n `setup.*` (en/fr/ar). No `meteor/*` in the SFC; calls `Setup.complete` / `Setup.isComplete`.
+`NSetupWizard` — `v-stepper-vertical` (Vuetify 4). Peer `@nexus/setup`. Core i18n `setup.*` (en/fr/ar). No `meteor/*` in the SFC; calls `Setup.complete` / `Setup.isComplete`.
 
 Steps:
 
@@ -108,7 +108,7 @@ On success: `Meteor.loginWithPassword` (same fallback as Auth.vue), then `emit('
 flowchart TD
   boot[App boot]
   complete{setup.isComplete}
-  wizard["/onboarding SetupWizard"]
+  wizard["/onboarding NSetupWizard"]
   app[Normal routes]
   seed{devSeedAdmin and setup exists}
   boot --> complete

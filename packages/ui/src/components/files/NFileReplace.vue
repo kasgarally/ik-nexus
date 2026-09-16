@@ -6,7 +6,7 @@ Single file replace: document field or clickable avatar
 import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { DOCUMENT_MIME_TYPES, IMAGE_MIME_TYPES } from '@nexus/files'
-import FileRow from './FileRow.vue'
+import NFileRow from './NFileRow.vue'
 import { useOwnerFiles } from './useOwnerFiles.js'
 
 const props = defineProps({
@@ -122,7 +122,7 @@ function onHiddenPickerChange(event) {
         @update:model-value="onInputSelect"
       />
       <v-list v-if="current" lines="two">
-        <FileRow
+        <n-file-row
           :file="current"
           :download-url="fileDownloadUrl(current._id)"
           :disabled="disabled || uploading"

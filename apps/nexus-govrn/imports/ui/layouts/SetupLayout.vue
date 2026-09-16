@@ -4,7 +4,7 @@ Wide first-run layout without a drawer
 -->
 <script setup>
 import { computed } from 'vue'
-import { LocaleSelect } from '@nexus/ui'
+import { NLocaleSelect } from '@nexus/ui'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from 'vuetify'
 import { usePublicSetup } from '../usePublicSetup.js'
@@ -26,7 +26,7 @@ function toggleTheme() {
     </v-avatar>
     <v-app-bar-title>{{ title }}</v-app-bar-title>
     <v-spacer />
-    <LocaleSelect class="me-2" />
+    <n-locale-select class="me-2" />
     <v-btn icon="mdi-theme-light-dark" :aria-label="t('themeToggle')" @click="toggleTheme" />
   </v-app-bar>
 

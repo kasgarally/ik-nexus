@@ -156,8 +156,8 @@ Environment is `happy-dom` so Vue SFCs can mount. [`vitest.setup.js`](vitest.set
 **`@nexus/ui`** — `packages/ui/tests/`
 
 - `createNexusI18n`, stored locale, `lang` / `dir` for AR vs FR, core `setup.title`
-- `FileLightbox`: native `img.file-lightbox-image`, `90vw` / `80vh` constraints, prev/next/close
-- `SetupWizard`: no `meteor/*`, company/admin gates, complete then login, review error, non-image logo
+- `NFileLightbox`: native `img.file-lightbox-image`, `90vw` / `80vh` constraints, prev/next/close
+- `NSetupWizard`: no `meteor/*`, company/admin gates, complete then login, review error, non-image logo
 
 Meteor is **mocked**. These tests never boot Mongo or DDP.
 

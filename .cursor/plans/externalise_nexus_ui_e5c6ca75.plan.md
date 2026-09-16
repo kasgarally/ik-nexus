@@ -1,12 +1,12 @@
 ---
 name: Externalise nexus UI
-overview: Create a hybrid `@nexus/ui` workspace package (source today, same import path for a later npm publish) that owns LocaleSelect plus the i18n bootstrap it needs. Layouts and Vuetify theme stay in each app. Wire Meteor/Rspack and the Docker build so `file:../../packages/ui` resolves both locally and in the image.
+overview: Create a hybrid `@nexus/ui` workspace package (source today, same import path for a later npm publish) that owns NLocaleSelect plus the i18n bootstrap it needs. Layouts and Vuetify theme stay in each app. Wire Meteor/Rspack and the Docker build so `file:../../packages/ui` resolves both locally and in the image.
 todos:
   - id: pkg-scaffold
-    content: Scaffold packages/ui (@nexus/ui) with LocaleSelect, createNexusI18n, core EN/FR/AR + Vuetify catalogs, peerDeps and exports
+    content: Scaffold packages/ui (@nexus/ui) with NLocaleSelect, createNexusI18n, core EN/FR/AR + Vuetify catalogs, peerDeps and exports
     status: completed
   - id: app-wire
-    content: Point nexus-govrn at file:../../packages/ui, thin app i18n, update layouts, delete local LocaleSelect, fix Rspack vue-loader include
+    content: Point nexus-govrn at file:../../packages/ui, thin app i18n, update layouts, delete local NLocaleSelect, fix Rspack vue-loader include
     status: completed
   - id: docker-docs
     content: COPY packages into the Meteor image and document it; add packages/ui README + TOC updates
@@ -17,7 +17,7 @@ todos:
 isProject: false
 ---
 
-# Externalise LocaleSelect into `@nexus/ui`
+# Externalise NLocaleSelect into `@nexus/ui`
 
 Branch `externalise-components` is already checked out from `main`.
 
@@ -25,12 +25,12 @@ Branch `externalise-components` is already checked out from `main`.
 
 - Shared Vue components live in one package every product app can import.
 - Iterate in this monorepo now; publish to npm later **without changing import paths**.
-- First extract: `LocaleSelect` + the i18n bootstrap it needs (EN/FR/AR, Vuetify `$vuetify` catalogs, persist/RTL helpers).
+- First extract: `NLocaleSelect` + the i18n bootstrap it needs (EN/FR/AR, Vuetify `$vuetify` catalogs, persist/RTL helpers).
 - **Out of scope:** layouts, Vuetify theme/defaults, cloning a second app.
 
 ## Why a factory, not a singleton
 
-[`LocaleSelect.vue`](apps/nexus-govrn/imports/ui/components/LocaleSelect.vue) today imports [`../i18n/index.js`](apps/nexus-govrn/imports/ui/i18n/index.js), which creates one `i18n` instance and hard-codes `nexus-govrn-locale` plus GovRN copy.
+The former app-local locale component imported [`../i18n/index.js`](apps/nexus-govrn/imports/ui/i18n/index.js), which creates one `i18n` instance and hard-codes `nexus-govrn-locale` plus GovRN copy.
 
 The package must not own per-product strings or a module-level singleton. The app creates the instance and merges its own messages:
 
@@ -48,14 +48,14 @@ export const i18n = createNexusI18n({
 
 `createNexusI18n` merges **core** keys (`locale.label` / `locale.en` / `fr` / `ar`) and Vuetify `en`/`fr`/`ar` under `$vuetify`. App files drop the `locale` block; they keep `brand`, `nav`, `home`, etc.
 
-`LocaleSelect` uses `useI18n()` plus package helpers (`supportedLocales`, `setAppLocale(i18n, code, storageKey)`). Storage key is injected or passed from `createNexusI18n` so the component never imports an app path.
+`NLocaleSelect` uses `useI18n()` plus package helpers (`supportedLocales`, `setAppLocale(i18n, code, storageKey)`). Storage key is injected or passed from `createNexusI18n` so the component never imports an app path.
 
 [`vuetify.config.js`](apps/nexus-govrn/imports/ui/vuetify.config.js) still lives in the app and still does `createVueI18nAdapter({ i18n, useI18n })` against the app-created instance. Themes stay local.
 
 ```mermaid
 flowchart LR
   subgraph pkg ["packages/ui @nexus/ui"]
-    LocaleSelect
+    NLocaleSelect
     createNexusI18n
     coreLocales["core locale + Vuetify catalogs"]
   end
@@ -68,7 +68,7 @@ flowchart LR
   createNexusI18n --> coreLocales
   appI18n --> createNexusI18n
   appI18n --> appMsgs
-  layouts --> LocaleSelect
+  layouts --> NLocaleSelect
   vuetifyConfig --> appI18n
 ```
 
@@ -80,7 +80,7 @@ Do **not** add Meteor apps to npm workspaces. Hoisting fights `meteor npm`. Each
 packages/ui/
   package.json          # name @nexus/ui, version 0.1.0, type module
   src/index.js          # public exports
-  src/components/LocaleSelect.vue
+  src/components/locale/NLocaleSelect.vue
   src/i18n/createNexusI18n.js
   src/i18n/locales/{en,fr,ar}.js   # locale picker strings only
   README.md             # Contents + how to consume / later publish
@@ -102,8 +102,8 @@ In [`apps/nexus-govrn/package.json`](apps/nexus-govrn/package.json):
 
 Then `meteor npm install` (updates the app lockfile).
 
-- Delete [`apps/nexus-govrn/imports/ui/components/LocaleSelect.vue`](apps/nexus-govrn/imports/ui/components/LocaleSelect.vue).
-- Layouts import `import { LocaleSelect } from '@nexus/ui'`.
+- Delete the former app-local locale component.
+- Layouts import `import { NLocaleSelect } from '@nexus/ui'`.
 - Thin [`imports/ui/i18n/index.js`](apps/nexus-govrn/imports/ui/i18n/index.js): only `createNexusI18n` + app message modules + `export { i18n }`.
 - [`rspack.config.js`](apps/nexus-govrn/rspack.config.js): ensure `vue-loader` compiles the linked package (include `node_modules/@nexus/ui` or the `packages/ui` path). Meteor often excludes `node_modules` from Vue rules.
 

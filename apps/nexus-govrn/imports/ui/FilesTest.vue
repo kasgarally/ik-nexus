@@ -4,7 +4,7 @@ Test page for the four file-upload variants
 -->
 <script setup>
 import { DOCUMENT_MIME_TYPES, IMAGE_MIME_TYPES } from '@nexus/files'
-import { FileReplace, FileUpload } from '@nexus/ui'
+import { NFileReplace, NFileUpload } from '@nexus/ui'
 import { useI18n } from 'vue-i18n'
 import {
   DEMO_MANY_DOC_ID,
@@ -29,7 +29,7 @@ const imageAccept = IMAGE_MIME_TYPES.join(',')
         <v-card-title>{{ t('filesTest.oneDocTitle') }}</v-card-title>
         <v-card-text>
           <p class="text-medium-emphasis mb-4">{{ t('filesTest.oneDocHint') }}</p>
-          <FileReplace
+          <n-file-replace
             owner-type="demo"
             :owner-id="DEMO_ONE_DOC_ID"
             variant="document"
@@ -43,7 +43,7 @@ const imageAccept = IMAGE_MIME_TYPES.join(',')
         <v-card-title>{{ t('filesTest.oneAvatarTitle') }}</v-card-title>
         <v-card-text>
           <p class="text-medium-emphasis mb-4">{{ t('filesTest.oneAvatarHint') }}</p>
-          <FileReplace
+          <n-file-replace
             owner-type="demo"
             :owner-id="DEMO_ONE_AVATAR_ID"
             variant="avatar"
@@ -60,7 +60,7 @@ const imageAccept = IMAGE_MIME_TYPES.join(',')
         <v-card-title>{{ t('filesTest.manyDocTitle') }}</v-card-title>
         <v-card-text>
           <p class="text-medium-emphasis mb-4">{{ t('filesTest.manyDocHint') }}</p>
-          <FileUpload
+          <n-file-upload
             owner-type="demo"
             :owner-id="DEMO_MANY_DOC_ID"
             variant="document"
@@ -74,7 +74,7 @@ const imageAccept = IMAGE_MIME_TYPES.join(',')
         <v-card-title>{{ t('filesTest.manyImagesTitle') }}</v-card-title>
         <v-card-text>
           <p class="text-medium-emphasis mb-4">{{ t('filesTest.manyImagesHint') }}</p>
-          <FileUpload
+          <n-file-upload
             owner-type="demo"
             :owner-id="DEMO_MANY_IMAGES_ID"
             variant="images"

@@ -6,8 +6,8 @@ Multiple files: document list or image grid with lightbox
 import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ALLOWED_MIME_TYPES, IMAGE_MIME_TYPES } from '@nexus/files'
-import FileLightbox from './FileLightbox.vue'
-import FileRow from './FileRow.vue'
+import NFileLightbox from './NFileLightbox.vue'
+import NFileRow from './NFileRow.vue'
 import { useOwnerFiles } from './useOwnerFiles.js'
 
 const props = defineProps({
@@ -112,7 +112,7 @@ function openLightbox(index) {
         </div>
       </div>
       <p v-else class="text-medium-emphasis">{{ t('files.empty') }}</p>
-      <FileLightbox
+      <n-file-lightbox
         v-model="lightboxOpen"
         v-model:index="lightboxIndex"
         :files="documents"
@@ -121,7 +121,7 @@ function openLightbox(index) {
     </template>
     <template v-else>
       <v-list v-if="documents.length" lines="two">
-        <FileRow
+        <n-file-row
           v-for="file in documents"
           :key="file._id"
           :file="file"

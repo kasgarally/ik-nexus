@@ -92,7 +92,7 @@ Do **not** convert GovRN to pnpm. Do **not** replace `file:` with `workspace:` (
 ## Verify
 
 - From repo root: `pnpm install` succeeds; `apps/nexus-govrn/node_modules` is untouched.
-- From `apps/nexus-govrn`: `meteor npm install` still resolves `@nexus/ui`; app boots; LocaleSelect EN/FR/AR still works.
+- From `apps/nexus-govrn`: `meteor npm install` still resolves `@nexus/ui`; app boots; NLocaleSelect EN/FR/AR still works.
 - Confirm `apps/` is absent from `pnpm-workspace.yaml`.
 
 ## Out of scope

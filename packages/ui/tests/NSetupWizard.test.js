@@ -23,7 +23,7 @@ vi.mock('@nexus/setup', () => ({
 }))
 
 const wizardSource = readFileSync(
-  path.resolve('packages/ui/src/components/setup/SetupWizard.vue'),
+  path.resolve('packages/ui/src/components/setup/NSetupWizard.vue'),
   'utf8',
 )
 
@@ -69,8 +69,8 @@ const vuetifyStubs = {
 }
 
 async function mountWizard() {
-  const { default: SetupWizard } = await import('../src/components/setup/SetupWizard.vue')
-  return mount(SetupWizard, {
+  const { default: NSetupWizard } = await import('../src/components/setup/NSetupWizard.vue')
+  return mount(NSetupWizard, {
     attachTo: document.body,
     global: {
       plugins: [i18n],
@@ -102,7 +102,7 @@ async function fillValidWizard(wrapper) {
   await nextOnStep(wrapper, 4).trigger('click')
 }
 
-describe('@nexus/ui SetupWizard', () => {
+describe('@nexus/ui NSetupWizard', () => {
   beforeEach(() => {
     complete.mockReset()
     loginWithPassword.mockReset()

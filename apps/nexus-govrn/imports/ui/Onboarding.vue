@@ -3,7 +3,7 @@ Author: Karmil Asgarally - INTELLEKTRA © 2026
 First-run onboarding page
 -->
 <script setup>
-import { SetupWizard } from '@nexus/ui'
+import { NSetupWizard } from '@nexus/ui'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -14,5 +14,5 @@ function onCompleted() {
 </script>
 
 <template>
-  <SetupWizard @completed="onCompleted" />
+  <n-setup-wizard @completed="onCompleted" />
 </template>

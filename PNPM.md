@@ -171,7 +171,7 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-  localeSelect["LocaleSelect.vue in packages/ui"]
+  localeSelect["NLocaleSelect.vue in packages/ui"]
   junction["app node_modules/@nexus/ui"]
   appVue["app node_modules/vue and vuetify"]
   rspack["Rspack symlinks: false"]
@@ -269,7 +269,7 @@ flowchart LR
 ## Consume a package from a Meteor app
 
 ```js
-import { FileReplace, FileUpload, LocaleSelect, createNexusI18n } from '@nexus/ui'
+import { NFileReplace, NFileUpload, NLocaleSelect, createNexusI18n } from '@nexus/ui'
 import { Files } from '@nexus/files'
 ```
 

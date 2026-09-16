@@ -6,7 +6,7 @@ Table plus modal form for one listKey
 import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Lists } from '@nexus/lists'
-import ListItemForm from './ListItemForm.vue'
+import NListItemForm from './NListItemForm.vue'
 import { useListItems } from './useListItems.js'
 
 const props = defineProps({
@@ -140,7 +140,7 @@ async function confirmDelete() {
       <v-card>
         <v-card-title>{{ dialogTitle }}</v-card-title>
         <v-card-text>
-          <ListItemForm
+          <n-list-item-form
             :creating="!editing"
             :item="editing"
             :disabled="disabled || saving"

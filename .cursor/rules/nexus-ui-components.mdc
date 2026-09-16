@@ -1,0 +1,23 @@
+---
+description: Prefix reusable @nexus/ui Vue components with N
+alwaysApply: true
+---
+
+<!--
+Author: Karmil Asgarally - INTELLEKTRA © 2026
+NEXUS UI component naming convention
+-->
+
+# NEXUS UI component names
+
+Every reusable Vue component under `packages/ui/src/components/` uses the NEXUS `N` prefix.
+
+- Filename: `NFileUpload.vue`
+- JavaScript import/export: `NFileUpload`
+- Vue template: `<n-file-upload>`
+
+Apply the prefix to public widgets and internal reusable components (`NFileRow`, `NListItemForm`). Export public components from `packages/ui/src/index.js` under their `N…` name, then update every consuming import and template. Do not keep unprefixed compatibility aliases unless the user explicitly requests a deprecation period.
+
+Composables and helpers are not components: keep names such as `useOwnerFiles`, `createNexusI18n`, and `setAppLocale`.
+
+When adding or renaming a component, update `packages/ui/README.md`, `PACKAGES.md`, and any other documentation or examples that name it.

@@ -7,10 +7,10 @@ import path from 'node:path'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { afterEach, describe, expect, it } from 'vitest'
-import FileLightbox from '../src/components/files/FileLightbox.vue'
+import NFileLightbox from '../src/components/files/NFileLightbox.vue'
 
 const lightboxSource = readFileSync(
-  path.resolve('packages/ui/src/components/files/FileLightbox.vue'),
+  path.resolve('packages/ui/src/components/files/NFileLightbox.vue'),
   'utf8',
 )
 
@@ -46,7 +46,7 @@ const gallery = [
 ]
 
 function mountLightbox(props = {}) {
-  return mount(FileLightbox, {
+  return mount(NFileLightbox, {
     attachTo: document.body,
     props: {
       modelValue: true,
@@ -62,7 +62,7 @@ function mountLightbox(props = {}) {
   })
 }
 
-describe('@nexus/ui FileLightbox', () => {
+describe('@nexus/ui NFileLightbox', () => {
   afterEach(() => {
     document.body.innerHTML = ''
   })

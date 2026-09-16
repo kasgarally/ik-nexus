@@ -6,13 +6,13 @@ todos:
     content: Add allowAnonymous, server-only WebApp GET /nexus-files/:fileId, and Files.remove / downloadUrl / subscribeForOwner helpers
     status: completed
   - id: ui-reorg-components
-    content: Reorganize packages/ui (locale/ + files/), add FileUpload, FileReplace, FileRow, useOwnerFiles, i18n, README
+    content: Reorganize packages/ui (locale/ + files/), add NFileUpload, NFileReplace, NFileRow, useOwnerFiles, i18n, README
     status: completed
   - id: govrn-test-page
     content: Wire @nexus/files in GovRN, seed demo parents, add /files-test page + nav + i18n
     status: completed
   - id: verify-browser
-    content: pnpm list check + browser-verify multi upload, replace-in-place, new-tab download, LocaleSelect
+    content: pnpm list check + browser-verify multi upload, replace-in-place, new-tab download, NLocaleSelect
     status: completed
 isProject: false
 ---
@@ -48,7 +48,7 @@ Add thin helpers on `Files`:
 
 ```mermaid
 flowchart LR
-  ui["FileUpload / FileReplace"]
+  ui["NFileUpload / NFileReplace"]
   ddp["DDP start push finish remove"]
   http["GET /nexus-files/fileId"]
   grid["nexus_fs GridFS"]
@@ -70,10 +70,10 @@ packages/ui/src/
   index.js
   i18n/                    # unchanged factory + locale/en|fr|ar
   components/
-    locale/LocaleSelect.vue
-    files/FileUpload.vue
-    files/FileReplace.vue
-    files/FileRow.vue
+    locale/NLocaleSelect.vue
+    files/NFileUpload.vue
+    files/NFileReplace.vue
+    files/NFileRow.vue
     files/useOwnerFiles.js
 ```
 
@@ -82,19 +82,19 @@ packages/ui/src/
 - Core i18n keys in [packages/ui/src/i18n/locales](packages/ui/src/i18n/locales) (`files.upload`, `files.replace`, `files.open`, `files.remove`, `files.empty`, errors)
 - [packages/ui/README.md](packages/ui/README.md): Contents, folder layout, both components, mermaid
 
-GovRN layouts keep `import { LocaleSelect } from '@nexus/ui'` — only the internal path changes.
+GovRN layouts keep `import { NLocaleSelect } from '@nexus/ui'` — only the internal path changes.
 
 ## Components
 
 Shared composable `useOwnerFiles({ ownerType, ownerId })`: subscribe, reactive list via `vue-meteor-tracker`, `upload`, `remove`, `downloadUrl`.
 
-**`FileUpload`** — many files per parent.
+**`NFileUpload`** — many files per parent.
 
-- `v-file-input` `multiple`, progress, `FileRow` list
+- `v-file-input` `multiple`, progress, `NFileRow` list
 - Each row: name, size, **Open** (`target="_blank"` + `rel="noopener"`), **Remove**
 - Adding files does not delete existing ones
 
-**`FileReplace`** — one file (avatar / photo).
+**`NFileReplace`** — one file (avatar / photo).
 
 - Image → `v-avatar` preview from download URL; otherwise show the file name
 - On pick: **upload the new file first**, then hard-delete every other file for that owner (keeps the old file if the new upload fails)
@@ -109,7 +109,7 @@ Wire the package (previously out of scope; required to exercise the UI).
 1. `"@nexus/files": "file:../../packages/files"` in [apps/nexus-govrn/package.json](apps/nexus-govrn/package.json), then `meteor npm install` in the app
 2. [`imports/api/filesDemoParents.js`](apps/nexus-govrn/imports/api/filesDemoParents.js) — collection + seed two parents: `files-demo-many`, `files-demo-one`
 3. [`imports/api/nexusFiles.js`](apps/nexus-govrn/imports/api/nexusFiles.js) — `registerWithMeteor` + `defineOwner({ type: 'demo', allowAnonymous: true, ... })`. Import from [server/main.js](apps/nexus-govrn/server/main.js) and [imports/ui/main.js](apps/nexus-govrn/imports/ui/main.js)
-4. Page [`imports/ui/FilesTest.vue`](apps/nexus-govrn/imports/ui/FilesTest.vue): two cards — `FileUpload` on `files-demo-many`, `FileReplace` on `files-demo-one`
+4. Page [`imports/ui/FilesTest.vue`](apps/nexus-govrn/imports/ui/FilesTest.vue): two cards — `NFileUpload` on `files-demo-many`, `NFileReplace` on `files-demo-one`
 5. Route `/files-test` in [router.js](apps/nexus-govrn/imports/ui/router.js); nav item in [WebLayout.vue](apps/nexus-govrn/imports/ui/layouts/WebLayout.vue)
 6. App strings in `imports/ui/i18n/{en,fr,ar}.js` (page title / hints only)
 
@@ -119,7 +119,7 @@ Rspack already compiles `packages/ui` Vue files — no config change.
 
 - [packages/files/README.md](packages/files/README.md): `allowAnonymous`, HTTP GET, `Files.remove` / `downloadUrl`
 - [packages/ui/README.md](packages/ui/README.md) as above
-- One line in root [README.md](README.md) / [PNPM.md](PNPM.md) if the UI section still only mentions LocaleSelect
+- One line in root [README.md](README.md) / [PNPM.md](PNPM.md) if the UI section still only mentions NLocaleSelect
 
 ## Verify
 
@@ -127,7 +127,7 @@ Rspack already compiles `packages/ui` Vue files — no config change.
 - No `meteor/*` imports from either npm package
 - Browser on `/files-test`: multi upload lists several files; replace swaps the single file and deletes the previous; Open opens a new tab and shows the blob (image/pdf)
 - Signed-out still works on the demo owner
-- Locale switch still works (LocaleSelect move)
+- Locale switch still works (NLocaleSelect move)
 
 ## Out of scope
 

@@ -47,7 +47,7 @@ Packages give that split:
 ```mermaid
 flowchart TB
   subgraph packagesDir ["packages/*  pnpm workspace"]
-    ui["@nexus/ui Vue widgets + i18n"]
+    ui["@nexus/ui N-prefixed Vue widgets + i18n"]
     files["@nexus/files GridFS + DDP + HTTP"]
     applog["@nexus/applog append-only audit"]
     lists["@nexus/lists translatable select items"]
@@ -87,7 +87,7 @@ Today the workspace is five members. Each has its own README for the public API.
 
 | Folder | npm name | What it owns | Meteor injection? |
 |--------|----------|--------------|-------------------|
-| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets (`LocaleSelect`, `FileUpload`, `FileReplace`, `ListItemsEditor`, `ListSelect`, `SetupWizard`) and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
+| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets (`NLocaleSelect`, `NFileUpload`, `NFileReplace`, `NListItemsEditor`, `NListSelect`, `NSetupWizard`) and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
 | [`packages/files`](packages/files/README.md) | `@nexus/files` | `nexus_files` + GridFS bucket `nexus_fs`, DDP upload/remove, `GET /nexus-files/:fileId`, `Files.defineOwner` | Yes. `Files.registerWithMeteor` |
 | [`packages/applog`](packages/applog/README.md) | `@nexus/applog` | Append-only `nexus_applog`; wraps `insertAsync` / `updateAsync` / `removeAsync`; `Applog.record` / `runAsSystem` | Yes. `Applog.registerWithMeteor` |
 | [`packages/lists`](packages/lists/README.md) | `@nexus/lists` | `nexus_lists` items (`listKey` + stable `code` + `title.en`/`fr`/`ar`) | Yes. `Lists.registerWithMeteor` |
@@ -252,7 +252,7 @@ registerNexusSetup()
 registerNexusApplog()
 ```
 
-The Vue tree mounts only after those calls, so `SetupWizard` / `FileUpload` / `ListSelect` see a registered package.
+The Vue tree mounts only after those calls, so `NSetupWizard` / `NFileUpload` / `NListSelect` see a registered package.
 
 ### Rspack
 
@@ -266,7 +266,7 @@ Do not alias `vuetify` to its package root — subpaths such as `vuetify/styles`
 
 ```mermaid
 flowchart TB
-  sfc["LocaleSelect.vue in packages/ui"]
+  sfc["NLocaleSelect.vue in packages/ui"]
   junction["app node_modules/@nexus/ui"]
   rspack["Rspack symlinks: false"]
   appVue["app node_modules/vue and vuetify"]
@@ -278,7 +278,7 @@ flowchart TB
 ## Consume a package from a Meteor app
 
 ```javascript
-import { FileReplace, FileUpload, LocaleSelect, createNexusI18n } from '@nexus/ui'
+import { NFileReplace, NFileUpload, NLocaleSelect, createNexusI18n } from '@nexus/ui'
 import { Files } from '@nexus/files'
 import { Applog } from '@nexus/applog'
 import { Lists } from '@nexus/lists'
@@ -289,9 +289,9 @@ The import specifier stays `@nexus/<name>` after an npm publish. GridFS, audit, 
 
 UI widgets assume the matching Meteor package is already registered:
 
-- `FileUpload` / `FileReplace` → `Files.registerWithMeteor` + `Files.defineOwner`
-- `ListItemsEditor` / `ListSelect` → `Lists.registerWithMeteor`
-- `SetupWizard` → `Setup.registerWithMeteor`
+- `NFileUpload` / `NFileReplace` → `Files.registerWithMeteor` + `Files.defineOwner`
+- `NListItemsEditor` / `NListSelect` → `Lists.registerWithMeteor`
+- `NSetupWizard` → `Setup.registerWithMeteor`
 
 ## Dependencies and peerDependencies
 
@@ -333,7 +333,7 @@ Keep that split. Do not put DDP methods in `@nexus/ui`. Do not put Vue component
 
 ## Add a new shared JS package
 
-1. Create `packages/<name>/package.json` with a scoped name (`@nexus/api`, …), `"private": true` until you publish, `"type": "module"`, and an `exports` map pointing at `src/index.js` (same pattern as the existing packages).
+1. Create `packages/<name>/package.json` with a scoped name (`@nexus/api`, …), `"private": true` until you publish, `"type": "module"`, and an `exports` map pointing at `src/index.js` (same pattern as the existing packages). Reusable Vue components in `@nexus/ui` use an `N` prefix: `NThing.vue` / `NThing` in JavaScript and `<n-thing>` in templates.
 2. Add the INTELLEKTRA file header on every source file. Keep names human-readable. Address access control and OWASP in the same change — see [`SECURITY.md`](SECURITY.md) and [`.cursor/rules/security-owasp.mdc`](.cursor/rules/security-owasp.mdc).
 3. If the package needs Meteor: **do not** import `meteor/*`. Export `registerWithMeteor`, deny client writes, use `check` / `Match`, and `*Async` collection APIs.
 4. From the repo root: `pnpm install` (the `packages/*` glob picks it up; no edit to `pnpm-workspace.yaml`).

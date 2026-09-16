@@ -6,7 +6,7 @@ Implementation of the approved regulatory submissions concept. Uses Vue 3, Vueti
 
 - `vuetify.config.js`: replacement options for createVuetify; keep at its current location so `./i18n/index.js` resolves.
 - `main.css`: load after `vuetify/styles` and your existing resets. Replace the supplied minimal main.css.
-- `WebLayout.vue`: replacement layout; preserves `@nexus/ui` LocaleSelect and `../usePublicSetup.js`. Adjust these two imports only if you move the file.
+- `WebLayout.vue`: replacement layout; preserves `@nexus/ui` `NLocaleSelect` and `../usePublicSetup.js`. Adjust these two imports only if you move the file.
 - `SubmissionsHeading.vue`: heading and preview actions.
 - `SubmissionsRegister.vue`: mock records, working local search, filters, tabs and selection.
 - `SubmissionContext.vue`: selected record and working context tabs.

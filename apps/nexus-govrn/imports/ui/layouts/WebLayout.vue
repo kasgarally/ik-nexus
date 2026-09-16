@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDisplay, useTheme } from 'vuetify'
 import { useI18n } from 'vue-i18n'
-import { LocaleSelect } from '@nexus/ui'
+import { NLocaleSelect } from '@nexus/ui'
 import { usePublicSetup } from '../usePublicSetup.js'
 const route = useRoute()
 const theme = useTheme()
@@ -66,7 +66,7 @@ const items = [
     <v-app-bar-nav-icon v-if="!lgAndUp" :aria-label="label('nav.toggle', 'Toggle navigation')" @click="drawer = !drawer" />
     <v-text-field class="app-toolbar-search" variant="solo" flat density="compact" hide-details prepend-inner-icon="mdi-magnify" :placeholder="label('search.placeholder', 'Search firms, submissions or reference numbers…')" :aria-label="label('search.global', 'Global search preview')" readonly />
     <v-spacer />
-    <LocaleSelect class="ms-2" />
+    <n-locale-select class="ms-2" />
     <v-btn icon="mdi-theme-light-dark" variant="text" :aria-label="label('themeToggle', 'Toggle colour theme')" @click="theme.toggle()" />
     <div class="app-user"><v-avatar color="primary" variant="tonal" size="36">KA</v-avatar><span class="app-user-name">Karmil Asgarally</span></div>
   </v-app-bar>

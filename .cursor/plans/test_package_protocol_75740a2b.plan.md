@@ -41,7 +41,7 @@ Plan mode could not create the branch. First command on execute:
 git checkout -b test-package
 ```
 
-Any already-local FileLightbox fix travels onto this branch. Do not mix unrelated Meteor `.meteor/local` db files.
+Any already-local NFileLightbox fix travels onto this branch. Do not mix unrelated Meteor `.meteor/local` db files.
 
 ## Why today’s `npm test` felt empty
 
@@ -91,7 +91,7 @@ Root pnpm owns this world ([`pnpm-workspace.yaml`](pnpm-workspace.yaml) is alrea
 **`@nexus/ui`:**
 
 - `createNexusI18n` / `readStoredLocale` / `applyDocumentLocale`.
-- `FileLightbox`: native `img.file-lightbox-image` present, `max-height: 80vh`, prev/next/close emit. Mount with a tiny Vuetify test plugin so `v-overlay` / `v-btn` resolve.
+- `NFileLightbox`: native `img.file-lightbox-image` present, `max-height: 80vh`, prev/next/close emit. Mount with a tiny Vuetify test plugin so `v-overlay` / `v-btn` resolve.
 
 Colocate as `packages/<name>/tests/*.test.js`. File headers stay the INTELLEKTRA header.
 
