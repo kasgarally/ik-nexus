@@ -19,6 +19,7 @@ Write code a colleague can read without a walkthrough. Prefer clarity over cleve
 - Match existing project style. Do not golf, minify, or pack multiple responsibilities into one expression.
 - Public APIs and Mongo collection names stay documented and stable.
 - No leftover TODOs, placeholders, or commented-out dead code in finished work.
+- Readability does **not** excuse skipping security. Name the access check so a reviewer can see it. Do not pack authorization into a dense boolean. If a control makes a function long, extract a helper (`requireOwnerRole`, `denyClientWrites`) rather than dropping the check. OWASP and DDP rules: `.cursor/rules/security-owasp.mdc` and `SECURITY.md`.
 
 ```javascript
 // BAD — dense, unnamed, unexplained, sync Mongo

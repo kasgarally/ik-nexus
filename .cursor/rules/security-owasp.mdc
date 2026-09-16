@@ -1,0 +1,50 @@
+---
+description: Human-readable code must still implement OWASP and access-control controls
+alwaysApply: true
+---
+
+<!--
+Author: Karmil Asgarally - INTELLEKTRA © 2026
+Readable code and OWASP security
+-->
+
+# Readable code and OWASP
+
+Clarity and security are both required. Do not hide access checks in a clever one-liner. Do not skip a control to keep a function short — extract a named helper (`requireOwnerRole`, `denyClientWrites`, `rejectInvalidFile`) and comment *why*. Full mapping: `SECURITY.md`.
+
+## Access control (OWASP A01)
+
+- Authorize on the **server**. Vue `v-if` and router guards are not security.
+- DDP methods: `check` / `Match`, then login/role gates, then the write. Use `userIsInRoleAsync` and `Meteor.callAsync`.
+- Publications: if the caller may not see rows, `return this.ready()`. Never `Collection.find()` with no filter.
+- Package collections deny client `insert` / `update` / `remove`. Do not add `insecure` or a permissive `allow`.
+- Do not pass a client-supplied Mongo modifier through to `updateAsync`.
+
+## Uploads, injection, secrets (A02–A04, A07, file upload)
+
+- MIME allowlist and size limits are **server** checks. Parent document must exist before GridFS writes.
+- `allowAnonymous` is demo-only. Product owners (risks, invoices, …) stay `false`.
+- Passwords go through `accounts-base` only. Never store them on `nexus_setup` or in applog.
+- No `v-html` on untrusted strings. No server fetch of a caller-supplied URL.
+- `check` every method/publication argument. Structured selectors only — never string-built queries.
+
+## Config, logging, integrity (A05, A08, A09)
+
+- Do not commit `.env`, PEMs, or generated `settings.json`. Do not put secrets in `Meteor.settings.public`.
+- Production must not enable `public.devSeedAdmin`.
+- Applog redacts `password`, `bcrypt`, `token`, `services`, `resume`. Add `redactKeys` for anything similar. Do not log secrets.
+- Prefer a named helper in this repo over a new dependency for validation or path parsing.
+
+```javascript
+// BAD — unreadable and unsafe (client modifier, sync, no role)
+Meteor.methods({ 'docs.update'(id, mod) { C.update(id, mod) } })
+
+// GOOD — named gates, async APIs, explicit fields
+async 'docs.update'(params) {
+  check(params, { id: String, title: String })
+  if (!this.userId) throw new Meteor.Error('not-logged-in', 'You must be signed in')
+  const allowed = await Roles.userIsInRoleAsync(this.userId, 'docs.update')
+  if (!allowed) throw new Meteor.Error('not-authorized', 'Missing role docs.update')
+  await C.updateAsync(params.id, { $set: { title: params.title } })
+}
+```

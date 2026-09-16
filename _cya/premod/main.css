@@ -1,0 +1,13 @@
+/**
+ * Author: Karmil Asgarally - INTELLEKTRA © 2026
+ * Global client styles
+ */
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}

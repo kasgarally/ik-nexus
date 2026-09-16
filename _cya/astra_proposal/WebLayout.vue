@@ -23,19 +23,6 @@ const items = [
   ['reviews', 'Reviews', 'mdi-checkbox-marked-outline', '/reviews'],
   ['correspondence', 'Correspondence', 'mdi-email-outline', '/correspondence'],
   ['reports', 'Reports', 'mdi-chart-box-outline', '/reports'],
-  ['overview', 'Overview', 'mdi-home-outline', '/governance'],
-  ['risks', 'Risks', 'mdi-alert-outline', '/risks'],
-  ['incidents', 'Incidents', 'mdi-alert-circle-outline', '/incidents'],
-  ['controls', 'Controls', 'mdi-shield-check-outline', '/controls'],
-  ['policies', 'Policies', 'mdi-file-document-outline', '/policies'],
-  ['approvals', 'Approvals', 'mdi-checkbox-marked-outline', '/approvals'],
-  ['overview', 'Overview', 'mdi-home-outline', '/erp'],
-  ['receivables', 'Receivables', 'mdi-file-document-outline', '/receivables/invoices/new'],
-  ['payables', 'Payables', 'mdi-wallet-outline', '/payables'],
-  ['accounting', 'Accounting', 'mdi-chart-box-outline', '/accounting'],
-  ['expenses', 'Expenses', 'mdi-credit-card-outline', '/expenses'],
-  ['payroll', 'Payroll', 'mdi-account-group-outline', '/payroll'],
-  ['reports', 'Reports', 'mdi-chart-bar', '/reports'],
 ]
 </script>
 <template>

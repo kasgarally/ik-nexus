@@ -10,6 +10,12 @@ import Entry from './Entry.vue'
 import FilesTest from './FilesTest.vue'
 import ListsTest from './ListsTest.vue'
 import Onboarding from './Onboarding.vue'
+import WebLayout from './layouts/WebLayout.vue'
+import SubmissionsHeading from './SubmissionsHeading.vue'
+import SubmissionsRegister from './SubmissionsRegister.vue'
+import SubmissionContext from './SubmissionContext.vue'
+import GovernanceDashboard from './GovernanceDashboard.vue'
+import InvoicePage from './InvoicePage.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -53,6 +59,28 @@ export const router = createRouter({
       },
       meta: { layout: 'web', context: true },
     },
+    {
+      path: '/submissions',
+      name: 'submissions',
+      components: {
+        default: SubmissionsRegister,
+        heading: SubmissionsHeading,
+        context: SubmissionContext,
+      },
+      meta: { layout: 'web' },
+    },
+    {
+      path: '/governance',
+      name: 'governance',
+      component: GovernanceDashboard,
+      meta: { layout: 'web' },
+    },
+    {
+      path: '/receivables/invoices/new',
+      name: 'invoice',
+      component: InvoicePage,
+      meta: { layout: 'web' },
+    }
   ],
 })
 

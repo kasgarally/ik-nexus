@@ -38,7 +38,7 @@ export const vuetifyConfig = {
       lighten: 2,
       darken: 2,
     },
-    transition: true,
+    transition: false,
     utilities: true,
     themes: {
       light: {
@@ -175,17 +175,14 @@ export const vuetifyConfig = {
     VTextField: {
       variant: 'outlined',
       density: 'comfortable',
-      color: 'primary',
     },
     VSelect: {
       variant: 'outlined',
       density: 'comfortable',
-      color: 'primary',
     },
     VTextarea: {
       variant: 'outlined',
       density: 'comfortable',
-      color: 'primary',
     },
     VNavigationDrawer: {
       width: 232,

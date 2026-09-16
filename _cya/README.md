@@ -1,0 +1,1 @@
+This folder is used to store the CYAs (Cover-Your-Ass) for the Nexus project. It contains files that may require restore in the future if things gone wrong or doesn't work. Files here are not important to the project and can be deleted if needed.

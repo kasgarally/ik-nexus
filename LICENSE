@@ -1,0 +1,129 @@
+INTELLEKTRA Proprietary License
+Copyright (c) 2026 INTELLEKTRA. All rights reserved.
+Author: Karmil Asgarally
+
+NEXUS™ platform and this monorepo (ik-nexus), including without limitation
+all source code, scripts, documentation, designs, configuration, tests,
+Docker and service definitions, and other materials in this repository
+(the "Software"), are confidential proprietary works of INTELLEKTRA.
+
+The Software is not open source. No licence is granted to the public.
+
+1. Ownership
+
+   INTELLEKTRA owns all right, title, and interest in the Software, including
+   copyrights, trade secrets, and any modifications, derivatives, or
+   compilations. Author: Karmil Asgarally. Copyright year: 2026.
+
+   "INTELLEKTRA" and "NEXUS" (including NEXUS™) are names and marks of
+   INTELLEKTRA. This file does not grant any trademark licence.
+
+2. Grant
+
+   Except as INTELLEKTRA has agreed in a separate written contract (employment,
+   contractor, customer, or evaluation agreement), no one may use, copy,
+   modify, merge, publish, distribute, sublicense, sell, or create derivative
+   works of the Software.
+
+   Where such a written contract exists, that contract controls. This LICENSE
+   does not expand those rights.
+
+3. Restrictions
+
+   Unless INTELLEKTRA expressly agrees in writing, you may not:
+
+   (a) copy, reproduce, or republish the Software, in whole or in part;
+   (b) distribute, sublicense, lease, lend, or make the Software available to
+       any third party, including by SaaS, hosting, or "as a service";
+   (c) reverse engineer, decompile, or disassemble the Software except to the
+       limited extent that applicable law prohibits this restriction;
+   (d) remove, alter, or obscure copyright, confidential, or proprietary
+       notices (including file headers that read
+       "Author: Karmil Asgarally - INTELLEKTRA © 2026");
+   (e) use the Software to build a competing product or to train a public
+       model whose purpose is to reproduce the Software;
+   (f) use INTELLEKTRA or NEXUS marks except as needed to identify the
+       Software internally under a valid contract.
+
+4. Confidentiality
+
+   The Software contains trade secrets and confidential information of
+   INTELLEKTRA. Recipients who have access under a contract must protect it
+   with at least the same care they use for their own confidential information,
+   and at least reasonable care. They may disclose it only to personnel
+   who have a need to know and who are bound by confidentiality obligations
+   no less protective than this LICENSE and their contract with INTELLEKTRA.
+
+5. Third-party components
+
+   The Software is distributed together with third-party packages (for
+   example Meteor, Vue, Vuetify, Vue I18n, Pinia, Vue Router, mongodb,
+   pnpm, Playwright, Vitest, and other dependencies declared in package
+   manifests). Those components remain the property of their respective
+   owners and are licensed under their own terms, which are separate from
+   this LICENSE.
+
+   This LICENSE covers INTELLEKTRA's original work and INTELLEKTRA's
+   selection, arrangement, and integration. It does not replace notices
+   required by third-party licences. Those notices must be preserved.
+
+6. Contributions
+
+   If you submit a patch, suggestion, or other contribution to INTELLEKTRA
+   for this repository, you assign (or, where assignment is not effective,
+   exclusively license) all intellectual property in that contribution to
+   INTELLEKTRA, unless a prior written agreement says otherwise. INTELLEKTRA
+   may use the contribution without restriction and without obligation to you.
+
+7. No warranty
+
+   THE SOFTWARE IS PROVIDED BY INTELLEKTRA "AS IS" AND "AS AVAILABLE",
+   WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+   TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE,
+   AND NON-INFRINGEMENT.
+
+   INTELLEKTRA DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE, SECURE,
+   UNINTERRUPTED, OR SUITABLE FOR ANY PARTICULAR REGULATORY OR PRODUCTION USE.
+
+8. Limitation of liability
+
+   TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, INTELLEKTRA AND THE
+   AUTHOR SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
+   CONSEQUENTIAL, PUNITIVE, OR EXEMPLARY DAMAGES, OR FOR LOSS OF PROFITS,
+   REVENUE, DATA, OR BUSINESS, ARISING OUT OF OR RELATED TO THE SOFTWARE OR
+   THIS LICENSE, WHETHER IN CONTRACT, TORT (INCLUDING NEGLIGENCE), OR
+   OTHERWISE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+   INTELLEKTRA'S TOTAL AGGREGATE LIABILITY ARISING OUT OF THE SOFTWARE SHALL
+   NOT EXCEED THE AMOUNT (IF ANY) PAID TO INTELLEKTRA UNDER THE WRITTEN
+   CONTRACT THAT AUTHORISED THE CLAIMANT'S USE, OR ZERO IF THERE IS NO SUCH
+   PAYMENT.
+
+   Some jurisdictions do not allow certain limitations. In those jurisdictions,
+   INTELLEKTRA's liability is limited to the maximum extent permitted by law.
+
+9. Termination
+
+   Any unauthorised use terminates any implied permission immediately.
+   INTELLEKTRA may also terminate access where a contract is breached.
+   On termination you must stop using the Software and destroy copies in
+   your possession, except copies you are legally required to retain, which
+   remain subject to confidentiality.
+
+   Sections 1, 3, 4, 5, 7, 8, 9, and 10 survive termination.
+
+10. General
+
+   This LICENSE is the statement of INTELLEKTRA's copyright and reservation
+   of rights for this repository. It does not create a partnership, and it
+   does not grant a customer licence by itself.
+
+   If a provision is held unenforceable, the remaining provisions remain in
+   effect. INTELLEKTRA's failure to enforce a provision is not a waiver.
+
+   For permission requests, licensing, or security reports, contact
+   INTELLEKTRA through the channel already used for this project, addressed
+   to Karmil Asgarally.
+
+© 2026 INTELLEKTRA. All rights reserved.
+Author: Karmil Asgarally
