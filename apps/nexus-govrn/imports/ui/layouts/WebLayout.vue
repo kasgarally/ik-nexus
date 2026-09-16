@@ -15,7 +15,7 @@ const theme = useTheme()
 const { lgAndUp } = useDisplay()
 const { t } = useI18n()
 const drawer = ref(lgAndUp.value)
-const { companyName, iconDataUrl } = usePublicSetup()
+const { companyName, iconDataUrl, logoDataUrl } = usePublicSetup()
 const title = computed(() => companyName.value || t('brand'))
 
 const hasContext = computed(() => {
@@ -33,6 +33,22 @@ function toggleTheme() {
 
 <template>
   <v-navigation-drawer v-model="drawer">
+    <div class="pa-4">
+      <v-img
+        v-if="logoDataUrl"
+        :src="logoDataUrl"
+        :alt="title"
+        max-height="64"
+        contain
+      />
+      <div v-else class="d-flex align-center ga-3">
+        <v-avatar v-if="iconDataUrl" size="32">
+          <v-img :src="iconDataUrl" :alt="title" />
+        </v-avatar>
+        <span class="text-subtitle-1 font-weight-medium">{{ title }}</span>
+      </div>
+    </div>
+    <v-divider />
     <v-list nav>
       <v-list-item prepend-icon="mdi-home" :title="t('nav.home')" value="home" to="/" />
       <v-list-item prepend-icon="mdi-paperclip" :title="t('nav.filesTest')" value="filesTest" to="/files-test" />

@@ -50,6 +50,19 @@ module.exports = defineConfig(Meteor => {
           },
         ],
       },
+      // Chrome reports a benign ResizeObserver loop when Vuetify remounts
+      // drawer + tables after auth → web. Keep compile errors on the overlay;
+      // hide only that runtime warning so it does not cover the page.
+      devServer: {
+        client: {
+          overlay: {
+            runtimeErrors: function (error) {
+              const message = error && error.message ? error.message : String(error || '');
+              return !/ResizeObserver loop/i.test(message);
+            },
+          },
+        },
+      },
     },
   };
 });

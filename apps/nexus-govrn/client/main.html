@@ -7,6 +7,18 @@ Meteor client shell
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+  <script>
+    // Capture before the Rspack overlay client so Chrome's ResizeObserver loop
+    // cannot be treated as a fatal runtime error.
+    window.addEventListener('error', function (event) {
+      var message = (event && event.message) || (event && event.error && event.error.message) || ''
+      if (typeof message !== 'string' || !/ResizeObserver loop/i.test(message)) {
+        return
+      }
+      event.stopImmediatePropagation()
+      event.preventDefault()
+    }, true)
+  </script>
 </head>
 
 <body>
