@@ -21,7 +21,7 @@ body {
   margin: 0;
 }
 .v-application {
-  font-family: var(--app-font);
+  /* font-family: var(--app-font); */
   font-size: var(--app-body);
   line-height: 1.5;
 }
@@ -40,7 +40,10 @@ body {
   font-weight: 600;
   text-transform: none;
   letter-spacing: normal;
+  /* Shape: do not set border-radius here. Vuetify 4 icon buttons use a circular hover.
+     Uncomment to override for this app (makes icon-button hover square-ish):
   border-radius: 5px;
+  */
 }
 .v-application .v-card {
   border-color: rgb(var(--v-theme-outline));
@@ -103,8 +106,14 @@ body {
   border-radius: 5px;
 }
 .app-navigation .v-list-item__prepend > .v-icon {
-  margin-inline-end: 18px;
+  /* Gap lives on the spacer so LTR and RTL stay aligned. */
+  margin-inline-end: 0;
   opacity: 1;
+}
+
+.app-navigation .v-list-item__prepend > .v-icon ~ .v-list-item__spacer {
+  width: 10px;
+  flex: 0 0 10px;
 }
 .app-nav-footer {
   padding: 16px 20px 24px;

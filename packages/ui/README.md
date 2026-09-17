@@ -17,6 +17,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Use NLocaleSelect](#use-nlocaleselect)
 - [File upload components](#file-upload-components)
 - [List components](#list-components)
+- [Date and time pickers](#date-and-time-pickers)
 - [Setup wizard](#setup-wizard)
 - [Docker](#docker)
 - [Testing](#testing)
@@ -30,6 +31,8 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` / `lists.*` / `setup.*` strings and Vuetify `$vuetify` catalogs
 - `NListItemsEditor` — table of items for one `listKey`, add/edit modal, delete confirm
 - `NListSelect` — `v-select` of active items; `v-model` is the stable `code`
+- `NDatePicker` — readonly text field that opens `v-date-picker`; `v-model` is `YYYY-MM-DD`
+- `NTimePicker` — readonly text field that opens `v-time-picker`; `v-model` is `HH:mm`
 - `NSetupWizard` — first-run `v-stepper-vertical` (company, address, branding, first admin, review)
 - Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `useOwnerFiles`, `useListItems`
 
@@ -61,6 +64,9 @@ src/
     lists/NListItemsEditor.vue
     lists/NListSelect.vue
     lists/useListItems.js
+    pickers/NDatePicker.vue
+    pickers/NTimePicker.vue
+    pickers/dateTime.js
     setup/NSetupWizard.vue
 ```
 
@@ -182,6 +188,29 @@ import { NListItemsEditor, NListSelect } from '@nexus/ui'
 `NListSelect` is for capture forms. It shows **active** items only. The bound value is `code`, not `_id` or a translated title. Changing locale updates labels.
 
 Later product routes such as `/risks/setup/categories` pass `list-key="risks.category"` into the same editor.
+
+## Date and time pickers
+
+```js
+import { NDatePicker, NTimePicker } from '@nexus/ui'
+```
+
+```html
+<n-date-picker v-model="invoiceDate" :min="earliest" :rules="[required]" />
+<n-time-picker v-model="startTime" />
+<n-time-picker v-model="meetingTime" ampm />
+```
+
+Both are a Vuetify text field. Click (or keyboard-activate) the field to open the matching picker. The field shows a locale-formatted value; the bound model stays machine-readable:
+
+| Component | Picker | `v-model` |
+|-----------|--------|-----------|
+| `NDatePicker` | `v-date-picker` | `YYYY-MM-DD` |
+| `NTimePicker` | `v-time-picker` | `HH:mm` (24-hour, even when `ampm` is set) |
+
+Shared props: `label`, `placeholder`, `disabled`, `clearable`, `required`, `rules`, `hideDetails`, `id`, `min`, `max`, `density`. `rules` run against the ISO model, not the formatted text, so comparisons such as “due date ≥ invoice date” stay correct. `NTimePicker` keeps the menu open while the user sets hour and minute; **Done** closes it.
+
+**Colour and shape** are not owned by `@nexus/ui`. Do not hard-code `color` or `rounded` on these widgets. Set `defaults.VDatePicker` and `defaults.VTimePicker` in the Meteor app’s Vuetify config (GovRN: [`vuetify.config.js`](../../apps/nexus-govrn/imports/ui/vuetify.config.js)) so each product can theme pickers independently. Optional `color` / `rounded` props exist only to override one instance.
 
 ## Setup wizard
 

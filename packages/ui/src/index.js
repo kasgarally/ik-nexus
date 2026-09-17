@@ -10,6 +10,8 @@ export { default as NListItemsEditor } from './components/lists/NListItemsEditor
 export { default as NListSelect } from './components/lists/NListSelect.vue'
 export { useListItems } from './components/lists/useListItems.js'
 export { default as NLocaleSelect } from './components/locale/NLocaleSelect.vue'
+export { default as NDatePicker } from './components/pickers/NDatePicker.vue'
+export { default as NTimePicker } from './components/pickers/NTimePicker.vue'
 export { default as NSetupWizard } from './components/setup/NSetupWizard.vue'
 export {
   applyDocumentLocale,

@@ -42,6 +42,14 @@ export default {
     empty: 'No items yet. Sign in as an admin to add some.',
     select: 'Select',
   },
+  pickers: {
+    date: 'Date',
+    time: 'Time',
+    chooseDate: 'Choose date',
+    chooseTime: 'Choose time',
+    done: 'Done',
+    clear: 'Clear',
+  },
   setup: {
     title: 'Set up this application',
     subtitle: 'Company details, branding, and the first administrator. This runs once.',

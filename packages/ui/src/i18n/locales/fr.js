@@ -42,6 +42,14 @@ export default {
     empty: 'Aucun élément. Connectez-vous en tant qu’administrateur pour en ajouter.',
     select: 'Sélectionner',
   },
+  pickers: {
+    date: 'Date',
+    time: 'Heure',
+    chooseDate: 'Choisir une date',
+    chooseTime: 'Choisir une heure',
+    done: 'OK',
+    clear: 'Effacer',
+  },
   setup: {
     title: 'Configurer cette application',
     subtitle: 'Société, identité visuelle et premier administrateur. Cette étape n’a lieu qu’une fois.',

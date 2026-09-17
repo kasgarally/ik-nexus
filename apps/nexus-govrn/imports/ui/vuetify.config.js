@@ -158,17 +158,19 @@ export const vuetifyConfig = {
       ripple: true,
     },
     VAppBar: {
-      flat: true,
+      // flat: true,
       color: 'surface',
     },
     VBtn: {
-      elevation: 0,
+      // elevation: 0,
       style: 'text-transform: none; letter-spacing: normal;',
-      variant: 'flat',
-      rounded: 'lg',
+      // variant: 'flat',
+      // Shape: leave unset so Vuetify 4 icon buttons (nav burger, icon) stay circular on hover.
+      // Uncomment to override for this app:
+      // rounded: 'lg',
     },
     VCard: {
-      elevation: 0,
+      // elevation: 0,
       border: true,
       rounded: 'lg',
     },
@@ -186,6 +188,17 @@ export const vuetifyConfig = {
       variant: 'outlined',
       density: 'comfortable',
       color: 'primary',
+    },
+    // NDatePicker / NTimePicker leave color and shape unset so these apply.
+    VDatePicker: {
+      color: 'primary',
+      rounded: 'lg',
+      // elevation: 0,
+    },
+    VTimePicker: {
+      color: 'primary',
+      rounded: 'lg',
+      // elevation: 0,
     },
     VNavigationDrawer: {
       width: 232,
