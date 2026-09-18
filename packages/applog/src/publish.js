@@ -1,6 +1,6 @@
 /**
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
- * Recent audit rows for admin and superadmin only
+ * Recent audit rows for superadmin only (full log visibility)
  */
 import {
   DEFAULT_RECENT_LIMIT,

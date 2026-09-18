@@ -31,7 +31,7 @@ The collection name is fixed (`nexus_applog`), like `nexus_files`. There is no U
 - `Applog.runAsSystem` — mark startup/seed/first-run writes as `actorId: 'SYSTEM'`, `actorKind: 'SYSTEM'`
 - `Applog.runAsAgent(agentId, fn)` — later: AI agents (`actorKind: 'agent'`, `actorId` is the agent `_id`)
 - `Applog.runAs({ actorId, actorKind }, fn)` — nested actor frame for any kind
-- Publication `applog.recent` for `superadmin` and `admin` only
+- Publication `applog.recent` for `superadmin` only (full audit visibility)
 - Client helper `Applog.subscribeRecent`
 
 This package must **not** import `meteor/*`. The app injects Meteor APIs.
@@ -130,7 +130,7 @@ A multi-document write is capped at 100 audited rows.
 
 `applog.recent` accepts `{ limit, collection, docId }`. Limit defaults to 50 (max 200).
 
-Only `Roles.userIsInRoleAsync(userId, ['superadmin', 'admin'])` receives rows. Until those roles exist in the app, the publication is empty.
+Only `Roles.userIsInRoleAsync(userId, 'superadmin')` receives rows. `admin` does not see the full log. Until the role exists in the app, the publication is empty.
 
 ```javascript
 Applog.subscribeRecent({ collection: 'nexus_files', limit: 50 })

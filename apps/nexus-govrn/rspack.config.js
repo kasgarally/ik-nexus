@@ -16,6 +16,7 @@ module.exports = defineConfig(Meteor => {
         symlinks: false,
         alias: {
           '@mdi/font': path.resolve(__dirname, 'node_modules/@mdi/font'),
+          '@nexus/accounts': path.resolve(__dirname, 'node_modules/@nexus/accounts'),
           '@nexus/applog': path.resolve(__dirname, 'node_modules/@nexus/applog'),
           '@nexus/files': path.resolve(__dirname, 'node_modules/@nexus/files'),
           '@nexus/lists': path.resolve(__dirname, 'node_modules/@nexus/lists'),

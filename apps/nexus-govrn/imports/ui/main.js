@@ -3,6 +3,7 @@
  * Vue client bootstrap
  */
 import { Meteor } from 'meteor/meteor'
+import { registerNexusAccounts } from '/imports/api/nexusAccounts.js'
 import { registerNexusApplog } from '/imports/api/nexusApplog.js'
 import { registerNexusFiles } from '/imports/api/nexusFiles.js'
 import { registerNexusLists } from '/imports/api/nexusLists.js'
@@ -23,6 +24,7 @@ import './main.css'
 registerNexusFiles()
 registerNexusLists()
 registerNexusSetup()
+registerNexusAccounts()
 registerNexusApplog()
 registerBooksClient()
 

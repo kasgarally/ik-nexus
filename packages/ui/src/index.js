@@ -2,6 +2,11 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * @nexus/ui public exports
  */
+export { default as NAccountForm } from './components/accounts/NAccountForm.vue'
+export { default as NAccountsRegister } from './components/accounts/NAccountsRegister.vue'
+export { default as NSettingsHeading } from './components/accounts/NSettingsHeading.vue'
+export { default as NSettingsWorkspace } from './components/accounts/NSettingsWorkspace.vue'
+export { useAccountsUsers } from './components/accounts/useAccountsUsers.js'
 export { default as NAdminConfigCard } from './components/admin/NAdminConfigCard.vue'
 export { default as NModal } from './components/dialogs/NModal.vue'
 export { default as NRemoveIcon } from './components/dialogs/NRemoveIcon.vue'

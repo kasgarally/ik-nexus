@@ -1,0 +1,20 @@
+{
+  "name": "@nexus/accounts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "User accounts, suspend, and role assignment for NEXUS Meteor apps",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node ../../scripts/run-vitest.mjs packages/accounts/tests"
+  },
+  "dependencies": {
+    "@nexus/setup": "workspace:*"
+  }
+}

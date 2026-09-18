@@ -13,6 +13,7 @@
   "dependencies": {
     "@babel/runtime": "^7.23.5",
     "@mdi/font": "^7.4.47",
+    "@nexus/accounts": "file:../../packages/accounts",
     "@nexus/applog": "file:../../packages/applog",
     "@nexus/files": "file:../../packages/files",
     "@nexus/lists": "file:../../packages/lists",

@@ -1,29 +1,27 @@
 /**
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
- * Create Books roles and grant them to signed-in users
+ * Create Books roles and grant signed-in readers (writers are assigned in Settings)
  */
 import { Accounts } from 'meteor/accounts-base'
 import { Meteor } from 'meteor/meteor'
 import { Roles } from 'meteor/roles'
+import { DEMO_ADMIN_EMAIL } from '/imports/api/demoAdmin.js'
+import {
+  BOOK_READER_ROLES,
+  BOOK_WRITER_ROLES,
+  bookRoleCatalog,
+} from '../roleCatalog.js'
 
-export const BOOK_READER_ROLES = ['books.reader', 'files.books.download']
-export const BOOK_WRITER_ROLES = [
-  'books.create',
-  'books.update',
-  'books.remove',
-  'files.books.upload',
-  'files.books.remove',
-]
-export const ALL_BOOK_ROLES = [...BOOK_WRITER_ROLES, ...BOOK_READER_ROLES]
+export { BOOK_READER_ROLES, BOOK_WRITER_ROLES, bookRoleCatalog }
 
 export async function ensureBookRoles() {
-  for (const role of ALL_BOOK_ROLES) {
-    await Roles.createRoleAsync(role, { unlessExists: true })
+  for (const role of bookRoleCatalog.roles) {
+    await Roles.createRoleAsync(role.name, { unlessExists: true })
   }
 
   const users = await Meteor.users.find({}, { fields: { _id: 1 } }).fetchAsync()
   for (const user of users) {
-    await grantBookRolesForUser(user._id)
+    await grantBookReaderRoles(user._id)
   }
 }
 
@@ -33,14 +31,21 @@ export function registerBookRoleHooks() {
     if (!userId) {
       return
     }
-    await grantBookRolesForUser(userId)
+    await grantBookReaderRoles(userId)
   })
 }
 
-async function grantBookRolesForUser(userId) {
-  await Roles.addUsersToRolesAsync(userId, BOOK_READER_ROLES)
-  const isAdmin = await Roles.userIsInRoleAsync(userId, ['superadmin', 'admin'])
-  if (isAdmin) {
-    await Roles.addUsersToRolesAsync(userId, BOOK_WRITER_ROLES)
+export async function grantDemoBookWriters() {
+  if (Meteor.settings?.public?.devSeedAdmin !== true) {
+    return
   }
+  const user = await Meteor.users.findOneAsync({ 'emails.address': DEMO_ADMIN_EMAIL })
+  if (!user) {
+    return
+  }
+  await Roles.addUsersToRolesAsync(user._id, BOOK_WRITER_ROLES)
+}
+
+async function grantBookReaderRoles(userId) {
+  await Roles.addUsersToRolesAsync(userId, BOOK_READER_ROLES)
 }

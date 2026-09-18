@@ -8,6 +8,7 @@ import { WebApp } from 'meteor/webapp'
 import { Applog } from '@nexus/applog'
 import { seedDemoAdmin } from '/imports/api/demoAdmin.js'
 import { seedFilesDemoParents } from '/imports/api/filesDemoParents.js'
+import { registerNexusAccounts } from '/imports/api/nexusAccounts.js'
 import { registerNexusApplog } from '/imports/api/nexusApplog.js'
 import { registerNexusFiles } from '/imports/api/nexusFiles.js'
 import { registerNexusLists } from '/imports/api/nexusLists.js'
@@ -18,6 +19,7 @@ import '/imports/api/publishUserRoles.js'
 registerNexusFiles({ MongoInternals, WebApp })
 registerNexusLists()
 registerNexusSetup()
+registerNexusAccounts()
 registerNexusApplog()
 
 Meteor.startup(async () => {

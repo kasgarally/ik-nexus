@@ -6,9 +6,15 @@ import { Meteor } from 'meteor/meteor'
 import { Applog } from '@nexus/applog'
 import { Books } from './collections/books.js'
 import { registerBookFileOwners } from './server/files.js'
-import { ensureBookRoles, registerBookRoleHooks } from './server/roles.js'
+import { registerBookRoleCatalog } from './roleCatalog.js'
+import {
+  ensureBookRoles,
+  grantDemoBookWriters,
+  registerBookRoleHooks,
+} from './server/roles.js'
 
 export function registerBooks() {
+  registerBookRoleCatalog()
   registerBookFileOwners()
   Applog.registerCollection({
     name: 'books',
@@ -18,5 +24,6 @@ export function registerBooks() {
 
   Meteor.startup(async () => {
     await ensureBookRoles()
+    await grantDemoBookWriters()
   })
 }

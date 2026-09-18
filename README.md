@@ -83,7 +83,7 @@ If a previous `meteor npm start` was left running after the terminal closed, por
 
 ## Shared JS
 
-Reusable Vue components (`NLocaleSelect`, `NFileUpload`, `NFileReplace`, `NSetupWizard`, `NListItemsEditor`, `NDatePicker`, `NTimePicker`) and i18n bootstrap live in [`packages/ui`](packages/ui) (`@nexus/ui`). Their `N` prefix identifies NEXUS components: import `NFileUpload` and use it as `<n-file-upload>`. GridFS uploads live in [`packages/files`](packages/files). Application audit lives in [`packages/applog`](packages/applog). Translatable select-list items live in [`packages/lists`](packages/lists). First-run install lives in [`packages/setup`](packages/setup).
+Reusable Vue components (`NLocaleSelect`, `NFileUpload`, `NFileReplace`, `NSetupWizard`, `NListItemsEditor`, `NDatePicker`, `NTimePicker`, `NSettingsWorkspace`, `NAccountsRegister`) and i18n bootstrap live in [`packages/ui`](packages/ui) (`@nexus/ui`). Their `N` prefix identifies NEXUS components: import `NFileUpload` and use it as `<n-file-upload>`. GridFS uploads live in [`packages/files`](packages/files). Application audit lives in [`packages/applog`](packages/applog). Translatable select-list items live in [`packages/lists`](packages/lists). First-run install lives in [`packages/setup`](packages/setup). Account admin DDP lives in [`packages/accounts`](packages/accounts).
 
 The pnpm workspace is **`packages/*` only** ([`pnpm-workspace.yaml`](pnpm-workspace.yaml)). Future JS libs (API clients, shared helpers) go here too. Python does not.
 

@@ -4,7 +4,7 @@
  */
 export const METADATA_COLLECTION = 'nexus_applog'
 export const PUBLICATION_RECENT = 'applog.recent'
-export const READ_ROLES = Object.freeze(['superadmin', 'admin'])
+export const READ_ROLES = Object.freeze(['superadmin'])
 export const DEFAULT_RECENT_LIMIT = 50
 export const MAX_RECENT_LIMIT = 200
 export const MAX_DOCS_PER_WRITE = 100

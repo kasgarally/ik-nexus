@@ -20,6 +20,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Date and time pickers](#date-and-time-pickers)
 - [Modal and remove confirm](#modal-and-remove-confirm)
 - [Admin configuration card](#admin-configuration-card)
+- [Settings and accounts](#settings-and-accounts)
 - [Setup wizard](#setup-wizard)
 - [Docker](#docker)
 - [Testing](#testing)
@@ -39,7 +40,11 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `NModal` — `v-dialog` with title, close, default slot, optional activator; expose `open` / `close`
 - `NRemoveIcon` — error delete icon plus a Vuetify confirm dialog (no SweetAlert)
 - `NAdminConfigCard` — context-pane card of admin list/setup links (`title` + `items`)
-- Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `useOwnerFiles`, `useListItems`
+- `NSettingsWorkspace` — settings landing cards
+- `NSettingsHeading` — Settings / Accounts page heading
+- `NAccountsRegister` — admin user table
+- `NAccountForm` — create/edit user, reset password, suspend, assign roles
+- Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `useOwnerFiles`, `useListItems`, `useAccountsUsers`
 
 Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`. First-run install lives in `@nexus/setup`.
 
@@ -75,6 +80,10 @@ src/
     dialogs/NModal.vue
     dialogs/NRemoveIcon.vue
     admin/NAdminConfigCard.vue
+    accounts/NSettingsWorkspace.vue
+    accounts/NSettingsHeading.vue
+    accounts/NAccountsRegister.vue
+    accounts/NAccountForm.vue
     setup/NSetupWizard.vue
 ```
 
@@ -94,6 +103,7 @@ That does not install or hoist Meteor apps. Do not add `apps/` to [`pnpm-workspa
 
 ```json
 "@nexus/ui": "file:../../packages/ui",
+"@nexus/accounts": "file:../../packages/accounts",
 "@nexus/files": "file:../../packages/files",
 "@nexus/lists": "file:../../packages/lists",
 "@nexus/setup": "file:../../packages/setup"
@@ -111,7 +121,7 @@ resolve: {
 
 Do not alias `vuetify` to its package root — that breaks `vuetify/styles` and other subpaths.
 
-The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md). Call `Lists.registerWithMeteor` before `NListItemsEditor` / `NListSelect`. See [`packages/lists/README.md`](../lists/README.md). Call `Setup.registerWithMeteor` before `NSetupWizard`. See [`packages/setup/README.md`](../setup/README.md).
+The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md). Call `Lists.registerWithMeteor` before `NListItemsEditor` / `NListSelect`. See [`packages/lists/README.md`](../lists/README.md). Call `Setup.registerWithMeteor` before `NSetupWizard`. See [`packages/setup/README.md`](../setup/README.md). Call `Accounts.registerWithMeteor` on `@nexus/accounts` before `NAccountsRegister` / `NAccountForm`. See [`packages/accounts/README.md`](../accounts/README.md).
 
 ## Create the i18n instance
 
@@ -257,6 +267,14 @@ import { NAdminConfigCard } from '@nexus/ui'
 ```
 
 `items` is `{ key, title, to, icon?, subtitle? }[]`. The parent gates visibility (`superadmin` / `admin`); Vue `v-if` is display only. Uses the app’s `app-context-card` / `app-section-title` classes so the card matches the context pane.
+
+## Settings and accounts
+
+```js
+import { NAccountForm, NAccountsRegister, NSettingsHeading, NSettingsWorkspace } from '@nexus/ui'
+```
+
+The app mounts these as named views on `/settings` and `/settings/accounts`. They call `@nexus/accounts` helpers. There is no `meteor/*` in the SFCs. Vue `v-if` on admin roles is display only.
 
 ## Setup wizard
 

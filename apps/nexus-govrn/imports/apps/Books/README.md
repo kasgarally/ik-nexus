@@ -74,15 +74,15 @@ Row click: `router.push({ name: 'books', params: { id: row._id } })`. Create ope
 
 | Role | Who | What |
 |------|-----|------|
-| `books.reader` | every signed-in user | label; publications use `this.userId` |
-| `books.create` | `superadmin` / `admin` | New button + `books.insert` |
-| `books.update` | `superadmin` / `admin` | pencil + `books.update` |
-| `books.remove` | `superadmin` / `admin` | `NRemoveIcon` + `books.remove` |
-| `files.books.download` | every signed-in user | file metadata and HTTP GET |
-| `files.books.upload` / `files.books.remove` | writers | cover and PDF |
+| `books.reader` | every signed-in user (auto-grant) | label; publications use `this.userId` |
+| `books.create` | assigned in Settings | New button + `books.insert` |
+| `books.update` | assigned in Settings | pencil + `books.update` |
+| `books.remove` | assigned in Settings | `NRemoveIcon` + `books.remove` |
+| `files.books.download` | every signed-in user (auto-grant) | file metadata and HTTP GET |
+| `files.books.upload` / `files.books.remove` | assigned in Settings | cover and PDF |
 | `superadmin` / `admin` | list writers | Configuration card + `NListItemsEditor` |
 
-`server/roles.js` creates these roles, grants readers to all users, and grants writers to `superadmin` / `admin`. List writes stay on the package contract (`superadmin` or `admin`).
+`roleCatalog.js` registers these names with `@nexus/accounts`. Reader roles are still granted on login. Writer roles are assigned in Settings (demo seed grants writers to `admin@localhost`). List writes stay on the package contract (`superadmin` or `admin`).
 
 Heading buttons use `useUserRole` from `/imports/ui/useUserRole.js`. Methods still enforce the same roles. The client only sees those roles if [`imports/api/publishUserRoles.js`](../../api/publishUserRoles.js) is imported on the server (current user’s `role-assignment` rows).
 
