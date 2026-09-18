@@ -110,6 +110,10 @@ docker/certs/**/*.pem
 docker/certs/**/*.crt
 docker/certs/**/*.key
 
+# --- Local design tooling ---
+tooling/penpot/.env
+tooling/penpot/backups/
+
 # --- Misc ---
 *.tmp
 *.temp

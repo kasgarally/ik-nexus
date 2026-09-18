@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "penpot": {
+      "url": "http://localhost:9001/mcp/stream?userToken=eyJhbGciOiJBMjU2S1ciLCJlbmMiOiJBMjU2R0NNIn0.3ruMMtWqAjVkDzbzHqxMH9cueBAYnJxgftniiHzXC96LSnR26DKpWA.zATPU4cmHhmAK4TW.06z_F0zjMmIXOErTraM63CfQCu97_szVKj1GNlxy2rfy2WjrtsR8UaqDJmfbJv10Tf9Dy-Y7fmzT1CIHK7KpLHlR7KlotimdEBkyiytPNA3oBaEcGQqL_Npfd5BOiWON6g_Czft4pi24JxlDJ_1V9-cwcA6I5WhHFwn6UQrPWYlV_wdbWHqVuVZjpS8UhMhZm-ZMbsgKPiYQ.WzlvY09vcUJwLO_b1qXnRQ"
+    }
+  }
+}

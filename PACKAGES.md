@@ -78,8 +78,9 @@ flowchart TB
 | [`apps/*`](apps/nexus-govrn) | Meteor products (GovRN today) | `meteor npm install` **in that app** |
 | [`services/`](services/README.md) | Python/Arelle, DevOps sidecars | venv / Compose — **not** packages |
 | [`docker/`](docker/README.md) | Compose stacks and the Meteor image | copies `packages/` then `meteor npm ci` |
+| [`tooling/`](tooling/penpot/README.md) | Local development aids such as Penpot | isolated Compose stacks — **not** packages |
 
-A folder belongs under `packages/` when it is JavaScript that more than one Meteor app (or several sub-apps in one app) will import. Python, certs, and Compose files do not.
+A folder belongs under `packages/` when it is JavaScript that more than one Meteor app (or several sub-apps in one app) will import. Python, certs, Compose files, and design tooling do not.
 
 ## Package catalog
 
@@ -105,6 +106,7 @@ Same split as [`README.md`](README.md#install-worlds) and [`PNPM.md`](PNPM.md). 
 | Shared JS | `packages/*` | `pnpm install` at the repo root | [`pnpm-lock.yaml`](pnpm-lock.yaml) |
 | Meteor apps | `apps/*` | `meteor npm install` in that app | each app’s `package-lock.json` |
 | Non-JS | `services/`, `docker/` | venv / Compose | not pnpm |
+| Development tooling | `tooling/*` | Docker Compose via root scripts | not pnpm |
 
 [`pnpm-workspace.yaml`](pnpm-workspace.yaml) is only:
 

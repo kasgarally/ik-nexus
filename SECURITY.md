@@ -160,6 +160,7 @@ Demo owner `demo` in GovRN is anonymous on purpose for `/files-test`. Do not cop
 |------|------|
 | [`apps/*/settings.json`](apps/nexus-govrn) | Generated, gitignored. Author [`settings.jsonc`](apps/nexus-govrn/settings.jsonc). |
 | `.env`, `*.pem`, `*.key`, `credentials.json` | gitignored. Docker certs: only `.gitkeep` is committed. |
+| Penpot secrets and backups | `tooling/penpot/.env` and `tooling/penpot/backups/` are gitignored. Never commit an MCP key or its token-bearing URL. |
 | `ROOT_URL` | HTTPS in production. See [docker/README.md](docker/README.md#production--digitalocean). |
 | Dev seed credentials | [`demoSeedData.js`](apps/nexus-govrn/imports/api/demoSeedData.js) is for local `meteor reset` only. Never enable `devSeedAdmin` on a public host. |
 
@@ -185,6 +186,8 @@ Do not put company secrets, license keys, or Mongo URIs in `Meteor.settings.publ
 - [`.dockerignore`](.dockerignore) keeps `.git`, `.meteor/local`, `node_modules`, caches, and TLS PEMs out of the context.
 - NGINX terminates TLS. HTTP redirects to HTTPS when certs exist. Production `ROOT_URL` must be the public `https://` URL.
 - Mongo data lives on a named volume. `docker:down --volumes` wipes it — do not run that on a host that holds real data unless the operator asked.
+- [Penpot tooling](tooling/penpot/README.md) binds only to `127.0.0.1` and uses HTTP-only development flags. It is not a production stack and must not be exposed to the network.
+- Penpot MCP keys are personal credentials. Keep them in user-local Cursor configuration or an approved password manager, start with read-only tools, and disconnect the active browser plugin when design writes are not intended.
 
 ## What not to do
 
@@ -195,6 +198,7 @@ Do not put company secrets, license keys, or Mongo URIs in `Meteor.settings.publ
 - Do not enable `allowAnonymous` on a product owner type to “make the demo work”.
 - Do not fetch caller-supplied URLs on the server.
 - Do not commit PEMs, `.env`, or `settings.json`.
+- Do not commit Penpot MCP keys, token-bearing MCP URLs, database dumps, or asset-volume backups.
 - Do not treat a Vue `v-if` as authorization.
 - Do not “minify” access checks into an unreadable boolean chain. Extract `canUploadToOwner` and keep the `why` comment.
 
