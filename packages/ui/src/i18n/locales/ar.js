@@ -3,6 +3,18 @@
  * Arabic core locale-picker messages
  */
 export default {
+  ui: {
+    modal: {
+      close: 'إغلاق',
+    },
+    remove: {
+      aria: 'حذف',
+      title: 'حذف هذا العنصر؟',
+      text: 'لا يمكن التراجع عن هذا الإجراء.',
+      cancel: 'إلغاء',
+      confirm: 'حذف',
+    },
+  },
   locale: {
     label: 'اللغة',
     en: 'الإنجليزية',

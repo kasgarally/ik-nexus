@@ -6,11 +6,16 @@
  * Core locale picker strings and $vuetify catalogs come from @nexus/ui.
  */
 import { createNexusI18n } from '@nexus/ui'
+import { bookMessages } from '/imports/apps/Books/client/i18n.js'
 import ar from './ar.js'
 import en from './en.js'
 import fr from './fr.js'
 
 export const i18n = createNexusI18n({
   storageKey: 'nexus-govrn-locale',
-  messages: { en, fr, ar },
+  messages: {
+    en: { ...en, ...bookMessages.en },
+    fr: { ...fr, ...bookMessages.fr },
+    ar: { ...ar, ...bookMessages.ar },
+  },
 })

@@ -3,11 +3,20 @@
  * HTTP GET so a new tab can stream a GridFS file
  *
  * WebApp is injected. This package never imports meteor/webapp.
+ * Product owners require a resume cookie plus the download role.
  */
 import { DOWNLOAD_PATH_PREFIX } from './constants.js'
+import { userHasRole } from './methods.js'
 import { getRegisteredOwner } from './owners.js'
+import { userIdFromRequest } from './httpAuth.js'
 
-export function registerDownloadRoute({ WebApp, filesCollection, storageAdapter }) {
+export function registerDownloadRoute({
+  WebApp,
+  Meteor,
+  Roles,
+  filesCollection,
+  storageAdapter,
+}) {
   WebApp.connectHandlers.use((req, res, next) => {
     const fileId = readDownloadFileId(req)
     if (!fileId) {
@@ -18,7 +27,10 @@ export function registerDownloadRoute({ WebApp, filesCollection, storageAdapter 
     streamDownload({
       fileId,
       method: req.method,
+      req,
       res,
+      Meteor,
+      Roles,
       filesCollection,
       storageAdapter,
     }).catch((error) => {
@@ -50,7 +62,16 @@ function readDownloadFileId(req) {
   return fileId
 }
 
-async function streamDownload({ fileId, method, res, filesCollection, storageAdapter }) {
+async function streamDownload({
+  fileId,
+  method,
+  req,
+  res,
+  Meteor,
+  Roles,
+  filesCollection,
+  storageAdapter,
+}) {
   const fileDocument = await findDocument(filesCollection, fileId)
   if (!fileDocument) {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
@@ -59,11 +80,20 @@ async function streamDownload({ fileId, method, res, filesCollection, storageAda
   }
 
   const owner = getRegisteredOwner(fileDocument.ownerType)
-  // Authenticated HTTP download comes later with accounts. Anonymous owners are open.
   if (!owner?.allowAnonymous) {
-    res.writeHead(401, { 'Content-Type': 'text/plain; charset=utf-8' })
-    res.end('Authentication required')
-    return
+    const userId = await userIdFromRequest(req, Meteor)
+    if (!userId) {
+      res.writeHead(401, { 'Content-Type': 'text/plain; charset=utf-8' })
+      res.end('Authentication required')
+      return
+    }
+
+    const canDownload = await userHasRole(Roles, userId, owner.roles.download)
+    if (!canDownload) {
+      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' })
+      res.end('Missing download role')
+      return
+    }
   }
 
   const headers = {

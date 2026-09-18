@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import { useDisplay, useTheme } from "vuetify";
 import { useI18n } from "vue-i18n";
 import { NLocaleSelect } from "@nexus/ui";
+import { navSections } from "../nav.js";
 import { usePublicSetup } from "../usePublicSetup.js";
 const route = useRoute();
 const theme = useTheme();
@@ -25,32 +26,6 @@ const title = computed(() => companyName.value || "INTELLEKTRA");
 const hasContext = computed(() =>
   route.matched.some((record) => record.components?.context),
 );
-const items = [
-  ["overview", "Overview", "mdi-home-outline", "/"],
-  ["firms", "Firms", "mdi-office-building-outline", "/firms"],
-  ["submissions", "Submissions", "mdi-file-document-outline", "/submissions"],
-  ["reviews", "Reviews", "mdi-checkbox-marked-outline", "/reviews"],
-  ["correspondence", "Correspondence", "mdi-email-outline", "/correspondence"],
-  ["reports", "Reports", "mdi-chart-box-outline", "/reports"],
-  ["overview", "Overview", "mdi-home-outline", "/governance"],
-  ["risks", "Risks", "mdi-alert-outline", "/risks"],
-  ["incidents", "Incidents", "mdi-alert-circle-outline", "/incidents"],
-  ["controls", "Controls", "mdi-shield-check-outline", "/controls"],
-  ["policies", "Policies", "mdi-file-document-outline", "/policies"],
-  ["approvals", "Approvals", "mdi-checkbox-marked-outline", "/approvals"],
-  ["overview", "Overview", "mdi-home-outline", "/erp"],
-  [
-    "receivables",
-    "Receivables",
-    "mdi-file-document-outline",
-    "/receivables/invoices/new",
-  ],
-  ["payables", "Payables", "mdi-wallet-outline", "/payables"],
-  ["accounting", "Accounting", "mdi-chart-box-outline", "/accounting"],
-  ["expenses", "Expenses", "mdi-credit-card-outline", "/expenses"],
-  ["payroll", "Payroll", "mdi-account-group-outline", "/payroll"],
-  ["reports", "Reports", "mdi-chart-bar", "/reports"],
-];
 </script>
 <template>
   <!-- Your existing root component owns the single v-app. -->
@@ -89,14 +64,19 @@ const items = [
       color="primary"
       :aria-label="label('nav.main', 'Main navigation')"
     >
-      <v-list-item
-        v-for="[key, fallback, icon, path] in items"
-        :key="key"
-        :to="path"
-        :exact="path === '/'"
-        :title="label('nav.' + key, fallback)"
-        :prepend-icon="icon"
-      />
+      <template v-for="section in navSections" :key="section.key">
+        <v-list-subheader>
+          {{ label("nav.section." + section.key, section.fallback) }}
+        </v-list-subheader>
+        <v-list-item
+          v-for="item in section.items"
+          :key="section.key + '-' + item.key"
+          :to="item.path"
+          :exact="item.path === '/'"
+          :title="label('nav.' + item.key, item.fallback)"
+          :prepend-icon="item.icon"
+        />
+      </template>
     </v-list>
     <template #append>
       <v-list nav>

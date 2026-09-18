@@ -2,7 +2,7 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * @nexus/files public exports
  */
-import { downloadUrl, remove, subscribeForOwner } from './helpers.js'
+import { downloadUrl, remove, subscribeForOwner, syncDownloadCookie } from './helpers.js'
 import { defineOwner } from './owners.js'
 import { getFilesCollection, registerWithMeteor } from './register.js'
 import { upload } from './upload.js'
@@ -24,7 +24,7 @@ export {
   STORAGE_KIND,
 } from './constants.js'
 
-export { defineOwner, downloadUrl, registerWithMeteor, remove, subscribeForOwner, upload }
+export { defineOwner, downloadUrl, registerWithMeteor, remove, subscribeForOwner, syncDownloadCookie, upload }
 
 export const Files = {
   registerWithMeteor,
@@ -33,6 +33,7 @@ export const Files = {
   remove,
   downloadUrl,
   subscribeForOwner,
+  syncDownloadCookie,
   get collection() {
     return getFilesCollection()
   },

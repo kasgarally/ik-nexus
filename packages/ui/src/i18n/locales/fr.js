@@ -3,6 +3,18 @@
  * French core locale-picker messages
  */
 export default {
+  ui: {
+    modal: {
+      close: 'Fermer',
+    },
+    remove: {
+      aria: 'Supprimer',
+      title: 'Supprimer cet élément ?',
+      text: 'Cette action est définitive.',
+      cancel: 'Annuler',
+      confirm: 'Supprimer',
+    },
+  },
   locale: {
     label: 'Langue',
     en: 'Anglais',

@@ -184,7 +184,12 @@ window.open(Files.downloadUrl(fileId), '_blank', 'noopener')
 
 ## HTTP download
 
-`GET /nexus-files/:fileId` streams the GridFS blob with `Content-Disposition: inline` so the browser can open it in a new tab. Authenticated HTTP comes later; today only `allowAnonymous` owners are served.
+`GET /nexus-files/:fileId` streams the GridFS blob with `Content-Disposition: inline` so the browser can open it in a new tab.
+
+- `allowAnonymous` owners are served without a login.
+- Product owners require the `meteor_login_token` cookie (the raw resume token) and the owner’s `roles.download`. Missing cookie or unknown token → 401. Signed-in without the role → 403.
+
+Call `Files.syncDownloadCookie()` on the client after login (and on logout to clear it) so `<img src="/nexus-files/…">` and `window.open` send the cookie. GovRN does this in `registerNexusFiles`.
 
 ```mermaid
 sequenceDiagram

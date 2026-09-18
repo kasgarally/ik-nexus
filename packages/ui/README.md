@@ -18,6 +18,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [File upload components](#file-upload-components)
 - [List components](#list-components)
 - [Date and time pickers](#date-and-time-pickers)
+- [Modal and remove confirm](#modal-and-remove-confirm)
 - [Setup wizard](#setup-wizard)
 - [Docker](#docker)
 - [Testing](#testing)
@@ -34,6 +35,8 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `NDatePicker` — readonly text field that opens `v-date-picker`; `v-model` is `YYYY-MM-DD`
 - `NTimePicker` — readonly text field that opens `v-time-picker`; `v-model` is `HH:mm`
 - `NSetupWizard` — first-run `v-stepper-vertical` (company, address, branding, first admin, review)
+- `NModal` — `v-dialog` with title, close, default slot, optional activator; expose `open` / `close`
+- `NRemoveIcon` — error delete icon plus a Vuetify confirm dialog (no SweetAlert)
 - Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `useOwnerFiles`, `useListItems`
 
 Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`. First-run install lives in `@nexus/setup`.
@@ -67,6 +70,8 @@ src/
     pickers/NDatePicker.vue
     pickers/NTimePicker.vue
     pickers/dateTime.js
+    dialogs/NModal.vue
+    dialogs/NRemoveIcon.vue
     setup/NSetupWizard.vue
 ```
 
@@ -211,6 +216,28 @@ Both are a Vuetify text field. Click (or keyboard-activate) the field to open th
 Shared props: `label`, `placeholder`, `disabled`, `clearable`, `required`, `rules`, `hideDetails`, `id`, `min`, `max`, `density`. `rules` run against the ISO model, not the formatted text, so comparisons such as “due date ≥ invoice date” stay correct. `NTimePicker` keeps the menu open while the user sets hour and minute; **Done** closes it.
 
 **Colour and shape** are not owned by `@nexus/ui`. Do not hard-code `color` or `rounded` on these widgets. Set `defaults.VDatePicker` and `defaults.VTimePicker` in the Meteor app’s Vuetify config (GovRN: [`vuetify.config.js`](../../apps/nexus-govrn/imports/ui/vuetify.config.js)) so each product can theme pickers independently. Optional `color` / `rounded` props exist only to override one instance.
+
+## Modal and remove confirm
+
+```js
+import { NModal, NRemoveIcon } from '@nexus/ui'
+```
+
+```html
+<n-modal v-model="formOpen" :title="t('books.add')">
+  <frm-book is-modal @close="formOpen = false" />
+</n-modal>
+
+<n-remove-icon
+  :title="t('books.removeTitle')"
+  :text="t('books.removeConfirm', { title: book.title })"
+  @confirm="removeBook"
+/>
+```
+
+`NModal` is a `v-dialog`: title, close button, default slot for a form. Optional `#activator` uses Vuetify’s dialog activator props. `open` / `close` are exposed on the component instance. There is no `meteor/*` in the SFC.
+
+`NRemoveIcon` is an error-coloured `mdi-delete-outline` button. Clicking it opens a confirm dialog (Cancel / Remove). Confirm emits `confirm`. No SweetAlert.
 
 ## Setup wizard
 

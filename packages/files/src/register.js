@@ -49,6 +49,8 @@ export function registerWithMeteor(apis) {
   })
   registerDownloadRoute({
     WebApp: apis.WebApp,
+    Meteor: apis.Meteor,
+    Roles: apis.Roles,
     filesCollection,
     storageAdapter,
   })

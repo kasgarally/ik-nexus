@@ -3,6 +3,18 @@
  * English core locale-picker messages
  */
 export default {
+  ui: {
+    modal: {
+      close: 'Close',
+    },
+    remove: {
+      aria: 'Remove',
+      title: 'Remove this item?',
+      text: 'This cannot be undone.',
+      cancel: 'Cancel',
+      confirm: 'Remove',
+    },
+  },
   locale: {
     label: 'Language',
     en: 'English',

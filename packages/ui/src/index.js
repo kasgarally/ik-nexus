@@ -2,6 +2,8 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * @nexus/ui public exports
  */
+export { default as NModal } from './components/dialogs/NModal.vue'
+export { default as NRemoveIcon } from './components/dialogs/NRemoveIcon.vue'
 export { default as NFileReplace } from './components/files/NFileReplace.vue'
 export { default as NFileUpload } from './components/files/NFileUpload.vue'
 export { useOwnerFiles } from './components/files/useOwnerFiles.js'

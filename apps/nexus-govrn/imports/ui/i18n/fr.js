@@ -11,6 +11,12 @@ export default {
     listsTest: 'Test listes',
     workspace: 'Avec contexte',
     signin: 'Connexion',
+    books: 'Livres',
+    section: {
+      regulator: 'Régulateur',
+      governance: 'Gouvernance',
+      erp: 'ERP',
+    },
   },
   listsTest: {
     title: 'Test listes',

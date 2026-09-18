@@ -2,8 +2,10 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * HTTP GET /nexus-files/:fileId path parse and status codes
  */
+import { createHash } from 'node:crypto'
 import { describe, expect, it, vi } from 'vitest'
 import { registerDownloadRoute } from '../src/http.js'
+import { hashLoginToken, LOGIN_COOKIE_NAME } from '../src/httpAuth.js'
 import { defineOwner } from '../src/owners.js'
 
 function createResponse() {
@@ -25,7 +27,7 @@ function createResponse() {
   }
 }
 
-function createRoute({ filesCollection, storageAdapter } = {}) {
+function createRoute({ filesCollection, storageAdapter, Meteor, Roles } = {}) {
   let handler
   registerDownloadRoute({
     WebApp: {
@@ -35,10 +37,30 @@ function createRoute({ filesCollection, storageAdapter } = {}) {
         },
       },
     },
+    Meteor: Meteor ?? { users: { findOneAsync: async () => null } },
+    Roles: Roles ?? { userIsInRoleAsync: async () => false },
     filesCollection: filesCollection ?? { findOneAsync: async () => null },
     storageAdapter: storageAdapter ?? { read: async () => ({ on() {}, pipe() {} }) },
   })
   return handler
+}
+
+function cookieForToken(token) {
+  return `${LOGIN_COOKIE_NAME}=${encodeURIComponent(token)}`
+}
+
+function signedInMeteor(userId, token) {
+  const hashedToken = hashLoginToken(token)
+  return {
+    users: {
+      findOneAsync: async (selector) => {
+        if (selector['services.resume.loginTokens.hashedToken'] === hashedToken) {
+          return { _id: userId }
+        }
+        return null
+      },
+    },
+  }
 }
 
 describe('@nexus/files HTTP download route', () => {
@@ -64,7 +86,7 @@ describe('@nexus/files HTTP download route', () => {
     expect(res.body).toContain('File not found')
   })
 
-  it('returns 401 when the owner is not anonymous', async () => {
+  it('returns 401 when a product owner has no resume cookie', async () => {
     defineOwner({
       type: 'http-auth-owner',
       collection: { findOneAsync: async () => ({ _id: 'parent' }) },
@@ -83,8 +105,83 @@ describe('@nexus/files HTTP download route', () => {
       },
     })
     const res = createResponse()
-    handler({ method: 'GET', url: '/nexus-files/file-1' }, res, vi.fn())
+    handler({ method: 'GET', url: '/nexus-files/file-1', headers: {} }, res, vi.fn())
     await vi.waitFor(() => expect(res.statusCode).toBe(401))
+  })
+
+  it('returns 403 when the caller lacks the download role', async () => {
+    defineOwner({
+      type: 'http-auth-forbidden',
+      collection: { findOneAsync: async () => ({ _id: 'parent' }) },
+      allowAnonymous: false,
+      roles: { upload: 'u', download: 'files.secret.download', remove: 'r' },
+    })
+    const token = 'resume-token-forbidden'
+    const handler = createRoute({
+      Meteor: signedInMeteor('user-1', token),
+      Roles: { userIsInRoleAsync: async () => false },
+      filesCollection: {
+        findOneAsync: async () => ({
+          _id: 'file-forbidden',
+          ownerType: 'http-auth-forbidden',
+          name: 'secret.pdf',
+          mime: 'application/pdf',
+          size: 4,
+        }),
+      },
+    })
+    const res = createResponse()
+    handler(
+      { method: 'GET', url: '/nexus-files/file-forbidden', headers: { cookie: cookieForToken(token) } },
+      res,
+      vi.fn(),
+    )
+    await vi.waitFor(() => expect(res.statusCode).toBe(403))
+  })
+
+  it('returns 200 when the caller has the download role', async () => {
+    defineOwner({
+      type: 'http-auth-allowed',
+      collection: { findOneAsync: async () => ({ _id: 'parent' }) },
+      allowAnonymous: false,
+      roles: { upload: 'u', download: 'files.books.download', remove: 'r' },
+    })
+    const token = 'resume-token-ok'
+    const handler = createRoute({
+      Meteor: signedInMeteor('user-2', token),
+      Roles: {
+        userIsInRoleAsync: async (userId, role) => userId === 'user-2' && role === 'files.books.download',
+      },
+      filesCollection: {
+        findOneAsync: async () => ({
+          _id: 'file-ok',
+          ownerType: 'http-auth-allowed',
+          name: 'cover.png',
+          mime: 'image/png',
+          size: 4,
+          gridFsId: '6aa917dddddddddddddddddd',
+        }),
+      },
+      storageAdapter: {
+        async read() {
+          return {
+            on() {},
+            pipe(res) {
+              res.end('png')
+            },
+          }
+        },
+      },
+    })
+    const res = createResponse()
+    handler(
+      { method: 'GET', url: '/nexus-files/file-ok', headers: { cookie: cookieForToken(token) } },
+      res,
+      vi.fn(),
+    )
+    await vi.waitFor(() => expect(res.statusCode).toBe(200))
+    expect(res.headers['Content-Type']).toBe('image/png')
+    expect(res.body).toBe('png')
   })
 
   it('returns 200 inline for an anonymous owner file', async () => {
@@ -125,5 +222,13 @@ describe('@nexus/files HTTP download route', () => {
     expect(res.headers['Content-Disposition']).toContain('hello.txt')
     expect(res.body).toBe('hello')
     expect(chunks).toEqual(['hello'])
+  })
+})
+
+describe('@nexus/files login token hash', () => {
+  it('hashes the resume token the same way accounts-base does', () => {
+    const token = 'plain-login-token'
+    const expected = createHash('sha256').update(token).digest('base64')
+    expect(hashLoginToken(token)).toBe(expected)
   })
 })

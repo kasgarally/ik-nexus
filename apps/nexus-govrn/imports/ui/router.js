@@ -16,6 +16,7 @@ import SubmissionsRegister from './SubmissionsRegister.vue'
 import SubmissionContext from './SubmissionContext.vue'
 import GovernanceDashboard from './GovernanceDashboard.vue'
 import InvoicePage from './InvoicePage.vue'
+import { bookRoutes } from '/imports/apps/Books/client/routes.js'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -80,7 +81,8 @@ export const router = createRouter({
       name: 'invoice',
       component: InvoicePage,
       meta: { layout: 'web' },
-    }
+    },
+    ...bookRoutes,
   ],
 })
 

@@ -11,6 +11,12 @@ export default {
     listsTest: 'اختبار القوائم',
     workspace: 'مع السياق',
     signin: 'تسجيل الدخول',
+    books: 'الكتب',
+    section: {
+      regulator: 'الجهة الرقابية',
+      governance: 'الحوكمة',
+      erp: 'تخطيط الموارد',
+    },
   },
   listsTest: {
     title: 'اختبار القوائم',

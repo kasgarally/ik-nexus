@@ -4,6 +4,7 @@
  *
  * MongoInternals and WebApp are server-only. The client registers without them.
  */
+import { Accounts } from 'meteor/accounts-base'
 import { check, Match } from 'meteor/check'
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
@@ -33,4 +34,11 @@ export function registerNexusFiles(serverApis = {}) {
       remove: 'files.demo.remove',
     },
   })
+
+  // Same-origin <img> and window.open need the resume token as a cookie.
+  if (Meteor.isClient) {
+    Files.syncDownloadCookie()
+    Accounts.onLogin(() => Files.syncDownloadCookie())
+    Accounts.onLogout(() => Files.syncDownloadCookie())
+  }
 }

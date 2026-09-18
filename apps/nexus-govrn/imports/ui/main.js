@@ -7,6 +7,7 @@ import { registerNexusApplog } from '/imports/api/nexusApplog.js'
 import { registerNexusFiles } from '/imports/api/nexusFiles.js'
 import { registerNexusLists } from '/imports/api/nexusLists.js'
 import { registerNexusSetup } from '/imports/api/nexusSetup.js'
+import { registerBooksClient } from '/imports/apps/Books/index.client.js'
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
 import { createPinia } from 'pinia'
@@ -23,6 +24,7 @@ registerNexusFiles()
 registerNexusLists()
 registerNexusSetup()
 registerNexusApplog()
+registerBooksClient()
 
 const app = createApp(App)
 const vuetify = createVuetify(vuetifyConfig)
