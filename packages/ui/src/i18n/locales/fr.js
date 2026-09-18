@@ -127,20 +127,5 @@ export default {
     removeTitle: 'Supprimer ce compte ?',
     removeConfirm: 'Supprimer {name} ? Cette action est définitive.',
     empty: 'Aucun compte.',
-    role: {
-      superadmin: 'Superadmin',
-      admin: 'Admin',
-      'books.reader': 'Lire les livres',
-      'books.create': 'Créer des livres',
-      'books.update': 'Modifier des livres',
-      'books.remove': 'Supprimer des livres',
-      'files.books.download': 'Télécharger les fichiers de livres',
-      'files.books.upload': 'Téléverser les fichiers de livres',
-      'files.books.remove': 'Supprimer les fichiers de livres',
-    },
-    group: {
-      platform: 'Plateforme',
-      books: 'Livres',
-    },
   },
 }

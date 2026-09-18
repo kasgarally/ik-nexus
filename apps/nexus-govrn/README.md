@@ -11,6 +11,7 @@ Meteor 3 + Vue 3 product app. First boot is gated by `/onboarding` until `nexus_
 - [How to run](#how-to-run)
   - [Stale process on port 3000](#stale-process-on-port-3000)
 - [Settings](#settings)
+- [Accounts UI](#accounts-ui)
 - [Dev seed](#dev-seed)
 - [Libraries used](#libraries-used)
 
@@ -59,6 +60,10 @@ node ../../scripts/build-settings.mjs
 ```
 
 `Meteor.settings.public` is for flags (and later a license URL). Company fields do not live here.
+
+## Accounts UI
+
+`/settings` is core app UI in [`imports/ui/settings/`](imports/ui/settings/README.md), not a cloneable sub-app. Named views mount `@nexus/ui` widgets; DDP is `@nexus/accounts`.
 
 ## Dev seed
 

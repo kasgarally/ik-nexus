@@ -26,7 +26,7 @@ This package must **not** import `meteor/*`. The app injects Meteor APIs.
 
 - Methods `accounts.users.insert` / `update` / `remove` / `setPassword` / `setSuspended` and `accounts.roles.set`
 - Publications `accounts.users` and `accounts.roleAssignments` (admin callers only)
-- In-memory `registerRoleCatalog` / `listRoleCatalog` for sub-app role names
+- In-memory `registerRoleCatalog` / `listRoleCatalog` / `allAssignableRoleNames` for sub-app role names
 - Login rejection when `suspendedAt` is set on the user
 
 Users stay on `Meteor.users`. Platform roles stay `ADMIN_ROLES` from `@nexus/setup`.
@@ -75,7 +75,7 @@ Calling it twice throws.
 
 ## Role catalogs
 
-Each sub-app registers names the assign-roles UI may grant:
+Each sub-app registers names the assign-roles UI may grant. Register from that sub-app folder (client and server entry). Settings shows those names as-is — no labels in `@nexus/ui`.
 
 ```javascript
 NexusAccounts.registerRoleCatalog({

@@ -127,20 +127,5 @@ export default {
     removeTitle: 'حذف هذا الحساب؟',
     removeConfirm: 'حذف {name}؟ لا يمكن التراجع عن ذلك.',
     empty: 'لا توجد حسابات بعد.',
-    role: {
-      superadmin: 'مشرف أعلى',
-      admin: 'مشرف',
-      'books.reader': 'قراءة الكتب',
-      'books.create': 'إنشاء الكتب',
-      'books.update': 'تعديل الكتب',
-      'books.remove': 'حذف الكتب',
-      'files.books.download': 'تنزيل ملفات الكتب',
-      'files.books.upload': 'رفع ملفات الكتب',
-      'files.books.remove': 'حذف ملفات الكتب',
-    },
-    group: {
-      platform: 'المنصة',
-      books: 'الكتب',
-    },
   },
 }

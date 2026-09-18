@@ -127,20 +127,5 @@ export default {
     removeTitle: 'Remove this account?',
     removeConfirm: 'Remove {name}? This cannot be undone.',
     empty: 'No accounts yet.',
-    role: {
-      superadmin: 'Superadmin',
-      admin: 'Admin',
-      'books.reader': 'Read books',
-      'books.create': 'Create books',
-      'books.update': 'Update books',
-      'books.remove': 'Remove books',
-      'files.books.download': 'Download book files',
-      'files.books.upload': 'Upload book files',
-      'files.books.remove': 'Remove book files',
-    },
-    group: {
-      platform: 'Platform',
-      books: 'Books',
-    },
   },
 }

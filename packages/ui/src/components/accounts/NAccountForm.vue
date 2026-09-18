@@ -3,7 +3,7 @@ Author: Karmil Asgarally - INTELLEKTRA © 2026
 Create or edit an account, reset password, suspend, assign roles
 -->
 <script setup>
-import { Accounts, listRoleCatalog } from '@nexus/accounts'
+import { Accounts, allAssignableRoleNames } from '@nexus/accounts'
 import { MIN_PASSWORD_LENGTH } from '@nexus/setup'
 import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -15,7 +15,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['created', 'removed'])
 
-const { t, tm } = useI18n()
+const { t } = useI18n()
 const { users, ready, saving, errorMessage, rolesFor, run } = useAccountsUsers()
 
 const isNew = computed(() => !props.accountId || props.accountId === 'new')
@@ -34,7 +34,7 @@ const passwordForm = reactive({
   confirm: '',
 })
 
-const catalogs = computed(() => listRoleCatalog())
+const roleNames = computed(() => allAssignableRoleNames())
 
 watch(
   [user, userId, ready],
@@ -60,36 +60,6 @@ const passwordValid = computed(() => {
   }
   return true
 })
-
-function catalogLabel(section, name) {
-  const map = tm(`accounts.${section}`)
-  if (map && typeof map === 'object' && typeof map[name] === 'string') {
-    return map[name]
-  }
-  return name
-}
-
-function roleLabel(name) {
-  return catalogLabel('role', name)
-}
-
-function groupLabel(group) {
-  return catalogLabel('group', group)
-}
-
-function roleChecked(name) {
-  return form.roles.includes(name)
-}
-
-function setRoleChecked(name, checked) {
-  if (checked && !form.roles.includes(name)) {
-    form.roles.push(name)
-    return
-  }
-  if (!checked) {
-    form.roles = form.roles.filter((role) => role !== name)
-  }
-}
 
 async function saveProfile() {
   if (isNew.value) {
@@ -189,21 +159,16 @@ async function removeAccount() {
           autocomplete="new-password"
         />
       </template>
-      <div class="mt-4">
-        <h3 class="text-body-1 font-weight-medium mb-2">{{ t('accounts.roles') }}</h3>
-        <div v-for="catalog in catalogs" :key="catalog.key" class="mb-4">
-          <div class="app-muted app-small mb-2">{{ groupLabel(catalog.key) }}</div>
-          <v-checkbox
-            v-for="role in catalog.roles"
-            :key="role.name"
-            :model-value="roleChecked(role.name)"
-            :label="roleLabel(role.name)"
-            hide-details
-            density="compact"
-            @update:model-value="setRoleChecked(role.name, $event)"
-          />
-        </div>
-      </div>
+      <v-combobox
+        v-model="form.roles"
+        class="mt-4"
+        :items="roleNames"
+        :label="t('accounts.roles')"
+        multiple
+        chips
+        closable-chips
+        hide-selected
+      />
       <div class="app-actions mt-4">
         <v-btn color="primary" :loading="saving" @click="saveProfile">
           {{ isNew ? t('accounts.create') : t('accounts.save') }}

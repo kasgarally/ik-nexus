@@ -17,7 +17,7 @@ import SubmissionContext from './SubmissionContext.vue'
 import GovernanceDashboard from './GovernanceDashboard.vue'
 import InvoicePage from './InvoicePage.vue'
 import { bookRoutes } from '/imports/apps/Books/client/routes.js'
-import { settingsRoutes } from '/imports/apps/Settings/client/routes.js'
+import { settingsRoutes } from './settings/routes.js'
 
 export const router = createRouter({
   history: createWebHistory(),

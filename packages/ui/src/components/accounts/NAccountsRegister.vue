@@ -7,7 +7,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAccountsUsers } from './useAccountsUsers.js'
 
-const { t, tm } = useI18n()
+const { t } = useI18n()
 const { users, ready, rolesFor } = useAccountsUsers()
 
 const rows = computed(() =>
@@ -19,17 +19,6 @@ const rows = computed(() =>
     roles: rolesFor(user._id),
   })),
 )
-
-function roleLabels(names) {
-  const map = tm('accounts.role')
-  return names
-    .map((name) =>
-      map && typeof map === 'object' && typeof map[name] === 'string'
-        ? map[name]
-        : name,
-    )
-    .join(', ')
-}
 </script>
 
 <template>
@@ -58,7 +47,7 @@ function roleLabels(names) {
                 </router-link>
               </td>
               <td>{{ row.email }}</td>
-              <td>{{ roleLabels(row.roles) }}</td>
+              <td>{{ row.roles.join(', ') }}</td>
               <td>
                 <v-chip
                   size="small"

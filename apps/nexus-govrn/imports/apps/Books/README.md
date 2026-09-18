@@ -82,7 +82,7 @@ Row click: `router.push({ name: 'books', params: { id: row._id } })`. Create ope
 | `files.books.upload` / `files.books.remove` | assigned in Settings | cover and PDF |
 | `superadmin` / `admin` | list writers | Configuration card + `NListItemsEditor` |
 
-`roleCatalog.js` registers these names with `@nexus/accounts`. Reader roles are still granted on login. Writer roles are assigned in Settings (demo seed grants writers to `admin@localhost`). List writes stay on the package contract (`superadmin` or `admin`).
+`roleCatalog.js` registers these names with `@nexus/accounts` (called from `index.client.js` / `index.server.js`). Settings lists the names as-is in a multi combobox. Reader roles are still granted on login. Writer roles are assigned in Settings (demo seed grants writers to `admin@localhost`). List writes stay on the package contract (`superadmin` or `admin`).
 
 Heading buttons use `useUserRole` from `/imports/ui/useUserRole.js`. Methods still enforce the same roles. The client only sees those roles if [`imports/api/publishUserRoles.js`](../../api/publishUserRoles.js) is imported on the server (current user’s `role-assignment` rows).
 

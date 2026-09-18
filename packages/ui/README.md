@@ -274,7 +274,9 @@ import { NAdminConfigCard } from '@nexus/ui'
 import { NAccountForm, NAccountsRegister, NSettingsHeading, NSettingsWorkspace } from '@nexus/ui'
 ```
 
-The app mounts these as named views on `/settings` and `/settings/accounts`. They call `@nexus/accounts` helpers. There is no `meteor/*` in the SFCs. Vue `v-if` on admin roles is display only.
+The Meteor app mounts these from `imports/ui/settings/` on `/settings` and `/settings/accounts`. They call `@nexus/accounts` helpers. There is no `meteor/*` in the SFCs. Vue `v-if` on admin roles is display only.
+
+`NAccountForm` assigns roles with a multi `v-combobox` of names from `allAssignableRoleNames()` (platform plus each sub-app catalog). The chips are the role ids (`books.create`, `superadmin`). Sub-app labels do not live in this package — register the catalog from the sub-app folder.
 
 ## Setup wizard
 

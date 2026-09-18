@@ -6,7 +6,7 @@ Settings heading — page from the current route
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { NSettingsHeading } from '@nexus/ui'
-import { useUserRole } from '/imports/ui/useUserRole.js'
+import { useUserRole } from '../useUserRole.js'
 
 const route = useRoute()
 const canManage = useUserRole(['superadmin', 'admin'])

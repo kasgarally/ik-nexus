@@ -2,10 +2,10 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * Settings named-view routes — thin wrappers around @nexus/ui
  */
-import ScrSettingsHeading from '../screens/ScrSettingsHeading.vue'
-import VewAccount from '../views/VewAccount.vue'
-import VewAccounts from '../views/VewAccounts.vue'
-import VewSettings from '../views/VewSettings.vue'
+import ScrSettingsHeading from './ScrSettingsHeading.vue'
+import VewAccount from './VewAccount.vue'
+import VewAccounts from './VewAccounts.vue'
+import VewSettings from './VewSettings.vue'
 
 export const settingsRoutes = [
   {

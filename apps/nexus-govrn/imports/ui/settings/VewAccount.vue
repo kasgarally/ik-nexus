@@ -7,7 +7,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { NAccountForm } from '@nexus/ui'
-import { useUserRole } from '/imports/ui/useUserRole.js'
+import { useUserRole } from '../useUserRole.js'
 
 const { t } = useI18n()
 const route = useRoute()

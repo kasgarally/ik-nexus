@@ -2,7 +2,7 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * @nexus/accounts public exports
  */
-import { listRoleCatalog, registerRoleCatalog } from './catalog.js'
+import { allAssignableRoleNames, listRoleCatalog, registerRoleCatalog } from './catalog.js'
 import {
   getRoleAssignmentCollection,
   getUsersCollection,
@@ -32,6 +32,7 @@ export {
 } from './constants.js'
 
 export {
+  allAssignableRoleNames,
   getMeteorApis,
   getRoleAssignmentCollection,
   getUsersCollection,
@@ -53,6 +54,7 @@ export const Accounts = {
   registerWithMeteor,
   registerRoleCatalog,
   listRoleCatalog,
+  allAssignableRoleNames,
   subscribeUsers,
   subscribeRoleAssignments,
   insertUser,
