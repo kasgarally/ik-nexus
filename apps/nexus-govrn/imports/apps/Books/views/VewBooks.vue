@@ -9,7 +9,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { Lists } from '@nexus/lists'
 import { useListItems } from '@nexus/ui'
-import { Books } from '../collection.js'
+import { Books } from '../collections/books.js'
 
 const { t, locale } = useI18n()
 const route = useRoute()

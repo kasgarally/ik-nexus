@@ -26,6 +26,8 @@ const title = computed(() => companyName.value || "INTELLEKTRA");
 const hasContext = computed(() =>
   route.matched.some((record) => record.components?.context),
 );
+const routePageKey = computed(() => String(route.name || route.path));
+const routeContextKey = computed(() => route.fullPath);
 </script>
 <template>
   <!-- Your existing root component owns the single v-app. -->
@@ -139,13 +141,21 @@ const hasContext = computed(() =>
   </v-app-bar>
   <v-main class="app-main">
     <div id="main-content" class="app-page" tabindex="-1">
-      <router-view name="heading" />
+      <router-view name="heading" v-slot="{ Component }">
+        <transition name="app-route-fade" mode="out-in">
+          <component :is="Component" v-if="Component" :key="routePageKey" />
+        </transition>
+      </router-view>
       <div
         class="app-workspace"
         :class="{ 'app-workspace--context': hasContext }"
       >
         <section :aria-label="label('workspace.content', 'Main content')">
-          <router-view />
+          <router-view v-slot="{ Component }">
+            <transition name="app-route-fade" mode="out-in">
+              <component :is="Component" v-if="Component" :key="routePageKey" />
+            </transition>
+          </router-view>
         </section>
         <aside
           v-if="hasContext"
@@ -153,7 +163,15 @@ const hasContext = computed(() =>
           class="app-context"
           :aria-label="label('workspace.context', 'Record context')"
         >
-          <router-view name="context" />
+          <router-view name="context" v-slot="{ Component }">
+            <transition name="app-route-fade" mode="out-in">
+              <component
+                :is="Component"
+                v-if="Component"
+                :key="routeContextKey"
+              />
+            </transition>
+          </router-view>
         </aside>
       </div>
     </div>

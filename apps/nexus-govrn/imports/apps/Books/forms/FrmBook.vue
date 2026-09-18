@@ -4,10 +4,10 @@ Create and update one book (metadata only; files live on the context pane)
 -->
 <script setup>
 import { Meteor } from 'meteor/meteor'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NDatePicker, NListSelect } from '@nexus/ui'
-import { Books } from '../collection.js'
+import { Books } from '../collections/books.js'
 
 const props = defineProps({
   bookId: { type: String, default: '' },
@@ -17,15 +17,21 @@ const props = defineProps({
 const emit = defineEmits(['close', 'saved'])
 const { t } = useI18n()
 
-const title = ref('')
-const description = ref('')
-const author = ref('')
-const aboutAuthor = ref('')
-const publisher = ref('')
-const publishedOn = ref('')
-const language = ref('')
-const isbn = ref('')
-const category = ref(null)
+function emptyBook() {
+  return {
+    title: '',
+    description: '',
+    author: '',
+    aboutAuthor: '',
+    publisher: '',
+    publishedOn: '',
+    language: '',
+    isbn: '',
+    category: null,
+  }
+}
+
+const form = reactive(emptyBook())
 const saving = ref(false)
 const errorMessage = ref('')
 
@@ -48,15 +54,19 @@ function toIsoDate(value) {
 }
 
 function applyBook(book) {
-  title.value = book?.title || ''
-  description.value = book?.description || ''
-  author.value = book?.author || ''
-  aboutAuthor.value = book?.aboutAuthor || ''
-  publisher.value = book?.publisher || ''
-  publishedOn.value = toIsoDate(book?.publishedOn)
-  language.value = book?.language || ''
-  isbn.value = book?.isbn || ''
-  category.value = book?.category || null
+  Object.assign(form, emptyBook(), book
+    ? {
+        title: book.title || '',
+        description: book.description || '',
+        author: book.author || '',
+        aboutAuthor: book.aboutAuthor || '',
+        publisher: book.publisher || '',
+        publishedOn: toIsoDate(book.publishedOn),
+        language: book.language || '',
+        isbn: book.isbn || '',
+        category: book.category || null,
+      }
+    : {})
 }
 
 async function loadBook() {
@@ -81,15 +91,9 @@ watch(
 
 function payload() {
   return {
-    title: title.value,
-    description: description.value,
-    author: author.value,
-    aboutAuthor: aboutAuthor.value,
-    publisher: publisher.value,
-    publishedOn: publishedOn.value || null,
-    language: language.value,
-    isbn: isbn.value,
-    category: category.value || '',
+    ...form,
+    publishedOn: form.publishedOn || null,
+    category: form.category || '',
   }
 }
 
@@ -122,24 +126,24 @@ function cancel() {
     <v-alert v-if="errorMessage" type="error" class="mb-4" closable @click:close="errorMessage = ''">
       {{ errorMessage }}
     </v-alert>
-    <v-text-field v-model="title" :label="t('books.titleLabel')" required class="mb-2" />
-    <v-textarea v-model="description" :label="t('books.description')" rows="3" auto-grow class="mb-2" />
+    <v-text-field v-model="form.title" :label="t('books.titleLabel')" required class="mb-2" />
+    <v-textarea v-model="form.description" :label="t('books.description')" rows="3" auto-grow class="mb-2" />
     <v-row>
       <v-col cols="12" md="6">
-        <v-text-field v-model="author" :label="t('books.author')" />
+        <v-text-field v-model="form.author" :label="t('books.author')" />
       </v-col>
       <v-col cols="12" md="6">
-        <v-text-field v-model="publisher" :label="t('books.publisher')" />
+        <v-text-field v-model="form.publisher" :label="t('books.publisher')" />
       </v-col>
     </v-row>
-    <v-textarea v-model="aboutAuthor" :label="t('books.aboutAuthor')" rows="2" auto-grow class="mb-2" />
+    <v-textarea v-model="form.aboutAuthor" :label="t('books.aboutAuthor')" rows="2" auto-grow class="mb-2" />
     <v-row>
       <v-col cols="12" md="4">
-        <n-date-picker v-model="publishedOn" :label="t('books.publishedOn')" clearable />
+        <n-date-picker v-model="form.publishedOn" :label="t('books.publishedOn')" clearable />
       </v-col>
       <v-col cols="12" md="4">
         <v-select
-          v-model="language"
+          v-model="form.language"
           :items="languageItems"
           item-value="value"
           item-title="title"
@@ -148,10 +152,10 @@ function cancel() {
         />
       </v-col>
       <v-col cols="12" md="4">
-        <v-text-field v-model="isbn" :label="t('books.isbn')" />
+        <v-text-field v-model="form.isbn" :label="t('books.isbn')" />
       </v-col>
     </v-row>
-    <n-list-select v-model="category" list-key="books.category" :label="t('books.category')" class="mb-4" />
+    <n-list-select v-model="form.category" list-key="books.category" :label="t('books.category')" class="mb-4" />
     <div class="d-flex justify-end ga-2">
       <v-btn v-if="isModal" variant="text" :disabled="saving" @click="cancel">
         {{ t('books.cancel') }}

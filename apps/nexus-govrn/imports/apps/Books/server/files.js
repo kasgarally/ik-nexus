@@ -3,7 +3,7 @@
  * Files.defineOwner for book cover and PDF (same parent collection)
  */
 import { Files } from '@nexus/files'
-import { Books } from '../collection.js'
+import { Books } from '../collections/books.js'
 
 const BOOK_FILE_ROLES = {
   upload: 'files.books.upload',

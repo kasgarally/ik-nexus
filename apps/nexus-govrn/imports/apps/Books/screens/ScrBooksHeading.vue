@@ -1,6 +1,6 @@
 <!--
 Author: Karmil Asgarally - INTELLEKTRA © 2026
-Books page heading — New and Categories actions
+Books page heading — New book action
 -->
 <script setup>
 import { ref } from 'vue'
@@ -14,7 +14,6 @@ const { t } = useI18n()
 const router = useRouter()
 const formOpen = ref(false)
 const canCreate = useUserRole('books.create')
-const canManageCategories = useUserRole(['superadmin', 'admin'])
 
 function onSaved(id) {
   formOpen.value = false
@@ -31,14 +30,6 @@ function onSaved(id) {
       <p class="app-muted">{{ t('books.subtitle') }}</p>
     </div>
     <div class="app-actions">
-      <v-btn
-        v-if="canManageCategories"
-        variant="outlined"
-        prepend-icon="mdi-format-list-bulleted"
-        :to="{ name: 'bookCategories' }"
-      >
-        {{ t('books.categories') }}
-      </v-btn>
       <v-btn
         v-if="canCreate"
         color="primary"

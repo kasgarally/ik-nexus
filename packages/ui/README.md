@@ -19,6 +19,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [List components](#list-components)
 - [Date and time pickers](#date-and-time-pickers)
 - [Modal and remove confirm](#modal-and-remove-confirm)
+- [Admin configuration card](#admin-configuration-card)
 - [Setup wizard](#setup-wizard)
 - [Docker](#docker)
 - [Testing](#testing)
@@ -37,6 +38,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `NSetupWizard` — first-run `v-stepper-vertical` (company, address, branding, first admin, review)
 - `NModal` — `v-dialog` with title, close, default slot, optional activator; expose `open` / `close`
 - `NRemoveIcon` — error delete icon plus a Vuetify confirm dialog (no SweetAlert)
+- `NAdminConfigCard` — context-pane card of admin list/setup links (`title` + `items`)
 - Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `useOwnerFiles`, `useListItems`
 
 Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`. First-run install lives in `@nexus/setup`.
@@ -72,6 +74,7 @@ src/
     pickers/dateTime.js
     dialogs/NModal.vue
     dialogs/NRemoveIcon.vue
+    admin/NAdminConfigCard.vue
     setup/NSetupWizard.vue
 ```
 
@@ -238,6 +241,22 @@ import { NModal, NRemoveIcon } from '@nexus/ui'
 `NModal` is a `v-dialog`: title, close button, default slot for a form. Optional `#activator` uses Vuetify’s dialog activator props. `open` / `close` are exposed on the component instance. There is no `meteor/*` in the SFC.
 
 `NRemoveIcon` is an error-coloured `mdi-delete-outline` button. Clicking it opens a confirm dialog (Cancel / Remove). Confirm emits `confirm`. No SweetAlert.
+
+## Admin configuration card
+
+```js
+import { NAdminConfigCard } from '@nexus/ui'
+```
+
+```html
+<n-admin-config-card
+  v-if="canManageLists"
+  :title="t('books.config')"
+  :items="configItems"
+/>
+```
+
+`items` is `{ key, title, to, icon?, subtitle? }[]`. The parent gates visibility (`superadmin` / `admin`); Vue `v-if` is display only. Uses the app’s `app-context-card` / `app-section-title` classes so the card matches the context pane.
 
 ## Setup wizard
 

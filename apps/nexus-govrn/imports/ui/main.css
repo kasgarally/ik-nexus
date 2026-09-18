@@ -173,6 +173,16 @@ body {
 .app-context {
   scroll-margin-top: 80px;
 }
+.app-route-fade-enter-active {
+  transition: opacity 280ms ease;
+}
+.app-route-fade-leave-active {
+  transition: opacity 140ms ease;
+}
+.app-route-fade-enter-from,
+.app-route-fade-leave-to {
+  opacity: 0;
+}
 .app-filter-bar {
   display: grid;
   grid-template-columns: minmax(200px, 1.5fr) repeat(3, minmax(110px, 1fr));
@@ -303,9 +313,6 @@ body {
   .app-workspace--context {
     grid-template-columns: minmax(0, 1fr) var(--app-context);
     align-items: start;
-  }
-  .app-context {
-    padding-top: 48px;
   }
 }
 @media (min-width: 600px) and (max-width: 1144px) {

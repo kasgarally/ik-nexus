@@ -87,7 +87,7 @@ Today the workspace is five members. Each has its own README for the public API.
 
 | Folder | npm name | What it owns | Meteor injection? |
 |--------|----------|--------------|-------------------|
-| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets (`NLocaleSelect`, `NFileUpload`, `NFileReplace`, `NListItemsEditor`, `NListSelect`, `NDatePicker`, `NTimePicker`, `NModal`, `NRemoveIcon`, `NSetupWizard`) and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
+| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets (`NLocaleSelect`, `NFileUpload`, `NFileReplace`, `NListItemsEditor`, `NListSelect`, `NDatePicker`, `NTimePicker`, `NModal`, `NRemoveIcon`, `NAdminConfigCard`, `NSetupWizard`) and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
 | [`packages/files`](packages/files/README.md) | `@nexus/files` | `nexus_files` + GridFS bucket `nexus_fs`, DDP upload/remove, `GET /nexus-files/:fileId`, `Files.defineOwner` | Yes. `Files.registerWithMeteor` |
 | [`packages/applog`](packages/applog/README.md) | `@nexus/applog` | Append-only `nexus_applog`; wraps `insertAsync` / `updateAsync` / `removeAsync`; `Applog.record` / `runAsSystem` | Yes. `Applog.registerWithMeteor` |
 | [`packages/lists`](packages/lists/README.md) | `@nexus/lists` | `nexus_lists` items (`listKey` + stable `code` + `title.en`/`fr`/`ar`) | Yes. `Lists.registerWithMeteor` |

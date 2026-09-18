@@ -4,6 +4,7 @@
   "scripts": {
     "settings:build": "node ../../scripts/build-settings.mjs",
     "start": "node ../../scripts/build-settings.mjs && meteor run --settings settings.json",
+    "kill-port": "node ../../scripts/kill-port.mjs",
     "build": "meteor build ../output/vue --directory",
     "test": "node tests/run-mocha.mjs",
     "test-app": "node tests/run-mocha.mjs --watch",

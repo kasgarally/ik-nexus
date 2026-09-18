@@ -20,6 +20,15 @@ import { bookRoutes } from '/imports/apps/Books/client/routes.js'
 
 export const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
+    if (to.name !== from.name) {
+      return { top: 0 }
+    }
+    return undefined
+  },
   routes: [
     {
       path: '/onboarding',

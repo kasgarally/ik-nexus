@@ -9,9 +9,9 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { IMAGE_MIME_TYPES } from '@nexus/files'
 import { Lists } from '@nexus/lists'
-import { NFileReplace, NModal, NRemoveIcon, useListItems, useOwnerFiles } from '@nexus/ui'
+import { NAdminConfigCard, NFileReplace, NModal, NRemoveIcon, useListItems, useOwnerFiles } from '@nexus/ui'
 import { useUserRole } from '/imports/ui/useUserRole.js'
-import { Books } from '../collection.js'
+import { Books } from '../collections/books.js'
 import FrmBook from '../forms/FrmBook.vue'
 
 const { t, locale } = useI18n()
@@ -27,6 +27,16 @@ const formOpen = ref(false)
 const removing = ref(false)
 const canUpdate = useUserRole('books.update')
 const canRemove = useUserRole('books.remove')
+const canManageLists = useUserRole(['superadmin', 'admin'])
+
+const configItems = computed(() => [
+  {
+    key: 'books.category',
+    title: t('books.categories'),
+    to: { name: 'bookCategories' },
+    icon: 'mdi-format-list-bulleted',
+  },
+])
 
 const imageAccept = IMAGE_MIME_TYPES.join(',')
 let subscriptionHandle = null
@@ -135,14 +145,15 @@ async function removeBook() {
 </script>
 
 <template>
-  <v-card class="app-context-card">
-    <template v-if="!bookId">
-      <p class="app-muted">{{ t('books.select') }}</p>
-    </template>
-    <template v-else-if="!book">
-      <p class="app-muted">{{ t('books.notFound') }}</p>
-    </template>
-    <template v-else>
+  <div class="d-flex flex-column ga-4">
+    <v-card class="app-context-card">
+      <template v-if="!bookId">
+        <p class="app-muted">{{ t('books.select') }}</p>
+      </template>
+      <template v-else-if="!book">
+        <p class="app-muted">{{ t('books.notFound') }}</p>
+      </template>
+      <template v-else>
       <div class="d-flex align-start justify-space-between mb-4">
         <h2 class="app-section-title">{{ book.title }}</h2>
         <div class="d-flex">
@@ -237,15 +248,22 @@ async function removeBook() {
         </v-btn>
         <p v-else class="app-muted">{{ t('books.noPdf') }}</p>
       </div>
-    </template>
+      </template>
 
-    <n-modal v-model="formOpen" :title="t('books.edit')">
-      <frm-book
-        v-if="formOpen && book"
-        is-modal
-        :book-id="book._id"
-        @close="formOpen = false"
-      />
-    </n-modal>
-  </v-card>
+      <n-modal v-model="formOpen" :title="t('books.edit')">
+        <frm-book
+          v-if="formOpen && book"
+          is-modal
+          :book-id="book._id"
+          @close="formOpen = false"
+        />
+      </n-modal>
+    </v-card>
+    <n-admin-config-card
+      v-if="canManageLists"
+      :title="t('books.config')"
+      :items="configItems"
+    />
+  </div>
 </template>
+

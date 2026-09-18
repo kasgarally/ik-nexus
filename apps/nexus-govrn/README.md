@@ -9,6 +9,7 @@ Meteor 3 + Vue 3 product app. First boot is gated by `/onboarding` until `nexus_
 ## Contents
 
 - [How to run](#how-to-run)
+  - [Stale process on port 3000](#stale-process-on-port-3000)
 - [Settings](#settings)
 - [Dev seed](#dev-seed)
 - [Libraries used](#libraries-used)
@@ -25,6 +26,29 @@ meteor npm start
 ```
 
 Open `http://localhost:3000`. With `public.devSeedAdmin: true`, a blank database is seeded and skips the wizard. Without that flag, first boot opens `/onboarding`.
+
+### Stale process on port 3000
+
+`meteor npm start` leaves Node listening on 3000 if the terminal is closed, an agent task is aborted, or the process is otherwise orphaned. The next start then fails with `EADDRINUSE`.
+
+Free the default Meteor port (stops only a **Node** / Meteor listener):
+
+```bash
+# from the repo root
+pnpm run kill-port
+
+# from this app
+meteor npm run kill-port
+```
+
+Another port (Meteor’s local Mongo is often 3001):
+
+```bash
+pnpm run kill-port -- 3001
+meteor npm run kill-port -- 3001
+```
+
+The script is [`scripts/kill-port.mjs`](../../scripts/kill-port.mjs). It does not kill a non-Node process that happens to bind the port.
 
 ## Settings
 
