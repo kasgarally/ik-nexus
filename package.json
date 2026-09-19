@@ -23,6 +23,7 @@
     "penpot:pull": "node tooling/penpot/stack.mjs pull",
     "penpot:backup": "node tooling/penpot/stack.mjs backup",
     "kill-port": "node scripts/kill-port.mjs",
+    "land": "node scripts/land-main.mjs",
     "test": "node scripts/run-vitest.mjs",
     "test:packages": "node scripts/run-vitest.mjs",
     "test:watch": "vitest",
