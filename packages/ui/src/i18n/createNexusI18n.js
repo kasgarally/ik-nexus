@@ -2,7 +2,7 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * vue-i18n factory with Vuetify catalogs
  *
- * Core keys (ui.* / locale.* / files.* / lists.* / pickers.* / setup.* / settings.* / accounts.* / auth.*) and $vuetify live here.
+ * Core keys (ui.* / locale.* / files.* / lists.* / pickers.* / setup.* / settings.* / accounts.* / auth.* / actions.* / org.*) and $vuetify live here.
  * Each app passes its own message packs, storageKey, and normalized locales.
  */
 import { createI18n } from 'vue-i18n'

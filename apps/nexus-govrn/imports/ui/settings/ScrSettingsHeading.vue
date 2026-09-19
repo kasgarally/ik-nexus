@@ -18,6 +18,9 @@ const page = computed(() => {
   if (route.name === 'settingsAccounts') {
     return 'accounts'
   }
+  if (route.name === 'settingsOrg') {
+    return 'org'
+  }
   return 'workspace'
 })
 </script>

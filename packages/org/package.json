@@ -1,0 +1,14 @@
+{
+  "name": "@nexus/org",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Organisational tree for NEXUS Meteor apps",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ]
+}

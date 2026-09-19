@@ -5,6 +5,7 @@
 import ScrSettingsHeading from './ScrSettingsHeading.vue'
 import VewAccount from './VewAccount.vue'
 import VewAccounts from './VewAccounts.vue'
+import VewOrg from './VewOrg.vue'
 import VewSettings from './VewSettings.vue'
 
 export const settingsRoutes = [
@@ -32,6 +33,15 @@ export const settingsRoutes = [
     components: {
       heading: ScrSettingsHeading,
       default: VewAccount,
+    },
+    meta: { layout: 'web' },
+  },
+  {
+    path: '/settings/org',
+    name: 'settingsOrg',
+    components: {
+      heading: ScrSettingsHeading,
+      default: VewOrg,
     },
     meta: { layout: 'web' },
   },

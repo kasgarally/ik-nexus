@@ -30,7 +30,7 @@ That distinguishes NEXUS widgets from app-local components and Vuetify’s `v-*`
 
 ## What this package does not own
 
-Layouts, router, Vuetify theme, and product collections stay in the app. GridFS is [Files](files.md). Select items are [Lists](lists.md). First-run install is [Setup](setup.md). User DDP is [Accounts](accounts.md). After the app registers those packages, widgets call `Files.*` / `Lists.*` / `Setup.*` / accounts helpers.
+Layouts, router, Vuetify theme, and product collections stay in the app. GridFS is [Files](files.md). Select items are [Lists](lists.md). First-run install is [Setup](setup.md). User DDP is [Accounts](accounts.md). Org tree is [Org](org.md). Action DDP is [Actions](actions.md). After the app registers those packages, widgets call `Files.*` / `Lists.*` / `Setup.*` / accounts / org / actions helpers.
 
 ## Inject keys
 
@@ -45,7 +45,7 @@ If translate is not provided, the icon is hidden. If locales are missing, helper
 
 ## i18n
 
-`createNexusI18n({ locales, storageKey, messages })` merges core `locale.*` / `files.*` / `lists.*` / `setup.*` / `settings.*` / `accounts.*` / `auth.*` strings and Vuetify `$vuetify` catalogs with the app’s packs. `fallbackLocale` is `defaultUi`. `NLocaleSelect` lists `locales.ui` and is hidden when that list has fewer than two codes. Arabic sets `dir="rtl"`.
+`createNexusI18n({ locales, storageKey, messages })` merges core `locale.*` / `files.*` / `lists.*` / `setup.*` / `settings.*` / `accounts.*` / `auth.*` / `actions.*` / `org.*` strings and Vuetify `$vuetify` catalogs with the app’s packs. `fallbackLocale` is `defaultUi`. `NLocaleSelect` lists `locales.ui` and is hidden when that list has fewer than two codes. Arabic sets `dir="rtl"`.
 
 Server code that only needs `normalizeLocales` must import `@nexus/ui/src/i18n/locales.js` (GovRN: `appLocales.js`), not the Vue barrel.
 
@@ -62,6 +62,8 @@ See [Locales](locales.md) for UI vs data.
 | Setup | `NSetupWizard` | [Setup](setup.md) |
 | Accounts | `NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm` | [Accounts](accounts.md) |
 | Auth | `NSignIn`, `NForgotPassword`, `NResetPassword`, `NAccountSecurity` | [Auth](auth.md) |
+| Actions | `NUserOrLabelField`, `NActionForm`, `NActionStatusForm`, `NActionStatusTimeline`, `NActionsList` | [Actions](actions.md) — unmounted until Risks |
+| Org | `NOrgTreeEditor`, `NOrgNodeForm` | [Org](org.md) — Settings `/settings/org` |
 | Chrome | `NModal`, `NRemoveIcon`, `NAdminConfigCard`, `NDatePicker`, `NTimePicker` | App only |
 
 Colour and shape are not owned here. Set Vuetify `defaults` in the app (`vuetify.config.js`).

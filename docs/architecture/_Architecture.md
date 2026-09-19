@@ -20,6 +20,8 @@ This folder is the design story. Package READMEs are the public API. [`PACKAGES.
   - [Setup](setup.md)
   - [Accounts](accounts.md)
   - [Auth](auth.md)
+  - [Org](org.md)
+  - [Actions](actions.md)
   - [Applog](applog.md)
 - [Package injection](#package-injection)
 - [What stays in the app](#what-stays-in-the-app)
@@ -45,6 +47,8 @@ flowchart TB
   lists["@nexus/lists"]
   setup["@nexus/setup"]
   accounts["@nexus/accounts"]
+  orgPkg["@nexus/org"]
+  actionsPkg["@nexus/actions"]
   applog["@nexus/applog"]
   screens["App screens and sub-apps"]
   settings --> adapters
@@ -52,6 +56,8 @@ flowchart TB
   adapters --> lists
   adapters --> setup
   adapters --> accounts
+  adapters --> orgPkg
+  adapters --> actionsPkg
   adapters --> applog
   screens --> uiPkg
   uiPkg -->|"after register"| files
@@ -60,7 +66,7 @@ flowchart TB
   uiPkg -->|"after register"| accounts
 ```
 
-GovRN registration order (client and server): **Files → Lists → Setup → Accounts → Applog**. Setup may pass `Applog.runAsSystem` before applog’s `registerWithMeteor`. Applog then wraps collections that already exist.
+GovRN registration order (client and server): **Files → Lists → Setup → Accounts → Org → Actions → Applog**. Setup may pass `Applog.runAsSystem` before applog’s `registerWithMeteor`. Applog then wraps collections that already exist.
 
 ## Guides
 
@@ -72,8 +78,10 @@ GovRN registration order (client and server): **Files → Lists → Setup → Ac
 | [@nexus/ui](ui.md) | `N` prefix, no `meteor/*`, inject keys, i18n factory, which widgets exist. |
 | [Files](files.md) | GridFS (`nexus_files` / `nexus_fs`), `defineOwner`, DDP chunks, HTTP download, `NFileUpload` / `NFileReplace`. |
 | [Setup](setup.md) | First-run singleton `nexus_setup`, wizard vs `devSeedAdmin`, public branding. |
-| [Accounts](accounts.md) | User CRUD, suspend, role catalogs. Settings screens in `@nexus/ui`. |
+| [Accounts](accounts.md) | User CRUD, suspend, role catalogs, `accounts.directory`, `setOrg`. Settings screens in `@nexus/ui`. |
 | [Auth](auth.md) | Split sign-in, password reset, optional TOTP, gated self-register. GovRN is invite-only. |
+| [Org](org.md) | Generic `nexus_org` tree; `profile.orgNodeId`. |
+| [Actions](actions.md) | Shared actions and status journals; `canRead` / `canWrite` plus assignee. |
 | [Applog](applog.md) | Append-only audit, collection wrappers, `runAsSystem`, superadmin-only read. |
 
 ## Package injection
@@ -94,4 +102,4 @@ Layouts, Vuetify theme, Vue Router, product collections (Books, later Risks, inv
 - [`SECURITY.md`](../../SECURITY.md) — deny client writes, roles, uploads, `locales.translate`
 - [`PNPM.md`](../../PNPM.md) — host pnpm for `packages/*` only
 - [`TESTING.md`](../../TESTING.md) — Vitest / mocha / Playwright (only when someone asks)
-- Package READMEs: [ui](../../packages/ui/README.md), [files](../../packages/files/README.md), [lists](../../packages/lists/README.md), [setup](../../packages/setup/README.md), [accounts](../../packages/accounts/README.md), [applog](../../packages/applog/README.md)
+- Package READMEs: [ui](../../packages/ui/README.md), [files](../../packages/files/README.md), [lists](../../packages/lists/README.md), [setup](../../packages/setup/README.md), [accounts](../../packages/accounts/README.md), [org](../../packages/org/README.md), [actions](../../packages/actions/README.md), [applog](../../packages/applog/README.md)

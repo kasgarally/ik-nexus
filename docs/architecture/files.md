@@ -12,6 +12,7 @@ Back to [_Architecture.md](_Architecture.md). Package API: [`packages/files/READ
 
 - [One bucket, many owners](#one-bucket-many-owners)
 - [defineOwner](#defineowner)
+- [Authorize hook](#authorize-hook)
 - [Upload and download](#upload-and-download)
 - [App wiring](#app-wiring)
 - [UI widgets](#ui-widgets)
@@ -44,6 +45,10 @@ Files.defineOwner({
 ```
 
 Unknown `ownerType` is refused. Client `insert` / `update` / `remove` on `nexus_files` are denied.
+
+## Authorize hook
+
+Optional `authorize({ userId, ownerId, action })` replaces the role check. Action file owners (`action.risk`, `actionStatus.risk`) use it so an assignee can reach files on **their** action without a catalog role. Role strings stay required. Product owners stay `allowAnonymous: false`.
 
 ## Upload and download
 

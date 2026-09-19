@@ -28,9 +28,9 @@ This package must **not** import `meteor/*`. The app injects Meteor APIs.
 
 ## What this package owns
 
-- Methods `accounts.users.insert` / `update` / `remove` / `setPassword` / `setSuspended` and `accounts.roles.set`
+- Methods `accounts.users.insert` / `update` / `remove` / `setPassword` / `setSuspended` / `setOrg` and `accounts.roles.set`
 - Guest methods `accounts.authOptions` and `accounts.selfRegister`
-- Publications `accounts.users` and `accounts.roleAssignments` (admin callers only)
+- Publications `accounts.users` and `accounts.roleAssignments` (admin callers only); `accounts.directory` (any logged-in user)
 - In-memory `registerRoleCatalog` / `listRoleCatalog` / `allAssignableRoleNames` for sub-app role names
 - `Accounts.config({ forbidClientAccountCreation: true })`
 - Login rejection when `suspendedAt` is set on the user
@@ -109,6 +109,7 @@ Admin methods: caller must be signed in and in `superadmin` or `admin`. Argument
 | `accounts.users.remove` | not self; not the last superadmin |
 | `accounts.users.setPassword` | admin-set password |
 | `accounts.users.setSuspended` | not self; not the last superadmin |
+| `accounts.users.setOrg` | admin/superadmin; `orgNodeId` is an active `nexus_org` id or `null` to clear. Writes `profile.orgNodeId`. No assignment UI this round. |
 | `accounts.roles.set` | replace roles; not the last superadmin |
 | `accounts.authOptions` | public: `selfRegister`, configured providers, `heroImage`, `prefillDemo` |
 | `accounts.selfRegister` | only when `public.accounts.selfRegister` is true; never grants `superadmin` / `admin` |
@@ -116,6 +117,8 @@ Admin methods: caller must be signed in and in `superadmin` or `admin`. Argument
 ## Publications
 
 `accounts.users` fields: `emails`, `profile.name`, `createdAt`, `suspendedAt` — never `services`. `accounts.roleAssignments` is the meteor-roles assignment collection.
+
+`accounts.directory` is for pickers (assignee combobox). Any logged-in user. Fields: `_id`, `emails`, `profile.name`, `profile.orgNodeId`. Omits suspended users. Never `services`. Org does not publish users.
 
 ## Suspend
 
@@ -138,5 +141,6 @@ Client helpers (after `registerWithMeteor`): `loginWithPassword({ email, passwor
 ## What this package does not do
 
 - Vue screens (those are `@nexus/ui`: `NSignIn`, `NResetPassword`, `NAccountSecurity`, `NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm`)
+- The org tree (that is `@nexus/org`)
 - Applog read access (that is `@nexus/applog`, superadmin only)
 - SMTP / SendGrid setup

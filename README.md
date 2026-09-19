@@ -13,6 +13,7 @@ Start here for orientation. The companion documents below are the detailed contr
 - [What this repository is](#what-this-repository-is)
 - [Documentation](#documentation)
 - [Install worlds](#install-worlds)
+- [Landing a branch](#landing-a-branch)
 - [Shared JS](#shared-js)
 - [Meteor apps](#meteor-apps)
 - [Services](#services)
@@ -26,7 +27,7 @@ Start here for orientation. The companion documents below are the detailed contr
 Companion documents (full guides, not sections of this file):
 
 - [`PACKAGES.md`](PACKAGES.md) — what each `@nexus/*` package owns, why they must not import `meteor/*`, and how a Meteor app injects APIs and consumes `file:` libraries (Rspack, Docker, new packages).
-- [`PNPM.md`](PNPM.md) — host pnpm 10 for `packages/*` only: install, filters, lockfile, and what not to do inside `apps/`.
+- [`PNPM.md`](PNPM.md) — host pnpm 10 for `packages/*` only: install, filters, lockfile, root scripts (`land`, `kill-port`), and what not to do inside `apps/`.
 - [`TESTING.md`](TESTING.md) — when tests are created, and the three layers (Vitest, Meteor mocha, Playwright).
 - [`SECURITY.md`](SECURITY.md) — deny-by-default DDP, roles, uploads, secrets, TLS, and OWASP Top 10 mapped onto this stack.
 - [`LICENSE`](LICENSE) — proprietary licence; all rights reserved to INTELLEKTRA.
@@ -35,7 +36,7 @@ Companion documents (full guides, not sections of this file):
 - [`tooling/penpot/README.md`](tooling/penpot/README.md) — local Penpot design workspace, persistence, exports, backups, and integrated MCP.
 - [`services/README.md`](services/README.md) — Python/Arelle and other non-JS tooling.
 - [`apps/nexus-govrn/README.md`](apps/nexus-govrn/README.md) — how to run GovRN, settings, and the dev seed.
-- [`docs/architecture/_Architecture.md`](docs/architecture/_Architecture.md) — Meteor app design (locales, lists, fields, files, setup, accounts, applog).
+- [`docs/architecture/_Architecture.md`](docs/architecture/_Architecture.md) — Meteor app design (locales, lists, fields, files, setup, accounts, auth, applog).
 
 ## What this repository is
 
@@ -43,7 +44,7 @@ Four isolated install trees share one git repo. That is deliberate: Meteor 3 doe
 
 | Tree | Path | You work on |
 |------|------|-------------|
-| Shared JS | [`packages/*`](packages/ui) | Reusable libraries imported as `@nexus/ui`, `@nexus/files`, `@nexus/applog`, `@nexus/lists`, `@nexus/setup` |
+| Shared JS | [`packages/*`](packages/ui) | Reusable libraries imported as `@nexus/ui`, `@nexus/files`, `@nexus/applog`, `@nexus/lists`, `@nexus/setup`, `@nexus/accounts`, `@nexus/org`, `@nexus/actions` |
 | Meteor products | [`apps/*`](apps/nexus-govrn) | One folder per Meteor app (`nexus-govrn` today). Each copies the same `file:` + `registerWithMeteor` pattern. |
 | Non-JS | [`services/`](services), [`docker/`](docker) | XBRL/Arelle, product Compose, NGINX, Mongo bind mounts |
 | Development tooling | [`tooling/`](tooling/penpot) | Local Penpot design workspace, exports, and MCP |
@@ -57,7 +58,7 @@ Use this table when you need the long form. This README stays short on purpose.
 | Document | Read it when you need to… |
 |----------|---------------------------|
 | [`PACKAGES.md`](PACKAGES.md) | Understand package boundaries, `registerWithMeteor`, GovRN adapters, Rspack `symlinks: false`, or add a new `@nexus/*` library. |
-| [`PNPM.md`](PNPM.md) | Install or pin pnpm, add a workspace dependency, or avoid mixing `pnpm` with `meteor npm`. |
+| [`PNPM.md`](PNPM.md) | Install or pin pnpm, add a workspace dependency, run `land` / `kill-port`, or avoid mixing `pnpm` with `meteor npm`. |
 | [`TESTING.md`](TESTING.md) | Add or run tests (only after a person asked), pick Vitest vs mocha vs Playwright, or find HTML reports. |
 | [`SECURITY.md`](SECURITY.md) | Design a method, publication, upload, or setup flow; map a change to OWASP; handle secrets and TLS. |
 | [`LICENSE`](LICENSE) | Confirm ownership (INTELLEKTRA, author Karmil Asgarally) and that this is not an open-source licence. |
@@ -66,8 +67,8 @@ Use this table when you need the long form. This README stays short on purpose.
 | [`tooling/penpot/README.md`](tooling/penpot/README.md) | Start Penpot, preserve or export designs, back up its data, or connect Cursor through MCP. |
 | [`services/README.md`](services/README.md) | Add Python/Arelle or another sidecar that must **not** join the pnpm workspace. |
 | [`apps/nexus-govrn/README.md`](apps/nexus-govrn/README.md) | Boot GovRN, author `settings.jsonc`, or reason about the first-run wizard vs `devSeedAdmin`. |
-| [`docs/architecture/_Architecture.md`](docs/architecture/_Architecture.md) | Read how a Meteor product wires locales, lists, fields, files, setup, accounts, and applog. |
-| Package READMEs | Call a public API: [ui](packages/ui/README.md), [files](packages/files/README.md), [applog](packages/applog/README.md), [lists](packages/lists/README.md), [setup](packages/setup/README.md). |
+| [`docs/architecture/_Architecture.md`](docs/architecture/_Architecture.md) | Read how a Meteor product wires locales, lists, fields, files, setup, accounts, auth, org, actions, and applog. |
+| Package READMEs | Call a public API: [ui](packages/ui/README.md), [files](packages/files/README.md), [applog](packages/applog/README.md), [lists](packages/lists/README.md), [setup](packages/setup/README.md), [accounts](packages/accounts/README.md), [org](packages/org/README.md), [actions](packages/actions/README.md). |
 
 ## Install worlds
 
@@ -91,7 +92,17 @@ meteor npm start
 
 If a previous `meteor npm start` was left running after the terminal closed, port 3000 stays occupied. Stop that Node listener with `pnpm run kill-port` (or `meteor npm run kill-port` from the app). Details: [`apps/nexus-govrn/README.md`](apps/nexus-govrn/README.md#stale-process-on-port-3000).
 
-When a feature branch is ready and the working tree is clean, `pnpm run land` fast-forwards it onto `main`, pushes, and deletes the branch locally and on `origin`. `pnpm run land -- next-name` then creates `next-name`. Script: [`scripts/land-main.mjs`](scripts/land-main.mjs).
+## Landing a branch
+
+When a feature branch is ready and the working tree is clean:
+
+```bash
+pnpm run land
+pnpm run land -- next-name
+pnpm run land -- --dry-run
+```
+
+That fast-forwards the branch onto `main`, pushes, and deletes it locally and on `origin`. Optional `next-name` creates that branch afterward. It refuses `main` and a dirty tree; rebase onto `main` first if the histories have diverged. Contract: [`PNPM.md`](PNPM.md#land-a-feature-branch). Script: [`scripts/land-main.mjs`](scripts/land-main.mjs).
 
 ## Shared JS
 

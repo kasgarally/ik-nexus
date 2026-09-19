@@ -19,6 +19,7 @@ This repo uses **pnpm 10** for **shared JavaScript packages only**. Meteor produ
 - [Dependencies and peerDependencies](#dependencies-and-peerdependencies)
 - [Lockfile](#lockfile)
 - [Scripts at the repo root](#scripts-at-the-repo-root)
+  - [Land a feature branch](#land-a-feature-branch)
 - [Docker](#docker)
 - [What not to do](#what-not-to-do)
 - [Troubleshooting](#troubleshooting)
@@ -26,7 +27,7 @@ This repo uses **pnpm 10** for **shared JavaScript packages only**. Meteor produ
 
 ## Why pnpm, and why not everywhere
 
-pnpm gives `packages/*` a single lockfile, fast installs, and first-class workspace members (`@nexus/ui`, `@nexus/files`, `@nexus/applog`, `@nexus/lists`, `@nexus/setup`; more JS libs later).
+pnpm gives `packages/*` a single lockfile, fast installs, and first-class workspace members (`@nexus/ui`, `@nexus/files`, `@nexus/applog`, `@nexus/lists`, `@nexus/setup`, `@nexus/accounts`, `@nexus/org`, `@nexus/actions`; more JS libs later).
 
 Meteor 3 does **not** play well with a hoisted monorepo. It installs through `meteor npm` and resolves Vue/Vuetify from **that app’s** `node_modules`. If GovRN were a pnpm workspace member, those deps would hoist (or live in a content-addressable store) and Rspack / `meteor npm ci` would miss them or load two copies.
 
@@ -51,6 +52,9 @@ flowchart TB
     applog["packages/applog @nexus/applog"]
     lists["packages/lists @nexus/lists"]
     setup["packages/setup @nexus/setup"]
+    accounts["packages/accounts @nexus/accounts"]
+    orgPkg["packages/org @nexus/org"]
+    actionsPkg["packages/actions @nexus/actions"]
     futureJs["packages/* future JS"]
     lockfile --- ui
     lockfile --- files
@@ -87,7 +91,7 @@ packages:
   - "packages/*"
 ```
 
-Today that is [`packages/ui`](packages/ui) (`@nexus/ui`), [`packages/files`](packages/files) (`@nexus/files`), [`packages/applog`](packages/applog) (`@nexus/applog`), [`packages/lists`](packages/lists) (`@nexus/lists`), and [`packages/setup`](packages/setup) (`@nexus/setup`). Tomorrow: API clients, shared helpers, config. Each new folder under `packages/` with a `package.json` joins the workspace automatically.
+Today that is [`packages/ui`](packages/ui) (`@nexus/ui`), [`packages/files`](packages/files) (`@nexus/files`), [`packages/applog`](packages/applog) (`@nexus/applog`), [`packages/lists`](packages/lists) (`@nexus/lists`), [`packages/setup`](packages/setup) (`@nexus/setup`), [`packages/accounts`](packages/accounts) (`@nexus/accounts`), [`packages/org`](packages/org) (`@nexus/org`), and [`packages/actions`](packages/actions) (`@nexus/actions`). Tomorrow: API clients, shared helpers, config. Each new folder under `packages/` with a `package.json` joins the workspace automatically.
 
 **Not** workspace members:
 
@@ -95,7 +99,7 @@ Today that is [`packages/ui`](packages/ui) (`@nexus/ui`), [`packages/files`](pac
 - `services/*` — Python/Arelle, DevOps sidecars
 - `docker/*` — Compose stacks (root `npm run docker:*` scripts are Node, not a pnpm package)
 
-Root [`package.json`](package.json) is private. It pins the tool and holds Docker helper scripts. It is **not** a library.
+Root [`package.json`](package.json) is private. It pins the tool and holds host helper scripts (Docker, `land`, `kill-port`, tests). It is **not** a library.
 
 ```json
 "packageManager": "pnpm@10.34.5"
@@ -136,7 +140,7 @@ pnpm install
 That:
 
 1. Reads `pnpm-workspace.yaml`
-2. Links `@nexus/ui`, `@nexus/files`, `@nexus/applog`, `@nexus/lists`, and `@nexus/setup`
+2. Links `@nexus/ui`, `@nexus/files`, `@nexus/applog`, `@nexus/lists`, `@nexus/setup`, `@nexus/accounts`, `@nexus/org`, and `@nexus/actions`
 3. Writes / updates **only** [`pnpm-lock.yaml`](pnpm-lock.yaml)
 4. Puts workspace `node_modules` at the repo root (and under `packages/*` as needed)
 
@@ -198,6 +202,10 @@ Always run workspace commands from the **repo root** unless noted.
 | Outdated workspace deps | `pnpm outdated -r` |
 | Run a script in one package | `pnpm --filter @nexus/ui <script>` |
 | Run a script in every package | `pnpm -r <script>` |
+| Merge the current branch into `main` and delete it | `pnpm run land` |
+| Same, then start the next branch | `pnpm run land -- next-name` |
+| Preview that land with no writes | `pnpm run land -- --dry-run` |
+| Stop a stale Node listener on port 3000 | `pnpm run kill-port` |
 
 There are no package scripts on `@nexus/ui` yet. `-r` / `--filter` are ready for when you add `lint` or `test`.
 
@@ -227,6 +235,9 @@ pnpm names come from each package’s `"name"` field, not the folder name.
 | `packages/applog` | `@nexus/applog` | `--filter @nexus/applog` |
 | `packages/lists` | `@nexus/lists` | `--filter @nexus/lists` |
 | `packages/setup` | `@nexus/setup` | `--filter @nexus/setup` |
+| `packages/accounts` | `@nexus/accounts` | `--filter @nexus/accounts` |
+| `packages/org` | `@nexus/org` | `--filter @nexus/org` |
+| `packages/actions` | `@nexus/actions` | `--filter @nexus/actions` |
 
 ```bash
 pnpm --filter @nexus/ui list
@@ -273,13 +284,13 @@ import { NFileReplace, NFileUpload, NLocaleSelect, createNexusI18n } from '@nexu
 import { Files } from '@nexus/files'
 ```
 
-The import path stays `@nexus/ui` / `@nexus/files` / `@nexus/applog` / `@nexus/lists` / `@nexus/setup` after an npm publish. Only the dependency string in the app `package.json` changes (`file:` → a version). GridFS wiring is documented in [`packages/files/README.md`](packages/files/README.md). Audit wiring is documented in [`packages/applog/README.md`](packages/applog/README.md). List items are documented in [`packages/lists/README.md`](packages/lists/README.md). First-run setup is documented in [`packages/setup/README.md`](packages/setup/README.md).
+The import path stays `@nexus/ui` / `@nexus/files` / `@nexus/applog` / `@nexus/lists` / `@nexus/setup` / `@nexus/accounts` / `@nexus/org` / `@nexus/actions` after an npm publish. Only the dependency string in the app `package.json` changes (`file:` → a version). GridFS wiring is documented in [`packages/files/README.md`](packages/files/README.md). Audit wiring is documented in [`packages/applog/README.md`](packages/applog/README.md). List items are documented in [`packages/lists/README.md`](packages/lists/README.md). First-run setup is documented in [`packages/setup/README.md`](packages/setup/README.md). Org and actions: [`packages/org/README.md`](packages/org/README.md), [`packages/actions/README.md`](packages/actions/README.md).
 
 If Rspack cannot compile the `.vue` files, include the package in `vue-loader` (GovRN already includes `node_modules/@nexus/ui` and `../../packages/ui`). Do not alias `vuetify` to its package root — subpaths like `vuetify/styles` break.
 
 ## Dependencies and peerDependencies
 
-`@nexus/ui` declares **peer** Vue, vue-i18n, Vuetify, `vue-meteor-tracker`, `@nexus/files`, `@nexus/lists`, and `@nexus/setup`. The **app** installs the concrete versions. That is how two products can pin different majors.
+`@nexus/ui` declares **peer** Vue, vue-i18n, Vuetify, `vue-meteor-tracker`, `@nexus/files`, `@nexus/lists`, `@nexus/setup`, `@nexus/accounts`, and `@nexus/actions`. The **app** installs the concrete versions. That is how two products can pin different majors.
 
 pnpm 10 may still materialize those peers into the **workspace** store (`autoInstallPeers` defaults to true). That copy lives under the repo-root `node_modules` / `.pnpm` store. It is for developing the library. It is **not** GovRN’s Vue.
 
@@ -318,7 +329,7 @@ Never run `pnpm import` against an app lockfile to “unify” the repo.
 
 ## Scripts at the repo root
 
-Root scripts are **npm** scripts that call `node docker/stack.mjs`. They do not need pnpm:
+Root [`package.json`](package.json) scripts are Node runners. Docker does not need pnpm:
 
 ```bash
 npm run docker:build -- nexus-govrn
@@ -326,7 +337,40 @@ npm run docker:build -- nexus-govrn
 
 You can run the same via `pnpm run docker:build -- nexus-govrn`. Extra `--` is still required so the app name reaches the Node runner. Using `npm run` here avoids mixing mental models: Docker ≠ workspace.
 
+| Script | Runner | What it does |
+|--------|--------|--------------|
+| `docker`, `docker:*` | [`docker/stack.mjs`](docker/stack.mjs) | Build, up, down, logs, certs for a product stack |
+| `penpot`, `penpot:*` | [`tooling/penpot/stack.mjs`](tooling/penpot/stack.mjs) | Local Penpot design workspace |
+| `kill-port` | [`scripts/kill-port.mjs`](scripts/kill-port.mjs) | Stop a stale Node / Meteor listener (default port 3000) |
+| `land` | [`scripts/land-main.mjs`](scripts/land-main.mjs) | Fast-forward the current branch onto `main`, push, delete that branch |
+| `test`, `test:packages`, `test:watch` | [`scripts/run-vitest.mjs`](scripts/run-vitest.mjs) | Package Vitest |
+| `test:e2e` | Playwright | User-visible flows |
+
 Package and Playwright tests **do** use pnpm at the root: `pnpm test` (Vitest) and `pnpm test:e2e`. Meteor mocha stays `meteor npm test` inside the app. See [`TESTING.md`](TESTING.md).
+
+### Land a feature branch
+
+`pnpm run land` is the repeatable “merge to `main` and delete this branch” step. Run it from the **repo root** on a feature branch whose working tree is clean (committed, no leftover untracked files).
+
+```bash
+pnpm run land
+pnpm run land -- next-name
+pnpm run land -- --dry-run
+pnpm run land -- --dry-run next-name
+```
+
+What a successful land does:
+
+1. Fetches `origin` and checks out `main`
+2. Pulls `origin/main` with `--ff-only`
+3. Fast-forwards `main` to the feature branch (`--ff-only`)
+4. Pushes `origin/main`
+5. Deletes the feature branch on `origin` (if it exists) and locally
+6. Stays on `main`, or creates `next-name` if you passed one
+
+It **refuses** to run on `main`, in a detached HEAD, or with a dirty tree. If `main` and the feature have diverged, it stops, checks the feature branch back out, and tells you to rebase onto `main` first. `--dry-run` prints the plan and writes nothing.
+
+Do not use `land` to publish secrets, force-push, or replace a merge that needs a review on GitHub. Linear history on `main` is the point.
 
 ## Docker
 

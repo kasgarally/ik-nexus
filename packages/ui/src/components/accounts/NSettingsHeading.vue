@@ -17,16 +17,25 @@ const { t } = useI18n()
 
 const isAccountsList = computed(() => props.page === 'accounts')
 const isAccountDetail = computed(() => props.page === 'account')
-const title = computed(() =>
-  isAccountsList.value || isAccountDetail.value
-    ? t('settings.accountsTitle')
-    : t('settings.title'),
-)
-const subtitle = computed(() =>
-  isAccountsList.value || isAccountDetail.value
-    ? t('settings.accountsSubtitle')
-    : t('settings.subtitle'),
-)
+const isOrg = computed(() => props.page === 'org')
+const title = computed(() => {
+  if (isAccountsList.value || isAccountDetail.value) {
+    return t('settings.accountsTitle')
+  }
+  if (isOrg.value) {
+    return t('settings.orgTitle')
+  }
+  return t('settings.title')
+})
+const subtitle = computed(() => {
+  if (isAccountsList.value || isAccountDetail.value) {
+    return t('settings.accountsSubtitle')
+  }
+  if (isOrg.value) {
+    return t('settings.orgSubtitle')
+  }
+  return t('settings.subtitle')
+})
 </script>
 
 <template>
@@ -51,6 +60,14 @@ const subtitle = computed(() =>
         to="/settings/accounts"
       >
         {{ t('settings.accountsTitle') }}
+      </v-btn>
+      <v-btn
+        v-else-if="isOrg"
+        variant="outlined"
+        prepend-icon="mdi-arrow-left"
+        to="/settings"
+      >
+        {{ t('settings.title') }}
       </v-btn>
       <v-btn
         v-else

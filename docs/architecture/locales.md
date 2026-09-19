@@ -24,7 +24,7 @@ Back to [_Architecture.md](_Architecture.md). Fields that edit maps: [Translatab
 | Axis | Settings | Changes | Stored where |
 |------|----------|---------|--------------|
 | **UI** | `defaultUi`, `ui` | Chrome: menus, buttons, Vuetify. `NLocaleSelect` + vue-i18n. | `localStorage` (per app `storageKey`) |
-| **Data** | `defaultData`, `data` | Keys on locale maps (`title`, list titles, book prose). Form tabs and translate. | Mongo on the document |
+| **Data** | `defaultData`, `data` | Keys on locale maps (`title`, list titles, org titles, action/status descriptions, book prose). Form tabs and translate. | Mongo on the document |
 
 `data` must be a subset of `ui`. A client can ship three UI languages and only English data (`ui: ["en","fr","ar"]`, `data: ["en"]`). The picker still switches chrome to French; stored maps stay `{ en: "…" }`.
 

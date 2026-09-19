@@ -105,7 +105,7 @@ Books prose fields (`title`, `description`, `author`, `aboutAuthor`, `publisher`
 
 ## Accounts UI
 
-`/settings` is core app UI in [`imports/ui/settings/`](imports/ui/settings/README.md), not a cloneable sub-app. Named views mount `@nexus/ui` widgets; DDP is `@nexus/accounts`.
+`/settings` is core app UI in [`imports/ui/settings/`](imports/ui/settings/README.md), not a cloneable sub-app. Named views mount `@nexus/ui` widgets; DDP is `@nexus/accounts` and `@nexus/org` (`/settings/org`).
 
 `/signin`, `/forgot-password`, `/reset-password/:token`, and `/account` mount `NSignIn` / reset / `NAccountSecurity`. Helpers are provided from [`imports/ui/authProvide.js`](imports/ui/authProvide.js). Sign-in design: [`docs/architecture/auth.md`](../../docs/architecture/auth.md).
 
@@ -115,7 +115,7 @@ Layout and widget previews (files, lists, submissions chrome, governance, invoic
 
 ## Dev seed
 
-[`imports/api/demoSeedData.js`](imports/api/demoSeedData.js) holds the demo company, address, logo/icon data URLs, and `admin@localhost` credentials. Change that file when the seed payload should change; [`demoAdmin.js`](imports/api/demoAdmin.js) only applies it.
+[`imports/api/demoSeedData.js`](imports/api/demoSeedData.js) holds the demo company, address, logo/icon data URLs, `admin@localhost` credentials, and the dummy `nexus_org` tree. Change that file when the seed payload should change; [`demoAdmin.js`](imports/api/demoAdmin.js) and [`demoOrg.js`](imports/api/demoOrg.js) apply it. Org seed runs only when `nexus_org` is empty.
 
 `public.devSeedAdmin: true` inserts `nexus_setup` (if missing) and the demo admin. Production must omit the key or set it `false`.
 
@@ -130,4 +130,4 @@ Layout and widget previews (files, lists, submissions chrome, governance, invoic
 
 ## Developer guide
 
-How the app is assembled (locales, lists, fields, files, setup, accounts, auth, applog): [`docs/architecture/_Architecture.md`](../../docs/architecture/_Architecture.md). Package wiring and `registerWithMeteor`: [`PACKAGES.md`](../../PACKAGES.md).
+How the app is assembled (locales, lists, fields, files, setup, accounts, auth, org, actions, applog): [`docs/architecture/_Architecture.md`](../../docs/architecture/_Architecture.md). Package wiring and `registerWithMeteor`: [`PACKAGES.md`](../../PACKAGES.md).

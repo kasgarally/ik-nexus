@@ -8,9 +8,11 @@ import {
   METHOD_SELF_REGISTER,
   METHOD_USERS_INSERT,
   METHOD_USERS_REMOVE,
+  METHOD_USERS_SET_ORG,
   METHOD_USERS_SET_PASSWORD,
   METHOD_USERS_SET_SUSPENDED,
   METHOD_USERS_UPDATE,
+  PUBLICATION_DIRECTORY,
   PUBLICATION_ROLE_ASSIGNMENTS,
   PUBLICATION_USERS,
 } from './constants.js'
@@ -19,6 +21,16 @@ import { getMeteorApis } from './register.js'
 export function subscribeUsers(callbacks) {
   const { Meteor } = getMeteorApis()
   return Meteor.subscribe(PUBLICATION_USERS, callbacks)
+}
+
+export function subscribeDirectory(callbacks) {
+  const { Meteor } = getMeteorApis()
+  return Meteor.subscribe(PUBLICATION_DIRECTORY, callbacks)
+}
+
+export function setOrg(params) {
+  const { Meteor } = getMeteorApis()
+  return Meteor.callAsync(METHOD_USERS_SET_ORG, params)
 }
 
 export function subscribeRoleAssignments(callbacks) {

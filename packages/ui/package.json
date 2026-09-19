@@ -18,8 +18,10 @@
   },
   "peerDependencies": {
     "@nexus/accounts": "workspace:*",
+    "@nexus/actions": "workspace:*",
     "@nexus/files": "workspace:*",
     "@nexus/lists": "workspace:*",
+    "@nexus/org": "workspace:*",
     "@nexus/setup": "workspace:*",
     "vue": "^3.5.42",
     "vue-i18n": "^11.4.10",

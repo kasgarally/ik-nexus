@@ -4,9 +4,11 @@
  */
 import { Meteor } from 'meteor/meteor'
 import { registerNexusAccounts } from '/imports/api/nexusAccounts.js'
+import { registerNexusActions } from '/imports/api/nexusActions.js'
 import { registerNexusApplog } from '/imports/api/nexusApplog.js'
 import { registerNexusFiles } from '/imports/api/nexusFiles.js'
 import { registerNexusLists } from '/imports/api/nexusLists.js'
+import { registerNexusOrg } from '/imports/api/nexusOrg.js'
 import { registerNexusSetup } from '/imports/api/nexusSetup.js'
 import { registerBooksClient } from '/imports/apps/Books/index.client.js'
 import { createApp } from 'vue'
@@ -27,6 +29,8 @@ registerNexusFiles()
 registerNexusLists()
 registerNexusSetup()
 registerNexusAccounts()
+registerNexusOrg()
+registerNexusActions()
 registerNexusApplog()
 registerBooksClient()
 

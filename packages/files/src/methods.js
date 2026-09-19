@@ -39,7 +39,10 @@ export function registerMethods({
 
       const owner = requireRegisteredOwner(Meteor, params.ownerType)
       const userId = requireCaller(Meteor, this.userId, owner)
-      await requireOwnerRole(Meteor, Roles, userId, owner, owner.roles.upload)
+      await requireOwnerAccess(Meteor, Roles, userId, owner, {
+        action: 'upload',
+        ownerId: params.ownerId,
+      })
       await requireParentExists(Meteor, owner.collection, params.ownerId)
       rejectInvalidFile(Meteor, params)
 
@@ -127,7 +130,10 @@ export function registerMethods({
 
       const owner = requireRegisteredOwner(Meteor, fileDocument.ownerType)
       const userId = requireCaller(Meteor, this.userId, owner)
-      await requireOwnerRole(Meteor, Roles, userId, owner, owner.roles.remove)
+      await requireOwnerAccess(Meteor, Roles, userId, owner, {
+        action: 'remove',
+        ownerId: fileDocument.ownerId,
+      })
 
       // Blob first so a failed metadata delete can be retried without leaving a live file.
       await storageAdapter.remove(fileDocument.gridFsId)
@@ -139,6 +145,26 @@ export function registerMethods({
 
 export async function userHasRole(Roles, userId, role) {
   return Roles.userIsInRoleAsync(userId, role)
+}
+
+export async function canAccessOwner(Roles, userId, owner, { action, ownerId }) {
+  if (owner.allowAnonymous) {
+    return true
+  }
+  if (!userId) {
+    return false
+  }
+
+  const role = owner.roles?.[action]
+  if (role && (await userHasRole(Roles, userId, role))) {
+    return true
+  }
+
+  if (typeof owner.authorize === 'function') {
+    return Boolean(await owner.authorize({ userId, ownerId, action }))
+  }
+
+  return false
 }
 
 function requireCaller(Meteor, userId, owner) {
@@ -159,13 +185,13 @@ function requireRegisteredOwner(Meteor, ownerType) {
   return owner
 }
 
-async function requireOwnerRole(Meteor, Roles, userId, owner, role) {
+async function requireOwnerAccess(Meteor, Roles, userId, owner, { action, ownerId }) {
   if (owner.allowAnonymous) {
     return
   }
-  const allowed = await userHasRole(Roles, userId, role)
+  const allowed = await canAccessOwner(Roles, userId, owner, { action, ownerId })
   if (!allowed) {
-    throw new Meteor.Error('not-authorized', `Missing role ${role}`)
+    throw new Meteor.Error('not-authorized', `Not allowed to ${action} files for this owner`)
   }
 }
 

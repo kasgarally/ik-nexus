@@ -29,9 +29,9 @@ The last superadmin cannot be removed, suspended, or stripped of that role. You 
 
 ## What the package owns
 
-- Methods `accounts.users.insert` / `update` / `remove` / `setPassword` / `setSuspended` and `accounts.roles.set`
+- Methods `accounts.users.insert` / `update` / `remove` / `setPassword` / `setSuspended` / `setOrg` and `accounts.roles.set`
 - Guest methods `accounts.authOptions` and `accounts.selfRegister` (self-register is off unless settings allow it)
-- Publications `accounts.users` and `accounts.roleAssignments` (admin callers only). User fields never include `services`.
+- Publications `accounts.users` and `accounts.roleAssignments` (admin callers only). `accounts.directory` is any logged-in user (`_id`, name, email, `profile.orgNodeId`; omit suspended). User fields never include `services`.
 - In-memory `registerRoleCatalog` for sub-app role names. The platform catalog includes `superadmin`, `admin`, and `user`.
 - `Accounts.config({ forbidClientAccountCreation: true })`
 - Login rejection when `suspendedAt` is set
@@ -74,7 +74,7 @@ Call `Accounts.registerWithMeteor` **after** Setup, with `record: Applog.record`
 | `NAccountSecurity` | Enroll or disable TOTP for the signed-in user |
 | `NSettingsWorkspace` | Settings landing cards |
 | `NAccountsRegister` | Admin user table (`useAccountsUsers`) |
-| `NAccountForm` | Create/edit, admin-set password, suspend, assign roles |
+| `NAccountForm` | Create/edit, admin-set password, suspend, assign roles. No org picker this round — `setOrg` is a method only. |
 | `NSettingsHeading` | Page heading |
 
 Widgets call the registered accounts helpers or the injected auth object. Vue `v-if` is not security — methods still authorize on the server.
@@ -85,6 +85,7 @@ Widgets call the registered accounts helpers or the injected auth object. Vue `v
 - Do not put OAuth secrets in `Meteor.settings.public`.
 - Do not treat router guards as the access control.
 - Do not re-open client `Accounts.createUser`.
+- Do not write `profile.orgNodeId` from the client. Use `accounts.users.setOrg`.
 
 ## Source map
 

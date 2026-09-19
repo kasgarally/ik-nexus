@@ -6,7 +6,7 @@
  * Product owners require a resume cookie plus the download role.
  */
 import { DOWNLOAD_PATH_PREFIX } from './constants.js'
-import { userHasRole } from './methods.js'
+import { canAccessOwner } from './methods.js'
 import { getRegisteredOwner } from './owners.js'
 import { userIdFromRequest } from './httpAuth.js'
 
@@ -88,10 +88,13 @@ async function streamDownload({
       return
     }
 
-    const canDownload = await userHasRole(Roles, userId, owner.roles.download)
+    const canDownload = await canAccessOwner(Roles, userId, owner, {
+      action: 'download',
+      ownerId: fileDocument.ownerId,
+    })
     if (!canDownload) {
       res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' })
-      res.end('Missing download role')
+      res.end('Not allowed to download this file')
       return
     }
   }

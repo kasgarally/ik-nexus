@@ -5,7 +5,7 @@
  * Publishes nexus_files rows only. GridFS chunks never go over DDP.
  */
 import { PUBLICATION_FOR_OWNER } from './constants.js'
-import { userHasRole } from './methods.js'
+import { canAccessOwner } from './methods.js'
 import { getRegisteredOwner } from './owners.js'
 
 export function registerPublication({ Meteor, check, Roles, filesCollection }) {
@@ -22,7 +22,10 @@ export function registerPublication({ Meteor, check, Roles, filesCollection }) {
       if (!this.userId) {
         return this.ready()
       }
-      const canDownload = await userHasRole(Roles, this.userId, owner.roles.download)
+      const canDownload = await canAccessOwner(Roles, this.userId, owner, {
+        action: 'download',
+        ownerId,
+      })
       if (!canDownload) {
         return this.ready()
       }

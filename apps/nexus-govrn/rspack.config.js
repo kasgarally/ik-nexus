@@ -9,9 +9,11 @@ const { VueLoaderPlugin } = require('vue-loader');
 module.exports = defineConfig(Meteor => {
   const nexusAliases = {
     '@nexus/accounts': path.resolve(__dirname, 'node_modules/@nexus/accounts'),
+    '@nexus/actions': path.resolve(__dirname, 'node_modules/@nexus/actions'),
     '@nexus/applog': path.resolve(__dirname, 'node_modules/@nexus/applog'),
     '@nexus/files': path.resolve(__dirname, 'node_modules/@nexus/files'),
     '@nexus/lists': path.resolve(__dirname, 'node_modules/@nexus/lists'),
+    '@nexus/org': path.resolve(__dirname, 'node_modules/@nexus/org'),
     '@nexus/setup': path.resolve(__dirname, 'node_modules/@nexus/setup'),
     'google-translate-api-x': path.resolve(__dirname, 'node_modules/google-translate-api-x'),
   };

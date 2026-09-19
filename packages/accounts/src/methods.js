@@ -2,6 +2,7 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * DDP account admin plus gated self-register and public auth options
  */
+import { Org } from '@nexus/org'
 import { ADMIN_ROLES } from '@nexus/setup'
 import { allAssignableRoleNames, isAssignableRole } from './catalog.js'
 import { readConfiguredProviders, readPublicAccounts } from './authSettings.js'
@@ -11,6 +12,7 @@ import {
   METHOD_SELF_REGISTER,
   METHOD_USERS_INSERT,
   METHOD_USERS_REMOVE,
+  METHOD_USERS_SET_ORG,
   METHOD_USERS_SET_PASSWORD,
   METHOD_USERS_SET_SUSPENDED,
   METHOD_USERS_UPDATE,
@@ -196,6 +198,30 @@ export function registerMethods({ Meteor, check, Match, Roles, Accounts, record 
       return { ok: true }
     },
 
+    async [METHOD_USERS_SET_ORG](params) {
+      check(params, {
+        id: String,
+        orgNodeId: Match.OneOf(String, null),
+      })
+      await requireAccountAdmin(Meteor, Roles, this.userId)
+      const user = await requireUser(Meteor, params.id)
+      const orgNodeId =
+        params.orgNodeId === null || params.orgNodeId === ''
+          ? null
+          : await readActiveOrgNodeId(Meteor, params.orgNodeId)
+
+      await Meteor.users.updateAsync(user._id, {
+        $set: { 'profile.orgNodeId': orgNodeId, updatedAt: new Date() },
+      })
+      await writeAudit(record, {
+        action: 'setOrg',
+        docId: user._id,
+        document: { orgNodeId },
+        fields: ['orgNodeId'],
+      })
+      return { ok: true }
+    },
+
     async [METHOD_ROLES_SET](params) {
       check(params, { id: String, roles: [String] })
       await requireAccountAdmin(Meteor, Roles, this.userId)
@@ -213,6 +239,14 @@ export function registerMethods({ Meteor, check, Match, Roles, Accounts, record 
       return { ok: true }
     },
   })
+}
+
+async function readActiveOrgNodeId(Meteor, orgNodeId) {
+  const node = await Org.requireActiveNode(orgNodeId)
+  if (!node) {
+    throw new Meteor.Error('invalid-org-node', 'orgNodeId must be an active nexus_org id')
+  }
+  return node._id
 }
 
 async function requireUser(Meteor, id) {

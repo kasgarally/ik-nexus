@@ -8,7 +8,7 @@
 
 const ownersByType = new Map()
 
-export function defineOwner({ type, collection, roles, allowAnonymous = false }) {
+export function defineOwner({ type, collection, roles, allowAnonymous = false, authorize }) {
   if (!type || typeof type !== 'string') {
     throw new Error('defineOwner requires a string type')
   }
@@ -23,11 +23,16 @@ export function defineOwner({ type, collection, roles, allowAnonymous = false })
     throw new Error(`defineOwner(${type}) requires roles.upload, roles.download, and roles.remove`)
   }
 
+  if (authorize != null && typeof authorize !== 'function') {
+    throw new Error(`defineOwner(${type}) authorize must be a function`)
+  }
+
   ownersByType.set(type, {
     type,
     collection,
     roles,
     allowAnonymous: Boolean(allowAnonymous),
+    authorize: authorize || null,
   })
 }
 

@@ -7,11 +7,14 @@ import { MongoInternals } from 'meteor/mongo'
 import { WebApp } from 'meteor/webapp'
 import { Applog } from '@nexus/applog'
 import { seedDemoAdmin } from '/imports/api/demoAdmin.js'
+import { seedDemoOrg } from '/imports/api/demoOrg.js'
 import { seedFilesDemoParents } from '/imports/api/filesDemoParents.js'
 import { registerNexusAccounts } from '/imports/api/nexusAccounts.js'
+import { registerNexusActions } from '/imports/api/nexusActions.js'
 import { registerNexusApplog } from '/imports/api/nexusApplog.js'
 import { registerNexusFiles } from '/imports/api/nexusFiles.js'
 import { registerNexusLists } from '/imports/api/nexusLists.js'
+import { registerNexusOrg } from '/imports/api/nexusOrg.js'
 import { registerNexusSetup } from '/imports/api/nexusSetup.js'
 import { registerBooks } from '/imports/apps/Books/index.server.js'
 import '/imports/api/localesTranslate.js'
@@ -21,12 +24,15 @@ registerNexusFiles({ MongoInternals, WebApp })
 registerNexusLists()
 registerNexusSetup()
 registerNexusAccounts()
+registerNexusOrg()
+registerNexusActions()
 registerNexusApplog()
 
 Meteor.startup(async () => {
   await Applog.runAsSystem(async () => {
     await seedFilesDemoParents()
     await seedDemoAdmin()
+    await seedDemoOrg()
   })
 })
 

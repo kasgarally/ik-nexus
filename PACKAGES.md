@@ -6,7 +6,7 @@ Shared JS packages and how Meteor apps consume them
 
 NEXUS keeps reusable JavaScript in `packages/*` and product code in `apps/*`. Packages are ordinary npm libraries (`@nexus/ui`, `@nexus/files`, …). Meteor product apps consume them with a `file:` dependency and `meteor npm`, not as Atmosphere packages and not as pnpm workspace members.
 
-This file is the integration map. Daily pnpm commands live in [`PNPM.md`](PNPM.md). Per-package APIs live in each package README. Design story (locales, lists, fields, files, setup, accounts, auth, applog): [`docs/architecture/_Architecture.md`](docs/architecture/_Architecture.md).
+This file is the integration map. Daily pnpm commands live in [`PNPM.md`](PNPM.md). Per-package APIs live in each package README. Design story (locales, lists, fields, files, setup, accounts, auth, org, actions, applog): [`docs/architecture/_Architecture.md`](docs/architecture/_Architecture.md).
 
 ## Contents
 
@@ -52,6 +52,8 @@ flowchart TB
     applog["@nexus/applog append-only audit"]
     lists["@nexus/lists translatable select items"]
     setup["@nexus/setup first-run install"]
+    orgPkg["@nexus/org organisation tree"]
+    actionsPkg["@nexus/actions actions + status"]
   end
   subgraph govrn ["apps/nexus-govrn  meteor npm"]
     adapter["imports/api/nexus*.js adapters"]
@@ -64,6 +66,8 @@ flowchart TB
   adapter --> applog
   adapter --> lists
   adapter --> setup
+  adapter --> orgPkg
+  adapter --> actionsPkg
   screens --> ui
   ui -.->|"calls Files / Lists / Setup after the app registered them"| files
   ui -.-> lists
@@ -84,16 +88,18 @@ A folder belongs under `packages/` when it is JavaScript that more than one Mete
 
 ## Package catalog
 
-Today the workspace is six members. Each has its own README for the public API.
+Today the workspace is eight members. Each has its own README for the public API.
 
 | Folder | npm name | What it owns | Meteor injection? |
 |--------|----------|--------------|-------------------|
-| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets including Settings/accounts (`NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm`), sign-in (`NSignIn`, `NResetPassword`, `NAccountSecurity`), translatable fields (`NTranslatableTextField`, `NTranslatableTextarea`), and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
+| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets including Settings/accounts (`NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm`), organisation (`NOrgTreeEditor`), sign-in (`NSignIn`, `NResetPassword`, `NAccountSecurity`), translatable fields (`NTranslatableTextField`, `NTranslatableTextarea`), and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
 | [`packages/files`](packages/files/README.md) | `@nexus/files` | `nexus_files` + GridFS bucket `nexus_fs`, DDP upload/remove, `GET /nexus-files/:fileId`, `Files.defineOwner` | Yes. `Files.registerWithMeteor` |
 | [`packages/applog`](packages/applog/README.md) | `@nexus/applog` | Append-only `nexus_applog`; wraps `insertAsync` / `updateAsync` / `removeAsync`; `Applog.record` / `runAsSystem`. `applog.recent` is **superadmin** only | Yes. `Applog.registerWithMeteor` |
 | [`packages/lists`](packages/lists/README.md) | `@nexus/lists` | `nexus_lists` items (`listKey` + stable `code` + `title` map; always `title.en`) | Yes. `Lists.registerWithMeteor` |
 | [`packages/setup`](packages/setup/README.md) | `@nexus/setup` | Singleton `nexus_setup` (`_id: 'current'`), first admin user, public branding publication | Yes. `Setup.registerWithMeteor` |
-| [`packages/accounts`](packages/accounts/README.md) | `@nexus/accounts` | User CRUD, gated self-register, password reset, optional TOTP wrappers, suspend, role assignment via `meteor/roles`; `registerRoleCatalog` | Yes. `Accounts.registerWithMeteor` |
+| [`packages/accounts`](packages/accounts/README.md) | `@nexus/accounts` | User CRUD, gated self-register, password reset, optional TOTP wrappers, suspend, role assignment via `meteor/roles`; `registerRoleCatalog`; `accounts.directory`; `accounts.users.setOrg` | Yes. `Accounts.registerWithMeteor` |
+| [`packages/org`](packages/org/README.md) | `@nexus/org` | `nexus_org` tree (`parentId`, free `type`, title map); admin writes; descendant helpers | Yes. `Org.registerWithMeteor` |
+| [`packages/actions`](packages/actions/README.md) | `@nexus/actions` | `nexus_actions` / `nexus_action_status`; `defineOwner` with `canRead` / `canWrite`; assignee derivation | Yes. `Actions.registerWithMeteor` |
 
 Layouts, Vuetify theme, routes, and product collections (Risks, invoices, …) stay in the app.
 
@@ -122,6 +128,8 @@ Apps are **not** workspace members. That is why they use `file:`, not `workspace
 "@nexus/files": "file:../../packages/files",
 "@nexus/applog": "file:../../packages/applog",
 "@nexus/lists": "file:../../packages/lists",
+"@nexus/org": "file:../../packages/org",
+"@nexus/actions": "file:../../packages/actions",
 "@nexus/setup": "file:../../packages/setup"
 ```
 
@@ -137,7 +145,7 @@ The house rule is therefore:
 2. The **app** imports Meteor APIs and passes them in once via `registerWithMeteor`.
 3. Calling `registerWithMeteor` twice throws. Using the package before that call throws.
 
-This is the same pattern for files, lists, setup, and applog. It is also why Vitest can mock those APIs: the package has no hidden Meteor import.
+This is the same pattern for files, lists, setup, accounts, org, actions, and applog. It is also why Vitest can mock those APIs: the package has no hidden Meteor import.
 
 ```mermaid
 flowchart LR
@@ -221,7 +229,9 @@ GovRN is the reference consumer. Copy this pattern for the next Meteor product.
 2. **Lists** — `nexus_lists`
 3. **Setup** — `nexus_setup` (may pass `Applog.runAsSystem`; that helper is importable before applog’s `registerWithMeteor`)
 4. **Accounts** — user admin methods; pass `Applog.record` (callable after applog registers)
-5. **Applog** — then, **server only**, `Applog.registerCollection` for `nexus_files`, demo parents, `nexus_lists`, and `nexus_setup`
+5. **Org** — `nexus_org`
+6. **Actions** — `nexus_actions` / `nexus_action_status` (no `defineOwner` until Risks)
+7. **Applog** — then, **server only**, `Applog.registerCollection` for shared collections including org and actions
 
 Startup seeds (`seedFilesDemoParents`, `seedDemoAdmin`) run inside `Applog.runAsSystem` so they are not attributed to a user.
 
@@ -235,9 +245,11 @@ The app never sprinkles `registerWithMeteor` across screens. One adapter per pac
 | [`imports/api/nexusLists.js`](apps/nexus-govrn/imports/api/nexusLists.js) | `@nexus/lists` | Injection only |
 | [`imports/api/nexusSetup.js`](apps/nexus-govrn/imports/api/nexusSetup.js) | `@nexus/setup` | `Accounts` + `Applog.runAsSystem` |
 | [`imports/api/nexusAccounts.js`](apps/nexus-govrn/imports/api/nexusAccounts.js) | `@nexus/accounts` | `Accounts` + `Roles` + `Applog.record` + `ServiceConfiguration` |
+| [`imports/api/nexusOrg.js`](apps/nexus-govrn/imports/api/nexusOrg.js) | `@nexus/org` | Injection + locales |
+| [`imports/api/nexusActions.js`](apps/nexus-govrn/imports/api/nexusActions.js) | `@nexus/actions` | Injection + locales; no `defineOwner` yet |
 | [`imports/api/nexusApplog.js`](apps/nexus-govrn/imports/api/nexusApplog.js) | `@nexus/applog` | Registers collections on the server after the others exist |
 
-Screens import `Files`, `Lists`, `Setup`, `Accounts` helpers, or Vue widgets from `@nexus/ui`. They do not call `registerWithMeteor`.
+Screens import `Files`, `Lists`, `Setup`, `Accounts`, `Org`, `Actions` helpers, or Vue widgets from `@nexus/ui`. They do not call `registerWithMeteor`.
 
 ### Client and server entry
 
@@ -247,6 +259,8 @@ registerNexusFiles()
 registerNexusLists()
 registerNexusSetup()
 registerNexusAccounts()
+registerNexusOrg()
+registerNexusActions()
 registerNexusApplog()
 ```
 
@@ -256,6 +270,8 @@ registerNexusFiles({ MongoInternals, WebApp })
 registerNexusLists()
 registerNexusSetup()
 registerNexusAccounts()
+registerNexusOrg()
+registerNexusActions()
 registerNexusApplog()
 ```
 
@@ -266,7 +282,7 @@ The Vue tree mounts only after those calls, so `NSetupWizard` / `NFileUpload` / 
 [`apps/nexus-govrn/rspack.config.js`](apps/nexus-govrn/rspack.config.js) has three package-related jobs:
 
 1. **`resolve.symlinks: false`** — `file:` installs a junction. If Rspack followed it into `packages/ui`, `vue` / `vuetify` would walk up to the repo root and miss the app’s `node_modules`.
-2. **Aliases** for `@nexus/accounts`, `@nexus/applog`, `@nexus/files`, `@nexus/lists`, `@nexus/setup` to the app’s `node_modules/@nexus/…` so client and server agree on one copy.
+2. **Aliases** for `@nexus/accounts`, `@nexus/actions`, `@nexus/applog`, `@nexus/files`, `@nexus/lists`, `@nexus/org`, `@nexus/setup` to the app’s `node_modules/@nexus/…` so client and server agree on one copy.
 3. **`vue-loader` include** of both `node_modules/@nexus/ui` and `../../packages/ui` so SFCs in the package compile.
 
 Do not alias `vuetify` to its package root — subpaths such as `vuetify/styles` break.
@@ -285,28 +301,31 @@ flowchart TB
 ## Consume a package from a Meteor app
 
 ```javascript
-import { NFileReplace, NFileUpload, NLocaleIcon, NLocaleSelect, NTranslatableTextField, createNexusI18n } from '@nexus/ui'
+import { NActionsList, NFileReplace, NFileUpload, NLocaleIcon, NLocaleSelect, NTranslatableTextField, createNexusI18n } from '@nexus/ui'
 import { Files } from '@nexus/files'
 import { Applog } from '@nexus/applog'
 import { Lists } from '@nexus/lists'
+import { Org } from '@nexus/org'
+import { Actions } from '@nexus/actions'
 import { Setup } from '@nexus/setup'
 ```
 
-The import specifier stays `@nexus/<name>` after an npm publish. GridFS, audit, lists, and setup APIs are documented in the package READMEs.
+The import specifier stays `@nexus/<name>` after an npm publish. GridFS, audit, lists, org, actions, and setup APIs are documented in the package READMEs.
 
 UI widgets assume the matching Meteor package is already registered:
 
 - `NFileUpload` / `NFileReplace` → `Files.registerWithMeteor` + `Files.defineOwner`
 - `NListItemsEditor` / `NListSelect` → `Lists.registerWithMeteor`
 - `NSetupWizard` → `Setup.registerWithMeteor`
+- `NActionsList` / `NActionForm` → `Actions.registerWithMeteor` (and `Actions.defineOwner` when a parent exists)
 
 ## Dependencies and peerDependencies
 
-`@nexus/ui` declares **peer** Vue, vue-i18n, Vuetify, `vue-meteor-tracker`, `@nexus/files`, `@nexus/lists`, `@nexus/setup`, and `@nexus/accounts`. The **app** installs the concrete versions. That is how GovRN can stay on Vuetify 4 while another product upgrades.
+`@nexus/ui` declares **peer** Vue, vue-i18n, Vuetify, `vue-meteor-tracker`, `@nexus/files`, `@nexus/lists`, `@nexus/setup`, `@nexus/accounts`, `@nexus/org`, and `@nexus/actions`. The **app** installs the concrete versions. That is how GovRN can stay on Vuetify 4 while another product upgrades.
 
 pnpm may still put peer copies in the **workspace** store for library development. Those copies are not GovRN’s Vue.
 
-Meteor-injected packages (`files`, `applog`, `lists`, `setup`) have **no** `meteor` npm dependency. Meteor is injected.
+Meteor-injected packages (`files`, `applog`, `lists`, `setup`, `accounts`, `org`, `actions`) have **no** `meteor` npm dependency. Meteor is injected.
 
 When a package needs a real runtime library (a date helper, …):
 
@@ -326,6 +345,8 @@ Package collection names are opinionated, like `meteor-roles`. They do not chang
 | `@nexus/applog` | `nexus_applog` |
 | `@nexus/lists` | `nexus_lists` |
 | `@nexus/setup` | `nexus_setup` (singleton `_id: 'current'`) |
+| `@nexus/org` | `nexus_org` |
+| `@nexus/actions` | `nexus_actions`, `nexus_action_status` |
 
 One Meteor app, one Mongo database, one set of these names, shared by every sub-app (Risks, Controls, ERP, …).
 
@@ -333,8 +354,8 @@ One Meteor app, one Mongo database, one set of these names, shared by every sub-
 
 | Kind | Examples | Talks to Meteor how |
 |------|----------|---------------------|
-| Vue library | `@nexus/ui` | Uses peers from the app. Calls `Files.*` / `Lists.*` / `Setup.*` / `Accounts.*` that the app already registered. SFCs contain **no** `meteor/*` imports. |
-| Injected Meteor library | `@nexus/files`, `@nexus/applog`, `@nexus/lists`, `@nexus/setup`, `@nexus/accounts` | `registerWithMeteor` on client and server. Methods and publications are created inside the package from the injected `Meteor`. |
+| Vue library | `@nexus/ui` | Uses peers from the app. Calls `Files.*` / `Lists.*` / `Setup.*` / `Accounts.*` / `Actions.*` that the app already registered. SFCs contain **no** `meteor/*` imports. |
+| Injected Meteor library | `@nexus/files`, `@nexus/applog`, `@nexus/lists`, `@nexus/setup`, `@nexus/accounts`, `@nexus/org`, `@nexus/actions` | `registerWithMeteor` on client and server. Methods and publications are created inside the package from the injected `Meteor`. |
 
 Keep that split. Do not put DDP methods in `@nexus/ui`. Do not put Vue components in `@nexus/files`.
 
@@ -398,7 +419,7 @@ Optionally point the package `exports` at a built `dist`. The workspace remains 
 - Do not call `registerWithMeteor` from a Vue component. Keep one adapter per package.
 - Do not alias `vuetify` in Rspack to `node_modules/vuetify`.
 - Do not switch the Meteor Dockerfile to `pnpm`.
-- Do not rename `nexus_files` / `nexus_fs` / `nexus_applog` / `nexus_lists` / `nexus_setup` per product.
+- Do not rename `nexus_files` / `nexus_fs` / `nexus_applog` / `nexus_lists` / `nexus_setup` / `nexus_org` / `nexus_actions` / `nexus_action_status` per product.
 - Do not use sync Mongo (`insert`, `findOne`, `fetch`) in packages or apps. See [`.cursor/rules/meteor-async.mdc`](.cursor/rules/meteor-async.mdc).
 
 ## Troubleshooting

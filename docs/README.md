@@ -23,6 +23,9 @@ Long-form design docs for how a Meteor product uses the `@nexus/*` packages. Sta
 | [Files](architecture/files.md) | GridFS, owners, upload widgets |
 | [Setup](architecture/setup.md) | First-run singleton and wizard |
 | [Accounts](architecture/accounts.md) | Users, suspend, role catalogs |
+| [Auth](architecture/auth.md) | Sign-in, password reset, optional TOTP, gated self-register |
+| [Org](architecture/org.md) | Organisation tree and `profile.orgNodeId` |
+| [Actions](architecture/actions.md) | Shared actions, status journals, assignee visibility |
 | [Applog](architecture/applog.md) | Append-only audit |
 
 ## Related contracts

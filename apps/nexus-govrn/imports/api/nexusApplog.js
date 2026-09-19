@@ -6,9 +6,11 @@ import { check, Match } from 'meteor/check'
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Roles } from 'meteor/roles'
+import { Actions, ActionStatus } from '@nexus/actions'
 import { Applog } from '@nexus/applog'
 import { Files } from '@nexus/files'
 import { Lists } from '@nexus/lists'
+import { Org } from '@nexus/org'
 import { Setup } from '@nexus/setup'
 import { FilesDemoParents } from './filesDemoParents.js'
 
@@ -40,5 +42,17 @@ export function registerNexusApplog() {
   Applog.registerCollection({
     name: 'nexus_setup',
     collection: Setup.collection,
+  })
+  Applog.registerCollection({
+    name: 'nexus_org',
+    collection: Org.collection,
+  })
+  Applog.registerCollection({
+    name: 'nexus_actions',
+    collection: Actions.collection,
+  })
+  Applog.registerCollection({
+    name: 'nexus_action_status',
+    collection: ActionStatus.collection,
   })
 }

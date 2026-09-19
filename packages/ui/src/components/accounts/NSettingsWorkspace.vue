@@ -28,6 +28,13 @@ const cards = computed(() => {
       to: '/settings/accounts',
     },
     {
+      key: 'org',
+      title: t('settings.orgTitle'),
+      subtitle: t('settings.orgSubtitle'),
+      icon: 'mdi-sitemap-outline',
+      to: '/settings/org',
+    },
+    {
       key: 'security',
       title: t('auth.securityTitle'),
       subtitle: t('auth.securityHint'),

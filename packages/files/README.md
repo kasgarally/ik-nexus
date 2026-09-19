@@ -18,6 +18,7 @@ Do **not** run `pnpm` inside `apps/`. This package is a `packages/*` workspace m
 - [Collection names](#collection-names)
 - [Roles](#roles)
 - [Anonymous access](#anonymous-access)
+- [Authorize hook](#authorize-hook)
 - [registerWithMeteor and defineOwner](#registerwithmeteor-and-defineowner)
 - [DDP API](#ddp-api)
 - [HTTP download](#http-download)
@@ -92,6 +93,28 @@ Example for risks: `files.risks.upload`, `files.risks.download`, `files.risks.re
 ## Anonymous access
 
 `defineOwner({ allowAnonymous: true })` skips login and role checks on DDP and HTTP. Parent existence, MIME, and size still apply. Role strings stay required so you can turn the flag off later. Default is `false`.
+
+## Authorize hook
+
+Optional `authorize({ userId, ownerId, action })` replaces the meteor-roles check for that owner. Role strings stay required. `@nexus/actions` uses this so assignees can download/upload/remove files on **their** action without a catalog role.
+
+```javascript
+Files.defineOwner({
+  type: 'action.risk',
+  collection: Actions.collection,
+  allowAnonymous: false,
+  roles: {
+    upload: 'files.action.risk.upload',
+    download: 'files.action.risk.download',
+    remove: 'files.action.risk.remove',
+  },
+  async authorize({ userId, ownerId, action }) {
+    // parent canRead / canWrite or assignee — see @nexus/actions
+  },
+})
+```
+
+`action` is `upload`, `download`, or `remove`. The hook runs after login (unless `allowAnonymous`) and after the parent document exists.
 
 ## registerWithMeteor and defineOwner
 

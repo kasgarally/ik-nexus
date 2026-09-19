@@ -1,0 +1,17 @@
+{
+  "name": "@nexus/actions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared actions and action-status journals for NEXUS Meteor apps",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@nexus/files": "workspace:*"
+  }
+}

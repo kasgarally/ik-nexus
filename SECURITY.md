@@ -58,10 +58,10 @@ OWASP Top 10:2021, applied to this monorepo. Treat each row as a build checklist
 
 | ID | Risk | What we do in NEXUS |
 |----|------|----------------------|
-| **A01 Broken Access Control** | Caller reaches another tenant’s data or an admin-only method | Methods check `userId` and `Roles.userIsInRoleAsync`. Publications return `this.ready()` when the caller is not allowed. Lists writes are `superadmin` / `admin` only. Applog is readable only by those roles. Client `insert` / `update` / `remove` are denied on package collections. |
+| **A01 Broken Access Control** | Caller reaches another tenant’s data or an admin-only method | Methods check `userId` and `Roles.userIsInRoleAsync`. Publications return `this.ready()` when the caller is not allowed. Lists and org writes are `superadmin` / `admin` only. Actions use parent `canRead` / `canWrite` plus assignee. Applog is readable only by those roles. Client `insert` / `update` / `remove` are denied on package collections. |
 | **A02 Cryptographic Failures** | Passwords, tokens, or TLS handled badly | Passwords go through `accounts-base` only — never stored on `nexus_setup` or in applog snapshots. Production terminates TLS at NGINX (`fullchain.pem` / `privkey.pem`, gitignored). No secrets in committed JSON. |
 | **A03 Injection** | Untrusted input reaches Mongo, HTTP, or HTML | `check` / `Match` on DDP arguments. Selectors are structured objects, never string-built queries. Vue interpolates by default; do not `v-html` untrusted content. File names used in `Content-Disposition` are sanitized. |
-| **A04 Insecure Design** | Feature ships without an access model | `Files.defineOwner` requires role strings even when `allowAnonymous` is true, so the flag can be turned off. Parent document must exist before upload. Setup is a one-shot singleton. New sub-apps (Risks, Controls) must declare roles **before** they grow methods. |
+| **A04 Insecure Design** | Feature ships without an access model | `Files.defineOwner` requires role strings even when `allowAnonymous` is true, so the flag can be turned off. Optional `authorize` is the real gate for action files (parent `canRead`/`canWrite` or assignee). Parent document must exist before upload. Setup is a one-shot singleton. New sub-apps (Risks, Controls) must declare roles **before** they grow methods. There is no global `risks.reader`. |
 | **A05 Security Misconfiguration** | Debug flags, default accounts, or open CORS in production | `public.devSeedAdmin` must be omitted or `false` in production. Generated `settings.json` is gitignored. `insecure` is not a product package. Docker does not copy `.env` / PEMs into the image context. |
 | **A06 Vulnerable and Outdated Components** | Known-bad npm / Meteor deps | Pin with `pnpm-lock.yaml` (packages) and each app’s `package-lock.json`. CI uses frozen / `npm ci` installs. Do not add a dependency to skip writing a ten-line helper. |
 | **A07 Identification and Authentication Failures** | Weak passwords, session confusion, role mix-ups | First admin is created only by `setup.complete`. Minimum password length is enforced server-side. Client `createUser` is forbidden. Self-register is a gated method. Optional TOTP after enroll. File upload sessions are bound to `userId` when the caller is logged in. Anonymous upload is only for owners that opted in. |
@@ -111,7 +111,7 @@ async 'risks.update'(params) {
 
 - **First user** comes from `@nexus/setup` (`setup.complete` creates the password user and grants `superadmin` and `admin`). There is no committed default password for production.
 - **Dev seed** (`public.devSeedAdmin`) is a local convenience. Production settings must not enable it.
-- **meteor-roles** strings are the authorization source. Files use `files.<ownerType>.upload` / `.download` / `.remove`. Lists and applog read/write gates use `superadmin` / `admin` until a product needs finer roles. The platform catalog also has `user` for gated self-register; setup does not grant it.
+- **meteor-roles** strings are the authorization source. Files use `files.<ownerType>.upload` / `.download` / `.remove` unless an `authorize` hook is the real gate. Lists, org, and applog read/write gates use `superadmin` / `admin` until a product needs finer roles. The platform catalog also has `user` for gated self-register; setup does not grant it. An action assignee (`byWhoUserId`) is **not** a role.
 - **Client account creation is closed.** `Accounts.config({ forbidClientAccountCreation: true })`. Signup, when a product enables `public.accounts.selfRegister`, goes through `accounts.selfRegister` and may only grant catalog roles that are not `superadmin` / `admin`.
 - **OAuth secrets** (`oauth.google`, `oauth.facebook`) stay out of `Meteor.settings.public`. Empty credentials skip `ServiceConfiguration` and hide those buttons.
 - **Optional TOTP** (`accounts-2fa`) is enrolled on `/account`. Password login works without a code until the user enables it. Suspend still rejects password, 2FA, and OAuth.
@@ -123,8 +123,14 @@ A publication is a query the server runs **as that user**. Returning `Collection
 
 | Publication | Who receives rows | Fields |
 |-------------|-------------------|--------|
-| `nexusFiles.forOwner` | Role `files.<type>.download`, or anonymous owner | Metadata only — never GridFS chunks |
+| `nexusFiles.forOwner` | Role `files.<type>.download`, optional `authorize` hook, or anonymous owner | Metadata only — never GridFS chunks |
 | `lists.forKey` | Any logged-in user | All items for that `listKey` (including inactive) |
+| `org.tree` | Any logged-in user | Full `nexus_org` tree (needed for later pickers and server walks) |
+| `actions.forOwner` | Parent `canRead`, else only the caller’s assigned actions | Action rows for that parent |
+| `actionStatus.forAction` | Parent `canRead` or assignee of that action | Status journal rows |
+| `actions.assignedToMe` | Signed-in; `byWhoUserId === this.userId` | The caller’s assigned actions |
+| `accounts.users` | `superadmin` / `admin` | `emails`, `profile.name`, `createdAt`, `suspendedAt` — never `services` |
+| `accounts.directory` | Any logged-in user | `_id`, `profile.name`, `emails`, `profile.orgNodeId`; omit suspended; never `services` |
 | `setup.public` | Anyone (needed before login) | **Only** `companyName`, `logoDataUrl`, `iconDataUrl` |
 | `applog.recent` | `superadmin` / `admin` | Capped (default 50, max 200) |
 
@@ -137,8 +143,9 @@ Address, `firstAdminUserId`, and system versions on `nexus_setup` stay off DDP. 
 - MIME **allowlist** (pdf, office, png/jpeg/gif/webp, txt, csv). Empty MIME is rejected.
 - Default max size **25 MB**. Chunk assembly rejects more bytes than `nexusFiles.start` declared.
 - Parent document must exist (`findOneAsync`) before `start`.
-- `allowAnonymous: true` skips login and roles but **not** parent, MIME, or size. Product owners (risks, invoices) must leave it `false`.
-- HTTP `GET /nexus-files/:fileId` currently serves **anonymous owners only**. Authenticated HTTP is not implemented; non-anonymous owners get `401`. Path ids that contain `/` are ignored (no traversal).
+- `allowAnonymous: true` skips login and roles but **not** parent, MIME, or size. Product owners (risks, invoices, actions) must leave it `false`.
+- Optional `Files.defineOwner({ authorize })` replaces the role check for that owner. Action file owners use it: download if parent `canRead` or assignee; upload/remove if parent `canWrite` or assignee.
+- HTTP `GET /nexus-files/:fileId` requires the `meteor_login_token` cookie plus download access (role or `authorize`) unless the owner is anonymous. Path ids that contain `/` are ignored (no traversal).
 - `Content-Disposition` is `inline` with a sanitized filename. Do not reflect raw user filenames into headers.
 - Hard delete removes metadata **and** GridFS chunks.
 
@@ -212,7 +219,9 @@ Do not put company secrets, license keys, Mongo URIs, or OAuth client secrets in
 
 - Do not add `insecure`, autopublish, or a global `Collection.allow({ insert: () => true })`.
 - Do not pass a client-supplied Mongo modifier through to `updateAsync`.
-- Do not publish `Users.find()` or `Meteor.users` without a field projection.
+- Do not publish `Users.find()` or `Meteor.users` without a field projection. `accounts.directory` is the picker pub — never `services`.
+- Do not let an assignee flip `completed` or edit another user’s action.
+- Do not walk the org tree inside `@nexus/actions`; the parent supplies `canRead` / `canWrite`.
 - Do not log passwords, bcrypt, resume tokens, or raw `services`.
 - Do not enable `allowAnonymous` on a product owner type to “make the demo work”.
 - Do not fetch caller-supplied URLs on the server.

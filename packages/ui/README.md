@@ -25,6 +25,8 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Admin configuration card](#admin-configuration-card)
 - [Settings and accounts](#settings-and-accounts)
 - [Sign-in and account security](#sign-in-and-account-security)
+- [Actions](#actions)
+- [Organisation](#organisation)
 - [Setup wizard](#setup-wizard)
 - [Docker](#docker)
 - [Testing](#testing)
@@ -37,7 +39,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `NTranslatableTextField` / `NTranslatableTextarea` — `v-text-field` / `v-textarea` for a data-locale map; tabs plus translate (fill empty or replace all)
 - `NFileUpload` — many files (`document` list or `images` grid + lightbox)
 - `NFileReplace` — one file (`document` field or clickable `avatar`); uploads the new file, then deletes the previous
-- `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` / `lists.*` / `setup.*` / `auth.*` strings and Vuetify `$vuetify` catalogs
+- `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` / `lists.*` / `setup.*` / `auth.*` / `actions.*` / `org.*` strings and Vuetify `$vuetify` catalogs
 - `NListItemsEditor` — table of items for one `listKey`, add/edit modal, delete confirm
 - `NListSelect` — `v-select` of active items; `v-model` is the stable `code`
 - `NDatePicker` — readonly text field that opens `v-date-picker`; `v-model` is `YYYY-MM-DD`
@@ -51,7 +53,10 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `NAccountsRegister` — admin user table
 - `NAccountForm` — create/edit user, reset password, suspend, assign roles
 - `NSignIn` / `NForgotPassword` / `NResetPassword` / `NAccountSecurity` — password sign-in, reset, optional TOTP (injected helpers, no `meteor/*`)
-- Helpers: `normalizeLocales`, `assertRequiredDataLocale`, `REQUIRED_DATA_LOCALE`, `resolveLocalized`, `emptyLocalizedMap`, `coerceLocalized`, `localeDisplayName`, `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `NEXUS_TRANSLATE_KEY`, `NEXUS_AUTH_KEY`, `useOwnerFiles`, `useListItems`, `useAccountsUsers`
+- `NUserOrLabelField` — directory user or external label (`v-combobox`)
+- `NActionForm` / `NActionStatusForm` / `NActionStatusTimeline` / `NActionsList` — shared action widgets (unmounted until Risks)
+- `NOrgTreeEditor` / `NOrgNodeForm` — organisation tree (Settings)
+- Helpers: `normalizeLocales`, `assertRequiredDataLocale`, `REQUIRED_DATA_LOCALE`, `resolveLocalized`, `emptyLocalizedMap`, `coerceLocalized`, `localeDisplayName`, `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `NEXUS_TRANSLATE_KEY`, `NEXUS_AUTH_KEY`, `useOwnerFiles`, `useListItems`, `useAccountsUsers`, `useOwnerActions`, `useActionStatuses`, `useDirectoryUsers`, `useOrgTree`
 
 Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`. First-run install lives in `@nexus/setup`.
 
@@ -103,6 +108,18 @@ src/
     auth/NForgotPassword.vue
     auth/NResetPassword.vue
     auth/NAccountSecurity.vue
+    actions/NUserOrLabelField.vue
+    actions/NActionForm.vue
+    actions/NActionStatusForm.vue
+    actions/NActionStatusTimeline.vue
+    actions/NActionsList.vue
+    actions/useOwnerActions.js
+    actions/useActionStatuses.js
+    actions/useDirectoryUsers.js
+    org/NOrgNodeForm.vue
+    org/NOrgTreeEditor.vue
+    org/NOrgTreeNode.vue
+    org/useOrgTree.js
     setup/NSetupWizard.vue
   auth/inject.js
 ```
@@ -124,8 +141,10 @@ That does not install or hoist Meteor apps. Do not add `apps/` to [`pnpm-workspa
 ```json
 "@nexus/ui": "file:../../packages/ui",
 "@nexus/accounts": "file:../../packages/accounts",
+"@nexus/actions": "file:../../packages/actions",
 "@nexus/files": "file:../../packages/files",
 "@nexus/lists": "file:../../packages/lists",
+"@nexus/org": "file:../../packages/org",
 "@nexus/setup": "file:../../packages/setup"
 ```
 
@@ -141,7 +160,7 @@ resolve: {
 
 Do not alias `vuetify` to its package root — that breaks `vuetify/styles` and other subpaths.
 
-The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md). Call `Lists.registerWithMeteor` before `NListItemsEditor` / `NListSelect`. See [`packages/lists/README.md`](../lists/README.md). Call `Setup.registerWithMeteor` before `NSetupWizard`. See [`packages/setup/README.md`](../setup/README.md). Call `Accounts.registerWithMeteor` on `@nexus/accounts` before `NAccountsRegister` / `NAccountForm`. See [`packages/accounts/README.md`](../accounts/README.md).
+The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md). Call `Lists.registerWithMeteor` before `NListItemsEditor` / `NListSelect`. See [`packages/lists/README.md`](../lists/README.md). Call `Setup.registerWithMeteor` before `NSetupWizard`. See [`packages/setup/README.md`](../setup/README.md). Call `Accounts.registerWithMeteor` on `@nexus/accounts` before `NAccountsRegister` / `NAccountForm`. See [`packages/accounts/README.md`](../accounts/README.md). Call `Actions.registerWithMeteor` before `NActionsList` / `NActionForm`. See [`packages/actions/README.md`](../actions/README.md). Call `Org.registerWithMeteor` before `NOrgTreeEditor`. See [`packages/org/README.md`](../org/README.md).
 
 ## Create the i18n instance
 
@@ -355,6 +374,28 @@ The Meteor app mounts these on `/signin`, `/forgot-password`, `/reset-password/:
 `NSignIn` shows signup and Google/Facebook only when `authOptions()` says `selfRegister` and that provider is configured. Email/password stay empty unless `prefillDemo` is true. After `no-2fa-code`, the TOTP field appears. `NAccountSecurity` is for any signed-in user.
 
 i18n keys live under `auth.*`. The split hero image is app layout + `settings.public.accounts.heroImage`, not this package.
+
+## Actions
+
+```js
+import { NActionForm, NActionsList, NActionStatusForm, NActionStatusTimeline, NUserOrLabelField } from '@nexus/ui'
+```
+
+Unmounted this round. Risks will pass `ownerType` + `ownerId` to `NActionsList`. `NUserOrLabelField` is a `v-combobox` over `accounts.directory` plus free text (`byWhoUserId` and/or `byWhoLabel`). `completed` is shown when the parent `canWrite`. Overdue is a UI hint (`!completed && byWhen < today`).
+
+There is no org assignment widget on `NAccountForm` this round.
+
+i18n keys live under `actions.*`.
+
+## Organisation
+
+```js
+import { NOrgNodeForm, NOrgTreeEditor } from '@nexus/ui'
+```
+
+GovRN mounts `NOrgTreeEditor` on `/settings/org`. `type` is a free string. Parent select excludes the node and its descendants. Remove is refused when the node has children or assigned users. There is no user-assignment picker on `NAccountForm`.
+
+i18n keys live under `org.*` (editor) and `settings.orgTitle` / `settings.orgSubtitle` (workspace card).
 
 ## Setup wizard
 
