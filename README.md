@@ -35,6 +35,7 @@ Companion documents (full guides, not sections of this file):
 - [`tooling/penpot/README.md`](tooling/penpot/README.md) — local Penpot design workspace, persistence, exports, backups, and integrated MCP.
 - [`services/README.md`](services/README.md) — Python/Arelle and other non-JS tooling.
 - [`apps/nexus-govrn/README.md`](apps/nexus-govrn/README.md) — how to run GovRN, settings, and the dev seed.
+- [`docs/architecture/_Architecture.md`](docs/architecture/_Architecture.md) — Meteor app design (locales, lists, fields, files, setup, accounts, applog).
 
 ## What this repository is
 
@@ -65,6 +66,7 @@ Use this table when you need the long form. This README stays short on purpose.
 | [`tooling/penpot/README.md`](tooling/penpot/README.md) | Start Penpot, preserve or export designs, back up its data, or connect Cursor through MCP. |
 | [`services/README.md`](services/README.md) | Add Python/Arelle or another sidecar that must **not** join the pnpm workspace. |
 | [`apps/nexus-govrn/README.md`](apps/nexus-govrn/README.md) | Boot GovRN, author `settings.jsonc`, or reason about the first-run wizard vs `devSeedAdmin`. |
+| [`docs/architecture/_Architecture.md`](docs/architecture/_Architecture.md) | Read how a Meteor product wires locales, lists, fields, files, setup, accounts, and applog. |
 | Package READMEs | Call a public API: [ui](packages/ui/README.md), [files](packages/files/README.md), [applog](packages/applog/README.md), [lists](packages/lists/README.md), [setup](packages/setup/README.md). |
 
 ## Install worlds

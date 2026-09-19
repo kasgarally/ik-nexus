@@ -14,6 +14,7 @@ import { registerNexusFiles } from '/imports/api/nexusFiles.js'
 import { registerNexusLists } from '/imports/api/nexusLists.js'
 import { registerNexusSetup } from '/imports/api/nexusSetup.js'
 import { registerBooks } from '/imports/apps/Books/index.server.js'
+import '/imports/api/localesTranslate.js'
 import '/imports/api/publishUserRoles.js'
 
 registerNexusFiles({ MongoInternals, WebApp })

@@ -13,6 +13,7 @@ import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
 import { createPinia } from 'pinia'
 import { VueMeteor } from 'vue-meteor-tracker'
+import { NEXUS_TRANSLATE_KEY } from '@nexus/ui'
 import { i18n } from './i18n/index.js'
 import { router } from './router.js'
 import { vuetifyConfig } from './vuetify.config.js'
@@ -36,6 +37,7 @@ app.use(i18n)
 app.use(router)
 app.use(createPinia())
 app.use(vuetify)
+app.provide(NEXUS_TRANSLATE_KEY, (params) => Meteor.callAsync('locales.translate', params))
 
 Meteor.startup(() => {
   app.mount('#app')

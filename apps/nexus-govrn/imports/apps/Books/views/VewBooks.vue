@@ -9,7 +9,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { Lists } from '@nexus/lists'
 import { useListItems } from '@nexus/ui'
-import { Books } from '../collections/books.js'
+import { Books, localizedBookField } from '../collections/books.js'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -117,10 +117,10 @@ onUnmounted(() => {
                   :aria-current="selectedId === row._id ? 'true' : undefined"
                   @click="selectBook(row._id)"
                 >
-                  {{ row.title }}
+                  {{ localizedBookField(row.title, locale) }}
                 </button>
               </td>
-              <td>{{ row.author }}</td>
+              <td>{{ localizedBookField(row.author, locale) }}</td>
               <td>{{ categoryLabel(row.category) }}</td>
               <td>{{ formatPublishedOn(row.publishedOn) }}</td>
             </tr>

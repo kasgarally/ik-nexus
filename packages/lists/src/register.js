@@ -3,7 +3,7 @@
  * Meteor API injection and nexus_lists wiring
  *
  * Meteor 3 will not resolve meteor/* from this npm package. The app injects
- * Meteor, Mongo, check, Match, and Roles once at startup.
+ * Meteor, Mongo, check, Match, Roles, and normalized locales once at startup.
  */
 import { METADATA_COLLECTION } from './constants.js'
 import { registerMethods } from './methods.js'
@@ -20,6 +20,7 @@ export function registerWithMeteor(apis) {
   }
 
   assertRequiredApis(apis)
+  assertLocales(apis.locales)
   meteorApis = apis
   listsCollection = new apis.Mongo.Collection(METADATA_COLLECTION)
   denyClientWrites(listsCollection)
@@ -34,6 +35,7 @@ export function registerWithMeteor(apis) {
     Match: apis.Match,
     Roles: apis.Roles,
     listsCollection,
+    locales: apis.locales,
   })
   registerPublication({
     Meteor: apis.Meteor,
@@ -68,6 +70,25 @@ function assertRequiredApis(apis) {
   const missing = REQUIRED_ALWAYS.filter((name) => apis[name] == null)
   if (missing.length > 0) {
     throw new Error(`registerWithMeteor is missing: ${missing.join(', ')}`)
+  }
+}
+
+function assertLocales(locales) {
+  if (!locales || typeof locales !== 'object' || Array.isArray(locales)) {
+    throw new Error('registerWithMeteor requires locales (defaultUi, ui, defaultData, data)')
+  }
+  if (!Array.isArray(locales.data) || locales.data.length === 0) {
+    throw new Error('registerWithMeteor locales.data must be a non-empty array')
+  }
+  if (typeof locales.defaultData !== 'string' || !locales.data.includes(locales.defaultData)) {
+    throw new Error('registerWithMeteor locales.defaultData must appear in locales.data')
+  }
+  // Same rule as normalizeLocales: English is the required stored key.
+  if (locales.defaultData !== 'en') {
+    throw new Error('registerWithMeteor locales.defaultData must be en')
+  }
+  if (!locales.data.includes('en')) {
+    throw new Error('registerWithMeteor locales.data must include en')
   }
 }
 

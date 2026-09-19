@@ -13,6 +13,7 @@ module.exports = defineConfig(Meteor => {
     '@nexus/files': path.resolve(__dirname, 'node_modules/@nexus/files'),
     '@nexus/lists': path.resolve(__dirname, 'node_modules/@nexus/lists'),
     '@nexus/setup': path.resolve(__dirname, 'node_modules/@nexus/setup'),
+    'google-translate-api-x': path.resolve(__dirname, 'node_modules/google-translate-api-x'),
   };
   return {
     resolve: {

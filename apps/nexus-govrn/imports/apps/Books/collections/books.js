@@ -13,19 +13,23 @@ import { check } from 'meteor/check'
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Files } from '@nexus/files'
+import { appLocales, coerceLocalized, resolveLocalized } from '/imports/api/appLocales.js'
+import { localizedStringSchema } from '/imports/api/localizedString.js'
 import { denyClientWrites, requireLoggedIn, requireRole, SimpleSchema, validateDocument } from '/imports/api/methodHelpers.js'
 
 const collectionName = 'books'
 const rolePrefix = collectionName
 
+export const BOOK_PROSE_FIELDS = ['title', 'description', 'author', 'aboutAuthor', 'publisher']
+
 export const Books = new Mongo.Collection(collectionName)
 
 export const bookSchema = new SimpleSchema({
-  title: { type: String, min: 1, label: 'Title' },
-  description: { type: String, optional: true, defaultValue: '', label: 'Description' },
-  author: { type: String, optional: true, defaultValue: '', label: 'Author' },
-  aboutAuthor: { type: String, optional: true, defaultValue: '', label: 'About the author' },
-  publisher: { type: String, optional: true, defaultValue: '', label: 'Publisher' },
+  title: { type: localizedStringSchema(), label: 'Title' },
+  description: { type: localizedStringSchema({ optional: true }), optional: true, label: 'Description' },
+  author: { type: localizedStringSchema({ optional: true }), optional: true, label: 'Author' },
+  aboutAuthor: { type: localizedStringSchema({ optional: true }), optional: true, label: 'About the author' },
+  publisher: { type: localizedStringSchema({ optional: true }), optional: true, label: 'Publisher' },
   publishedOn: { type: Date, optional: true, label: 'Published on' },
   language: { type: String, optional: true, defaultValue: '', label: 'Language' },
   isbn: { type: String, optional: true, defaultValue: '', label: 'ISBN' },
@@ -115,16 +119,23 @@ if (Meteor.isServer) {
 
   Meteor.startup(() => {
     void Promise.all([
-      Books.createIndexAsync({ title: 1 }),
+      Books.createIndexAsync({ [`title.${appLocales.defaultData}`]: 1 }),
       Books.createIndexAsync({ createdAt: -1 }),
       Books.createIndexAsync({ category: 1 }),
     ])
   })
 }
 
+export function localizedBookField(value, locale) {
+  return resolveLocalized(value, locale, appLocales)
+}
+
 function readFormFields(params) {
   const fields = { ...params }
   delete fields.id
+  for (const name of BOOK_PROSE_FIELDS) {
+    fields[name] = coerceLocalized(fields[name], appLocales)
+  }
   if (fields.publishedOn === '' || fields.publishedOn == null) {
     delete fields.publishedOn
   }

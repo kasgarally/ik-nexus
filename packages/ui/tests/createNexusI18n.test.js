@@ -31,8 +31,14 @@ describe('@nexus/ui createNexusI18n', () => {
   })
 
   it('reads a stored locale when it is supported', () => {
+    const locales = {
+      defaultUi: 'en',
+      ui: ['en', 'fr', 'ar'],
+      defaultData: 'en',
+      data: ['en', 'fr', 'ar'],
+    }
     persistLocale('fr')
-    expect(readStoredLocale()).toBe('fr')
+    expect(readStoredLocale(DEFAULT_STORAGE_KEY, locales)).toBe('fr')
   })
 
   it('sets lang and rtl dir for Arabic', () => {

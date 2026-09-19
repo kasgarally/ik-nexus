@@ -6,8 +6,15 @@ Create and update one book (metadata only; files live on the context pane)
 import { Meteor } from 'meteor/meteor'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NDatePicker, NListSelect } from '@nexus/ui'
-import { Books } from '../collections/books.js'
+import {
+  localeDisplayName,
+  NDatePicker,
+  NListSelect,
+  NTranslatableTextarea,
+  NTranslatableTextField,
+} from '@nexus/ui'
+import { appLocales, coerceLocalized, emptyLocalizedMap } from '/imports/api/appLocales.js'
+import { BOOK_PROSE_FIELDS, Books } from '../collections/books.js'
 
 const props = defineProps({
   bookId: { type: String, default: '' },
@@ -15,20 +22,19 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'saved'])
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 function emptyBook() {
-  return {
-    title: '',
-    description: '',
-    author: '',
-    aboutAuthor: '',
-    publisher: '',
+  const next = {
     publishedOn: '',
     language: '',
     isbn: '',
     category: null,
   }
+  for (const name of BOOK_PROSE_FIELDS) {
+    next[name] = emptyLocalizedMap(appLocales.data)
+  }
+  return next
 }
 
 const form = reactive(emptyBook())
@@ -36,11 +42,12 @@ const saving = ref(false)
 const errorMessage = ref('')
 
 const isUpdate = computed(() => Boolean(props.bookId))
-const languageItems = computed(() => [
-  { value: 'en', title: t('locale.en') },
-  { value: 'fr', title: t('locale.fr') },
-  { value: 'ar', title: t('locale.ar') },
-])
+const languageItems = computed(() =>
+  appLocales.ui.map((code) => ({
+    value: code,
+    title: localeDisplayName(code, t, te),
+  })),
+)
 
 function toIsoDate(value) {
   if (!value) {
@@ -54,19 +61,17 @@ function toIsoDate(value) {
 }
 
 function applyBook(book) {
-  Object.assign(form, emptyBook(), book
-    ? {
-        title: book.title || '',
-        description: book.description || '',
-        author: book.author || '',
-        aboutAuthor: book.aboutAuthor || '',
-        publisher: book.publisher || '',
-        publishedOn: toIsoDate(book.publishedOn),
-        language: book.language || '',
-        isbn: book.isbn || '',
-        category: book.category || null,
-      }
-    : {})
+  const next = emptyBook()
+  if (book) {
+    for (const name of BOOK_PROSE_FIELDS) {
+      next[name] = coerceLocalized(book[name], appLocales)
+    }
+    next.publishedOn = toIsoDate(book.publishedOn)
+    next.language = book.language || ''
+    next.isbn = book.isbn || ''
+    next.category = book.category || null
+  }
+  Object.assign(form, next)
 }
 
 async function loadBook() {
@@ -126,17 +131,34 @@ function cancel() {
     <v-alert v-if="errorMessage" type="error" class="mb-4" closable @click:close="errorMessage = ''">
       {{ errorMessage }}
     </v-alert>
-    <v-text-field v-model="form.title" :label="t('books.titleLabel')" required class="mb-2" />
-    <v-textarea v-model="form.description" :label="t('books.description')" rows="3" auto-grow class="mb-2" />
+    <n-translatable-text-field
+      v-model="form.title"
+      :label="t('books.titleLabel')"
+      :required="true"
+      class="mb-2"
+    />
+    <n-translatable-textarea
+      v-model="form.description"
+      :label="t('books.description')"
+      rows="3"
+      auto-grow
+      class="mb-2"
+    />
     <v-row>
       <v-col cols="12" md="6">
-        <v-text-field v-model="form.author" :label="t('books.author')" />
+        <n-translatable-text-field v-model="form.author" :label="t('books.author')" />
       </v-col>
       <v-col cols="12" md="6">
-        <v-text-field v-model="form.publisher" :label="t('books.publisher')" />
+        <n-translatable-text-field v-model="form.publisher" :label="t('books.publisher')" />
       </v-col>
     </v-row>
-    <v-textarea v-model="form.aboutAuthor" :label="t('books.aboutAuthor')" rows="2" auto-grow class="mb-2" />
+    <n-translatable-textarea
+      v-model="form.aboutAuthor"
+      :label="t('books.aboutAuthor')"
+      rows="2"
+      auto-grow
+      class="mb-2"
+    />
     <v-row>
       <v-col cols="12" md="4">
         <n-date-picker v-model="form.publishedOn" :label="t('books.publishedOn')" clearable />

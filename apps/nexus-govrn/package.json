@@ -20,6 +20,7 @@
     "@nexus/setup": "file:../../packages/setup",
     "@nexus/ui": "file:../../packages/ui",
     "@swc/helpers": "^0.5.17",
+    "google-translate-api-x": "^10.7.3",
     "meteor-node-stubs": "^1.2.30",
     "pinia": "^4.0.3",
     "vue": "^3.5.42",

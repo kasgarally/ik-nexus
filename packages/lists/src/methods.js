@@ -3,20 +3,17 @@
  * DDP insert / update / remove for nexus_lists
  *
  * listKey and code are immutable after insert. Only superadmin/admin write.
+ * Title maps accept exactly the registered data locales.
  */
 import { METHOD_INSERT, METHOD_REMOVE, METHOD_UPDATE, WRITE_ROLES } from './constants.js'
 
-export function registerMethods({ Meteor, check, Match, Roles, listsCollection }) {
+export function registerMethods({ Meteor, check, Match, Roles, listsCollection, locales }) {
   Meteor.methods({
     async [METHOD_INSERT](params) {
       check(params, {
         listKey: String,
         code: String,
-        title: {
-          en: String,
-          fr: Match.Maybe(String),
-          ar: Match.Maybe(String),
-        },
+        title: titleMatch(Match, locales, { defaultRequired: true }),
         sortOrder: Match.Maybe(Number),
         active: Match.Maybe(Boolean),
         meta: Match.Maybe(Object),
@@ -26,7 +23,7 @@ export function registerMethods({ Meteor, check, Match, Roles, listsCollection }
 
       const listKey = requireNonEmpty(Meteor, params.listKey, 'invalid-list-key', 'listKey is required')
       const code = requireNonEmpty(Meteor, params.code, 'invalid-code', 'code is required')
-      const title = buildTitle(Meteor, params.title)
+      const title = buildTitle(Meteor, params.title, locales)
       requirePlainMeta(Meteor, params.meta)
 
       const now = new Date()
@@ -55,11 +52,7 @@ export function registerMethods({ Meteor, check, Match, Roles, listsCollection }
     async [METHOD_UPDATE](params) {
       check(params, {
         id: String,
-        title: Match.Maybe({
-          en: Match.Maybe(String),
-          fr: Match.Maybe(String),
-          ar: Match.Maybe(String),
-        }),
+        title: Match.Maybe(titleMatch(Match, locales, { defaultRequired: false })),
         sortOrder: Match.Maybe(Number),
         active: Match.Maybe(Boolean),
         meta: Match.Maybe(Object),
@@ -76,7 +69,7 @@ export function registerMethods({ Meteor, check, Match, Roles, listsCollection }
 
       const fields = { updatedAt: new Date() }
       if (params.title !== undefined) {
-        fields.title = mergeTitle(Meteor, existing.title, params.title)
+        fields.title = mergeTitle(Meteor, existing.title, params.title, locales)
       }
       if (params.sortOrder !== undefined) {
         fields.sortOrder = readSortOrder(Meteor, params.sortOrder)
@@ -108,6 +101,15 @@ export function registerMethods({ Meteor, check, Match, Roles, listsCollection }
   })
 }
 
+function titleMatch(Match, locales, { defaultRequired }) {
+  const pattern = {}
+  for (const code of locales.data) {
+    pattern[code] =
+      defaultRequired && code === locales.defaultData ? String : Match.Maybe(String)
+  }
+  return pattern
+}
+
 async function requireWriteRole(Meteor, Roles, userId) {
   if (!userId) {
     throw new Meteor.Error('not-logged-in', 'You must be logged in to change nexus_lists')
@@ -135,43 +137,61 @@ function optionalLocale(value) {
   return trimmed || undefined
 }
 
-function buildTitle(Meteor, title) {
-  const en = requireNonEmpty(Meteor, title.en, 'invalid-title', 'title.en is required')
-  const next = { en }
-  const fr = optionalLocale(title.fr)
-  const ar = optionalLocale(title.ar)
-  if (fr) {
-    next.fr = fr
-  }
-  if (ar) {
-    next.ar = ar
+function buildTitle(Meteor, title, locales) {
+  const { data, defaultData } = locales
+  const required = requireNonEmpty(
+    Meteor,
+    title[defaultData],
+    'invalid-title',
+    `title.${defaultData} is required`,
+  )
+  const next = { [defaultData]: required }
+
+  for (const code of data) {
+    if (code === defaultData) {
+      continue
+    }
+    const value = optionalLocale(title[code])
+    if (value) {
+      next[code] = value
+    }
   }
   return next
 }
 
-function mergeTitle(Meteor, current, patch) {
-  const merged = { ...(current || {}) }
-  if (patch.en !== undefined) {
-    merged.en = requireNonEmpty(Meteor, patch.en, 'invalid-title', 'title.en cannot be empty')
-  }
-  if (patch.fr !== undefined) {
-    const fr = optionalLocale(patch.fr)
-    if (fr) {
-      merged.fr = fr
-    } else {
-      delete merged.fr
+function mergeTitle(Meteor, current, patch, locales) {
+  const { data, defaultData } = locales
+  const merged = {}
+
+  for (const code of data) {
+    if (typeof current?.[code] === 'string' && current[code].trim()) {
+      merged[code] = current[code].trim()
     }
   }
-  if (patch.ar !== undefined) {
-    const ar = optionalLocale(patch.ar)
-    if (ar) {
-      merged.ar = ar
+
+  for (const code of data) {
+    if (patch[code] === undefined) {
+      continue
+    }
+    if (code === defaultData) {
+      merged[code] = requireNonEmpty(
+        Meteor,
+        patch[code],
+        'invalid-title',
+        `title.${defaultData} cannot be empty`,
+      )
+      continue
+    }
+    const value = optionalLocale(patch[code])
+    if (value) {
+      merged[code] = value
     } else {
-      delete merged.ar
+      delete merged[code]
     }
   }
-  if (!merged.en) {
-    throw new Meteor.Error('invalid-title', 'title.en is required')
+
+  if (!merged[defaultData]) {
+    throw new Meteor.Error('invalid-title', `title.${defaultData} is required`)
   }
   return merged
 }

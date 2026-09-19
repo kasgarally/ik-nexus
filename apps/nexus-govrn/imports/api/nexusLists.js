@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Roles } from 'meteor/roles'
 import { Lists } from '@nexus/lists'
+import { appLocales } from '/imports/api/appLocales.js'
 
 export function registerNexusLists() {
   Lists.registerWithMeteor({
@@ -15,5 +16,6 @@ export function registerNexusLists() {
     check,
     Match,
     Roles,
+    locales: appLocales,
   })
 }

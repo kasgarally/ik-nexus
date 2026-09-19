@@ -10,6 +10,8 @@ export { useAccountsUsers } from './components/accounts/useAccountsUsers.js'
 export { default as NAdminConfigCard } from './components/admin/NAdminConfigCard.vue'
 export { default as NModal } from './components/dialogs/NModal.vue'
 export { default as NRemoveIcon } from './components/dialogs/NRemoveIcon.vue'
+export { default as NTranslatableTextarea } from './components/fields/NTranslatableTextarea.vue'
+export { default as NTranslatableTextField } from './components/fields/NTranslatableTextField.vue'
 export { default as NFileReplace } from './components/files/NFileReplace.vue'
 export { default as NFileUpload } from './components/files/NFileUpload.vue'
 export { useOwnerFiles } from './components/files/useOwnerFiles.js'
@@ -23,11 +25,20 @@ export { default as NTimePicker } from './components/pickers/NTimePicker.vue'
 export { default as NSetupWizard } from './components/setup/NSetupWizard.vue'
 export {
   applyDocumentLocale,
+  assertRequiredDataLocale,
+  coerceLocalized,
   createNexusI18n,
   DEFAULT_STORAGE_KEY,
+  emptyLocalizedMap,
+  localeDisplayName,
   NEXUS_LOCALE_STORAGE_KEY,
+  NEXUS_LOCALES_KEY,
+  NEXUS_TRANSLATE_KEY,
+  normalizeLocales,
   persistLocale,
   readStoredLocale,
+  REQUIRED_DATA_LOCALE,
+  resolveLocalized,
   setAppLocale,
   supportedLocales,
 } from './i18n/createNexusI18n.js'

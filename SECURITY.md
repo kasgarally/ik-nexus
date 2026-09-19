@@ -20,6 +20,8 @@ Cursor follows the same rules in [`.cursor/rules/security-owasp.mdc`](.cursor/ru
 - [First-run setup](#first-run-setup)
 - [Audit log](#audit-log)
 - [Secrets, settings, and TLS](#secrets-settings-and-tls)
+  - [Locale settings](#locale-settings)
+  - [Translation](#translation)
 - [Client UI (Vue)](#client-ui-vue)
 - [Dependencies and supply chain](#dependencies-and-supply-chain)
 - [Docker and production](#docker-and-production)
@@ -65,7 +67,7 @@ OWASP Top 10:2021, applied to this monorepo. Treat each row as a build checklist
 | **A07 Identification and Authentication Failures** | Weak passwords, session confusion, role mix-ups | First admin is created only by `setup.complete`. Minimum password length is enforced server-side. File upload sessions are bound to `userId` when the caller is logged in. Anonymous upload is only for owners that opted in. |
 | **A08 Software and Data Integrity Failures** | Tampered lockfile, untrusted `eval`, unsigned artifacts | Commit lockfiles. Do not `eval` client input. Meteor methods are the write path; do not expose a generic “run this modifier” API. |
 | **A09 Security Logging Failures** | No trail of who changed which document | `@nexus/applog` wraps `*Async` writes. Failed audit inserts log to the console and do not fail the business write — still investigate those console errors. Redact secrets from snapshots. Do not log passwords. |
-| **A10 Server-Side Request Forgery** | Server fetches a caller-supplied URL | Do not fetch client-supplied URLs in methods. Logo/icon are data URLs with an `image/` prefix and size cap, not remote URLs the server retrieves. |
+| **A10 Server-Side Request Forgery** | Server fetches a caller-supplied URL | Do not fetch client-supplied URLs in methods. Logo/icon are data URLs with an `image/` prefix and size cap, not remote URLs the server retrieves. `locales.translate` fetches a **fixed** Google Translate host with checked text and data-locale codes — never a caller URL. |
 
 Additional cheat sheets that apply here: **File Upload**, **Session Management**, **MongoDB**, **XSS**. When a change touches uploads, DDP, or HTML, read the matching OWASP cheat sheet and implement the control in named helpers.
 
@@ -168,6 +170,14 @@ Demo owner `demo` in GovRN is anonymous on purpose for `/files-test`. Do not cop
 | Dev seed credentials | [`demoSeedData.js`](apps/nexus-govrn/imports/api/demoSeedData.js) is for local `meteor reset` only. Never enable `devSeedAdmin` on a public host. |
 
 Do not put company secrets, license keys, or Mongo URIs in `Meteor.settings.public`. That object is sent to every client. Do not bake `settings.json` or relay credentials into [`docker/Dockerfile`](docker/Dockerfile). Do not commit a PM2-style file that lists live SendGrid or Twilio keys — treat any historical copy as leaked and rotate those values.
+
+### Locale settings
+
+`public.locales` (`defaultUi`, `ui`, `defaultData`, `data`) is public configuration, not a secret. It is sent to every client and only names language codes. `defaultData` must be `en` and `data` must include `en`. `data` must be a subset of `ui`. Lists and Books accept map keys that appear in `data` and reject or drop anything else — a caller cannot persist an arbitrary locale key. Do not put credentials, license URLs, or tenant identifiers in this object. The UI locale in `localStorage` is not an access-control signal.
+
+### Translation
+
+`locales.translate` requires a signed-in user, at least two data locales, a non-empty text cap (5000 characters), and `from` / `to` codes that appear in `locales.data`. A one-code `data` list (`["en"]`) is refused before any Google call. The server calls `translate.google.com` through `google-translate-api-x` (unofficial, rate-limited, can break). The caller cannot choose the host. `@nexus/ui` only invokes an injected function; it does not import the npm package.
 
 ## Client UI (Vue)
 

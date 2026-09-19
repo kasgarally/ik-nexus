@@ -3,8 +3,11 @@ Author: Karmil Asgarally - INTELLEKTRA © 2026
 Fields for one nexus_lists item (used inside a dialog)
 -->
 <script setup>
-import { computed, reactive, watch } from 'vue'
+import { computed, inject, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { emptyLocalizedMap, NEXUS_LOCALES_KEY } from '../../i18n/createNexusI18n.js'
+import { defaultLocales } from '../../i18n/locales.js'
+import NTranslatableTextField from '../fields/NTranslatableTextField.vue'
 
 const props = defineProps({
   creating: { type: Boolean, default: true },
@@ -14,6 +17,7 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 const { t } = useI18n()
+const locales = inject(NEXUS_LOCALES_KEY, defaultLocales())
 
 const draft = reactive(emptyDraft())
 
@@ -26,15 +30,13 @@ watch(
 )
 
 const canSubmit = computed(() => {
-  return Boolean(draft.code.trim() && draft.titleEn.trim())
+  return Boolean(draft.code.trim() && String(draft.title[locales.defaultData] || '').trim())
 })
 
 function emptyDraft() {
   return {
     code: '',
-    titleEn: '',
-    titleFr: '',
-    titleAr: '',
+    title: emptyLocalizedMap(locales.data),
     sortOrder: 0,
     active: true,
   }
@@ -46,10 +48,15 @@ function applyItem(item) {
     return
   }
 
+  const title = emptyLocalizedMap(locales.data)
+  for (const code of locales.data) {
+    if (typeof item.title?.[code] === 'string') {
+      title[code] = item.title[code]
+    }
+  }
+
   draft.code = item.code || ''
-  draft.titleEn = item.title?.en || ''
-  draft.titleFr = item.title?.fr || ''
-  draft.titleAr = item.title?.ar || ''
+  draft.title = title
   draft.sortOrder = Number.isFinite(item.sortOrder) ? item.sortOrder : 0
   draft.active = item.active !== false
 }
@@ -59,13 +66,14 @@ function onSubmit() {
     return
   }
 
+  const title = {}
+  for (const code of locales.data) {
+    title[code] = String(draft.title[code] || '').trim()
+  }
+
   emit('submit', {
     code: draft.code.trim(),
-    title: {
-      en: draft.titleEn.trim(),
-      fr: draft.titleFr.trim(),
-      ar: draft.titleAr.trim(),
-    },
+    title,
     sortOrder: Number(draft.sortOrder) || 0,
     active: Boolean(draft.active),
   })
@@ -82,24 +90,10 @@ function onSubmit() {
       autocomplete="off"
       class="mb-2"
     />
-    <v-text-field
-      v-model="draft.titleEn"
-      :label="t('lists.titleEn')"
-      :disabled="disabled"
-      :rules="[(value) => Boolean(String(value || '').trim()) || t('lists.titleEnRequired')]"
-      autocomplete="off"
-      class="mb-2"
-    />
-    <v-text-field
-      v-model="draft.titleFr"
-      :label="t('lists.titleFr')"
-      :disabled="disabled"
-      autocomplete="off"
-      class="mb-2"
-    />
-    <v-text-field
-      v-model="draft.titleAr"
-      :label="t('lists.titleAr')"
+    <n-translatable-text-field
+      v-model="draft.title"
+      :label="t('lists.title')"
+      :required="true"
       :disabled="disabled"
       autocomplete="off"
       class="mb-2"

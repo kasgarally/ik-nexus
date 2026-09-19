@@ -4,7 +4,7 @@ Shared NEXUS translatable select lists
 -->
 # @nexus/lists
 
-Central repository of translatable select-list items for one Meteor app. Each option has a stable `code` (what you store and filter on) and `title.en` / `title.fr` / `title.ar` (what a later v-select shows in the user’s locale).
+Central repository of translatable select-list items for one Meteor app. Each option has a stable `code` (what you store and filter on) and a `title` map whose keys come from `settings.public.locales.data` (what a later v-select shows in the user’s locale). Extra codes in `data` (for example `es`) persist even when there is no UI catalog for that code.
 
 The collection name is fixed (`nexus_lists`), like `nexus_files`. There is no UI in this package.
 
@@ -53,7 +53,7 @@ Then `meteor npm install` in that app. Do not use `workspace:*`.
 
 ## registerWithMeteor
 
-Call once on the client and once on the server (same split as `@nexus/files`):
+Call once on the client and once on the server (same split as `@nexus/files`). Pass the normalized locales object from the app (`normalizeLocales` in `@nexus/ui` / `@nexus/ui/locales`):
 
 ```javascript
 import { Lists } from '@nexus/lists'
@@ -62,10 +62,10 @@ import { Mongo } from 'meteor/mongo'
 import { check, Match } from 'meteor/check'
 import { Roles } from 'meteor/roles'
 
-Lists.registerWithMeteor({ Meteor, Mongo, check, Match, Roles })
+Lists.registerWithMeteor({ Meteor, Mongo, check, Match, Roles, locales })
 ```
 
-Calling it twice throws. Client inserts/updates/removes on `nexus_lists` are denied.
+`locales` must include `defaultData: "en"` and a `data` array that contains `en` (minimum `["en"]`). Insert/update `check` / `Match` and `buildTitle` accept exactly those keys; `title.en` is required. Extra keys are rejected. Calling it twice throws. Client inserts/updates/removes on `nexus_lists` are denied.
 
 ## Document shape
 
@@ -73,8 +73,7 @@ Calling it twice throws. Client inserts/updates/removes on `nexus_lists` are den
 |-------|---------|
 | `listKey` | Which v-select this row belongs to (`risks.category`, `risks.likelihood`) |
 | `code` | Stable value stored on domain docs and used to filter. Unique per `listKey`. Immutable after insert. |
-| `title.en` | Required English label |
-| `title.fr` / `title.ar` | Optional. Missing locales fall back to `en`, then `code`. |
+| `title.<data>` | Map keyed by `locales.data`. `title.en` is required; other data keys are optional. Display uses the UI locale only when that code is in `data`; otherwise `defaultData`, then `code`. Leftover keys that are not in `data` are ignored. |
 | `sortOrder` | Number, default `0` |
 | `active` | Boolean, default `true`. Inactive rows stay in Mongo; UI later can hide them. |
 | `meta` | Optional plain object (`score`, `color`, …). This package does not interpret it. |
@@ -127,7 +126,9 @@ Lists.subscribeForKey('risks.category')
 ## Lists.title
 
 ```javascript
-Lists.title(item, locale) // item.title[locale] || item.title.en || item.code
+Lists.title(item, locale)
+// locale must be in locales.data, else title.en, else item.code
+// leftover title.fr is ignored when data is ["en"]
 ```
 
 ## What this package does not do

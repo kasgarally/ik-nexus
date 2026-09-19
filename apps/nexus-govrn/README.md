@@ -11,9 +11,11 @@ Meteor 3 + Vue 3 product app. First boot is gated by `/onboarding` until `nexus_
 - [How to run](#how-to-run)
   - [Stale process on port 3000](#stale-process-on-port-3000)
 - [Settings](#settings)
+  - [Locale settings](#locale-settings)
 - [Accounts UI](#accounts-ui)
 - [Dev seed](#dev-seed)
 - [Libraries used](#libraries-used)
+- [Developer guide](#developer-guide)
 
 ## How to run
 
@@ -59,7 +61,27 @@ Author [`settings.jsonc`](settings.jsonc). `meteor npm start` (or `meteor npm ru
 node ../../scripts/build-settings.mjs
 ```
 
-`Meteor.settings.public` is for flags (and later a license URL). Company fields do not live here.
+`Meteor.settings.public` is for flags (and later a license URL) plus the locale block below. Company fields do not live here.
+
+### Locale settings
+
+GovRN ships three UI languages and three data languages so the picker and the translatable field tabs are both visible:
+
+```jsonc
+"locales": {
+  "defaultUi": "en",
+  "ui": ["en", "fr", "ar"],
+  "defaultData": "en",
+  "data": ["en", "fr", "ar"]
+}
+```
+
+All four keys are mandatory. `defaultData` must be `en` and `data` must include `en` (the minimum stored map is `{ en }`). `defaultUi` must be in `ui`, `defaultData` must be in `data`, and every `data` code must appear in `ui`. Invalid settings fail startup. With `data: ["en"]` only, translatable fields render a single control (no tabs, no translate) and `locales.translate` is refused.
+
+- **UI** — `NLocaleSelect` and vue-i18n chrome. Hidden when `ui` has fewer than two codes. A stored locale that is not in `ui` falls back to `defaultUi`. Missing catalogs (for example `es`) stay on `defaultUi` English chrome until a pack is added.
+- **Data** — keys stored on list titles and Books prose (`title`, `description`, `author`, `aboutAuthor`, `publisher`). Lists persist whatever is in `data`, including codes with no UI pack. Other Book fields stay scalars.
+
+Books prose fields (`title`, `description`, `author`, `aboutAuthor`, `publisher`) use `NTranslatableTextField` / `NTranslatableTextarea`. Tabs and translate follow **data** locales, not the header picker. Click translate to fill empty locales; the chevron offers replace-all. `locales.translate` is a logged-in DDP method (Google Translate unofficial client on the server). Views resolve through `locales.data` only: `map[uiLocale]` when that code is in `data`, else `map[defaultData]`, else `''`. A leftover `title.fr` is ignored when `data` is `["en"]`. Legacy strings coerce to `{ [defaultData]: value }`.
 
 ## Accounts UI
 
@@ -79,3 +101,7 @@ node ../../scripts/build-settings.mjs
 - [Meteor](https://www.meteor.com/)
 - [Vue Meteor Tracker](https://github.com/meteor-vue/vue-meteor-tracker)
 - [Vuetify](https://vuetifyjs.com/)
+
+## Developer guide
+
+How the app is assembled (locales, lists, fields, files, setup, accounts, applog): [`docs/architecture/_Architecture.md`](../../docs/architecture/_Architecture.md). Package wiring and `registerWithMeteor`: [`PACKAGES.md`](../../PACKAGES.md).

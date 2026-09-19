@@ -11,7 +11,7 @@ import { IMAGE_MIME_TYPES } from '@nexus/files'
 import { Lists } from '@nexus/lists'
 import { NAdminConfigCard, NFileReplace, NModal, NRemoveIcon, useListItems, useOwnerFiles } from '@nexus/ui'
 import { useUserRole } from '/imports/ui/useUserRole.js'
-import { Books } from '../collections/books.js'
+import { Books, localizedBookField } from '../collections/books.js'
 import FrmBook from '../forms/FrmBook.vue'
 
 const { t, locale } = useI18n()
@@ -59,6 +59,12 @@ const {
 
 const cover = computed(() => coverFiles.value[0] || null)
 const pdf = computed(() => pdfFiles.value[0] || null)
+
+const displayTitle = computed(() => localizedBookField(book.value?.title, locale.value))
+const displayAuthor = computed(() => localizedBookField(book.value?.author, locale.value))
+const displayPublisher = computed(() => localizedBookField(book.value?.publisher, locale.value))
+const displayDescription = computed(() => localizedBookField(book.value?.description, locale.value))
+const displayAboutAuthor = computed(() => localizedBookField(book.value?.aboutAuthor, locale.value))
 
 const categoryLabel = computed(() => {
   const code = book.value?.category
@@ -155,7 +161,7 @@ async function removeBook() {
       </template>
       <template v-else>
       <div class="d-flex align-start justify-space-between mb-4">
-        <h2 class="app-section-title">{{ book.title }}</h2>
+        <h2 class="app-section-title">{{ displayTitle }}</h2>
         <div class="d-flex">
           <v-btn
             v-if="canUpdate"
@@ -167,7 +173,7 @@ async function removeBook() {
           <n-remove-icon
             v-if="canRemove"
             :title="t('books.removeTitle')"
-            :text="t('books.removeConfirm', { title: book.title })"
+            :text="t('books.removeConfirm', { title: displayTitle })"
             :disabled="removing"
             @confirm="removeBook"
           />
@@ -198,17 +204,17 @@ async function removeBook() {
       </div>
 
       <dl class="app-detail-list">
-        <template v-if="book.author">
+        <template v-if="displayAuthor">
           <dt>{{ t('books.author') }}</dt>
-          <dd>{{ book.author }}</dd>
+          <dd>{{ displayAuthor }}</dd>
         </template>
         <template v-if="categoryLabel">
           <dt>{{ t('books.category') }}</dt>
           <dd>{{ categoryLabel }}</dd>
         </template>
-        <template v-if="book.publisher">
+        <template v-if="displayPublisher">
           <dt>{{ t('books.publisher') }}</dt>
-          <dd>{{ book.publisher }}</dd>
+          <dd>{{ displayPublisher }}</dd>
         </template>
         <template v-if="book.publishedOn">
           <dt>{{ t('books.publishedOn') }}</dt>
@@ -224,8 +230,8 @@ async function removeBook() {
         </template>
       </dl>
 
-      <p v-if="book.description" class="mt-4">{{ book.description }}</p>
-      <p v-if="book.aboutAuthor" class="app-muted mt-4">{{ book.aboutAuthor }}</p>
+      <p v-if="displayDescription" class="mt-4">{{ displayDescription }}</p>
+      <p v-if="displayAboutAuthor" class="app-muted mt-4">{{ displayAboutAuthor }}</p>
 
       <div class="mt-6">
         <n-file-replace

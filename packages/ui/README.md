@@ -14,7 +14,9 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Develop in this repo](#develop-in-this-repo)
 - [Install in an app](#install-in-an-app)
 - [Create the i18n instance](#create-the-i18n-instance)
+- [UI and data locales](#ui-and-data-locales)
 - [Use NLocaleSelect](#use-nlocaleselect)
+- [Translatable fields](#translatable-fields)
 - [File upload components](#file-upload-components)
 - [List components](#list-components)
 - [Date and time pickers](#date-and-time-pickers)
@@ -28,7 +30,8 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 
 ## What this package owns
 
-- `NLocaleSelect` — language menu (EN / FR / AR, RTL for Arabic)
+- `NLocaleSelect` — language menu from `locales.ui` (hidden when fewer than two codes; RTL for Arabic)
+- `NTranslatableTextField` / `NTranslatableTextarea` — `v-text-field` / `v-textarea` for a data-locale map; tabs plus translate (fill empty or replace all)
 - `NFileUpload` — many files (`document` list or `images` grid + lightbox)
 - `NFileReplace` — one file (`document` field or clickable `avatar`); uploads the new file, then deletes the previous
 - `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` / `lists.*` / `setup.*` strings and Vuetify `$vuetify` catalogs
@@ -44,7 +47,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `NSettingsHeading` — Settings / Accounts page heading
 - `NAccountsRegister` — admin user table
 - `NAccountForm` — create/edit user, reset password, suspend, assign roles
-- Helpers: `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `useOwnerFiles`, `useListItems`, `useAccountsUsers`
+- Helpers: `normalizeLocales`, `assertRequiredDataLocale`, `REQUIRED_DATA_LOCALE`, `resolveLocalized`, `emptyLocalizedMap`, `coerceLocalized`, `localeDisplayName`, `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `NEXUS_TRANSLATE_KEY`, `useOwnerFiles`, `useListItems`, `useAccountsUsers`
 
 Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`. First-run install lives in `@nexus/setup`.
 
@@ -63,7 +66,14 @@ The prefix distinguishes NEXUS components from app-local components and Vuetify�
 src/
   index.js
   i18n/
+    locales.js
+    createNexusI18n.js
+    locales/{en,fr,ar}.js
   components/
+    fields/NTranslatableTextField.vue
+    fields/NTranslatableTextarea.vue
+    fields/NTranslatableToolbar.vue
+    fields/useTranslatableInput.js
     locale/NLocaleSelect.vue
     files/NFileUpload.vue
     files/NFileReplace.vue
@@ -87,7 +97,7 @@ src/
     setup/NSetupWizard.vue
 ```
 
-Public imports stay `@nexus/ui`.
+Public imports stay `@nexus/ui`. Server-only locale helpers: `@nexus/ui/locales` (or `@nexus/ui/src/i18n/locales.js`).
 
 ## Develop in this repo
 
@@ -126,18 +136,30 @@ The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting
 ## Create the i18n instance
 
 ```js
-import { createNexusI18n } from '@nexus/ui'
+import { createNexusI18n, normalizeLocales } from '@nexus/ui'
 import ar from './ar.js'
 import en from './en.js'
 import fr from './fr.js'
 
 export const i18n = createNexusI18n({
   storageKey: 'your-app-locale',
+  locales: normalizeLocales(Meteor.settings.public.locales),
   messages: { en, fr, ar },
 })
 ```
 
-`app.use(i18n)` also provides the storage key so `NLocaleSelect` persists the choice. Keep Vuetify’s `createVueI18nAdapter({ i18n, useI18n })` in the app.
+`app.use(i18n)` provides the storage key and the normalized locales. `NLocaleSelect` persists the UI locale in `localStorage`. A stored code that is not in `ui` falls back to `defaultUi`. Missing UI catalogs (for example `es`) use vue-i18n `fallbackLocale = defaultUi`. Keep Vuetify’s `createVueI18nAdapter({ i18n, useI18n })` in the app.
+
+Server code that only needs the normalizer must import `@nexus/ui/locales` (or `@nexus/ui/src/i18n/locales.js`) so Vue SFCs are not loaded.
+
+## UI and data locales
+
+`settings.public.locales` is four mandatory keys: `defaultUi`, `ui`, `defaultData`, `data`. `defaultData` must be `en` and `data` must include `en` (minimum `{ defaultData: "en", data: ["en"] }`). `data` must be a subset of `ui`. `normalizeLocales` throws if the object is invalid.
+
+- **UI** (`ui` / `defaultUi`) — chrome and `NLocaleSelect`. Hide the picker when `ui.length < 2`.
+- **Data** (`data` / `defaultData`) — keys stored on list titles and other locale maps. Always includes `title.en` (and other `data` codes when configured). `NListItemForm` uses `NTranslatableTextField` for the title map. Lists persist whatever is in `data`, including codes with no UI pack. A one-code `data` list hides tabs and translate.
+
+Resolve a map with `resolveLocalized(map, uiLocale, locales)`: if `uiLocale` is in `locales.data` and that key has text, use it; otherwise `defaultData`; otherwise `''`. Keys that are not in `data` are ignored even when they still exist on the document (a leftover `title.fr` must not show when `data` is `["en"]`). `coerceLocalized` turns a legacy string into `{ [defaultData]: value }` and keeps only `data` keys. `emptyLocalizedMap(data)` builds `{ en: '', … }`.
 
 ## Use NLocaleSelect
 
@@ -147,6 +169,28 @@ import { NLocaleSelect } from '@nexus/ui'
 
 ```html
 <n-locale-select />
+```
+
+The menu lists every code in `ui`. It does not change document maps — those follow `data` on the form.
+
+## Translatable fields
+
+`v-model` is a locale map (`{ en, fr, ar }`), keyed by `locales.data`. Other Vuetify 4 props and slots pass through to the inner `v-text-field` or `v-textarea`. `required` means `defaultData` must be non-empty even when another tab is showing.
+
+When `data.length === 1` (the required minimum is `["en"]`), render only the Vuetify control — no tabs and no translate. When `data.length > 1`, compact language tabs sit on the top-right of the control. Provide `NEXUS_TRANSLATE_KEY` from the app (a function that calls a server method) to show the translate icon:
+
+- Click the icon — fill **empty** other locales from the active tab
+- Chevron menu — **Replace all** other locales. The source tab is never changed
+
+`@nexus/ui` does not call Google itself. Hide the icon when the inject is missing, `data.length < 2`, or the active tab is empty.
+
+```js
+import { NTranslatableTextarea, NTranslatableTextField } from '@nexus/ui'
+```
+
+```html
+<n-translatable-text-field v-model="form.title" :label="t('books.titleLabel')" required />
+<n-translatable-textarea v-model="form.description" :label="t('books.description')" rows="3" auto-grow />
 ```
 
 ## File upload components
@@ -201,9 +245,9 @@ import { NListItemsEditor, NListSelect } from '@nexus/ui'
 <n-list-select v-model="category" list-key="risks.category" />
 ```
 
-`NListItemsEditor` is the setup page: table for one `listKey`, Add opens a modal (`code`, `title.en` / `fr` / `ar`, `sortOrder`, `active`). Edit uses the same modal; `code` is locked. Delete asks for confirmation.
+`NListItemsEditor` is the setup page: table for one `listKey`, Add opens a modal (`code`, one `NTranslatableTextField` for the title map, `sortOrder`, `active`). Edit uses the same modal; `code` is locked. Delete asks for confirmation.
 
-`NListSelect` is for capture forms. It shows **active** items only. The bound value is `code`, not `_id` or a translated title. Changing locale updates labels.
+`NListSelect` is for capture forms. It shows **active** items only. The bound value is `code`, not `_id` or a translated title. Labels use the **UI** locale and fall back to `defaultData` when that key is missing.
 
 Later product routes such as `/risks/setup/categories` pass `list-key="risks.category"` into the same editor.
 

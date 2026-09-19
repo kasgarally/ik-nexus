@@ -6,7 +6,7 @@ Shared JS packages and how Meteor apps consume them
 
 NEXUS keeps reusable JavaScript in `packages/*` and product code in `apps/*`. Packages are ordinary npm libraries (`@nexus/ui`, `@nexus/files`, …). Meteor product apps consume them with a `file:` dependency and `meteor npm`, not as Atmosphere packages and not as pnpm workspace members.
 
-This file is the integration map. Daily pnpm commands live in [`PNPM.md`](PNPM.md). Per-package APIs live in each package README.
+This file is the integration map. Daily pnpm commands live in [`PNPM.md`](PNPM.md). Per-package APIs live in each package README. Design story (locales, lists, fields, files, setup, accounts, applog): [`docs/architecture/_Architecture.md`](docs/architecture/_Architecture.md).
 
 ## Contents
 
@@ -88,10 +88,10 @@ Today the workspace is six members. Each has its own README for the public API.
 
 | Folder | npm name | What it owns | Meteor injection? |
 |--------|----------|--------------|-------------------|
-| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets including Settings/accounts (`NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm`) and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
+| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets including Settings/accounts (`NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm`), translatable fields (`NTranslatableTextField`, `NTranslatableTextarea`), and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
 | [`packages/files`](packages/files/README.md) | `@nexus/files` | `nexus_files` + GridFS bucket `nexus_fs`, DDP upload/remove, `GET /nexus-files/:fileId`, `Files.defineOwner` | Yes. `Files.registerWithMeteor` |
 | [`packages/applog`](packages/applog/README.md) | `@nexus/applog` | Append-only `nexus_applog`; wraps `insertAsync` / `updateAsync` / `removeAsync`; `Applog.record` / `runAsSystem`. `applog.recent` is **superadmin** only | Yes. `Applog.registerWithMeteor` |
-| [`packages/lists`](packages/lists/README.md) | `@nexus/lists` | `nexus_lists` items (`listKey` + stable `code` + `title.en`/`fr`/`ar`) | Yes. `Lists.registerWithMeteor` |
+| [`packages/lists`](packages/lists/README.md) | `@nexus/lists` | `nexus_lists` items (`listKey` + stable `code` + `title` map; always `title.en`) | Yes. `Lists.registerWithMeteor` |
 | [`packages/setup`](packages/setup/README.md) | `@nexus/setup` | Singleton `nexus_setup` (`_id: 'current'`), first admin user, public branding publication | Yes. `Setup.registerWithMeteor` |
 | [`packages/accounts`](packages/accounts/README.md) | `@nexus/accounts` | User CRUD, password reset, suspend, role assignment via `meteor/roles`; `registerRoleCatalog` | Yes. `Accounts.registerWithMeteor` |
 
@@ -285,7 +285,7 @@ flowchart TB
 ## Consume a package from a Meteor app
 
 ```javascript
-import { NFileReplace, NFileUpload, NLocaleSelect, createNexusI18n } from '@nexus/ui'
+import { NFileReplace, NFileUpload, NLocaleSelect, NTranslatableTextField, createNexusI18n } from '@nexus/ui'
 import { Files } from '@nexus/files'
 import { Applog } from '@nexus/applog'
 import { Lists } from '@nexus/lists'

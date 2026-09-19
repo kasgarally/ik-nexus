@@ -8,21 +8,33 @@ import { useI18n } from 'vue-i18n'
 import {
   applyDocumentLocale,
   DEFAULT_STORAGE_KEY,
+  localeDisplayName,
+  NEXUS_LOCALES_KEY,
   NEXUS_LOCALE_STORAGE_KEY,
   setAppLocale,
-  supportedLocales,
 } from '../../i18n/createNexusI18n.js'
+import { defaultLocales } from '../../i18n/locales.js'
 
-const { locale, t } = useI18n()
+const { locale, t, te } = useI18n()
 const storageKey = inject(NEXUS_LOCALE_STORAGE_KEY, DEFAULT_STORAGE_KEY)
+const locales = inject(NEXUS_LOCALES_KEY, defaultLocales())
+
+const visible = computed(() => locales.ui.length > 1)
+
+const uiItems = computed(() =>
+  locales.ui.map((code) => ({
+    code,
+    label: localeDisplayName(code, t, te),
+  })),
+)
 
 const currentLabel = computed(() => {
-  const match = supportedLocales.find((item) => item.code === locale.value)
-  return match ? t(match.labelKey) : locale.value
+  const match = uiItems.value.find((item) => item.code === locale.value)
+  return match ? match.label : locale.value
 })
 
 function setLocale(code) {
-  setAppLocale(locale, code, storageKey)
+  setAppLocale(locale, code, storageKey, locales)
 }
 
 onMounted(() => {
@@ -31,7 +43,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-menu>
+  <v-menu v-if="visible">
     <template #activator="{ props }">
       <v-btn
         v-bind="props"
@@ -44,9 +56,9 @@ onMounted(() => {
     </template>
     <v-list>
       <v-list-item
-        v-for="item in supportedLocales"
+        v-for="item in uiItems"
         :key="item.code"
-        :title="t(item.labelKey)"
+        :title="item.label"
         :active="locale === item.code"
         @click="setLocale(item.code)"
       />

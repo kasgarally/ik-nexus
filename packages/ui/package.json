@@ -6,7 +6,9 @@
   "description": "Shared Vue components and i18n bootstrap for NEXUS apps",
   "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./locales": "./src/i18n/locales.js",
+    "./src/i18n/locales.js": "./src/i18n/locales.js"
   },
   "files": [
     "src"
