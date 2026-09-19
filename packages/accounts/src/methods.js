@@ -1,11 +1,14 @@
 /**
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
- * DDP account admin: create, update, remove, password, suspend, roles
+ * DDP account admin plus gated self-register and public auth options
  */
 import { ADMIN_ROLES } from '@nexus/setup'
 import { allAssignableRoleNames, isAssignableRole } from './catalog.js'
+import { readConfiguredProviders, readPublicAccounts } from './authSettings.js'
 import {
+  METHOD_AUTH_OPTIONS,
   METHOD_ROLES_SET,
+  METHOD_SELF_REGISTER,
   METHOD_USERS_INSERT,
   METHOD_USERS_REMOVE,
   METHOD_USERS_SET_PASSWORD,
@@ -23,6 +26,7 @@ import {
   userEmail,
 } from './gates.js'
 import {
+  addUserRoles,
   createPasswordUser,
   findUserByEmail,
   replaceUserEmail,
@@ -32,6 +36,46 @@ import {
 
 export function registerMethods({ Meteor, check, Match, Roles, Accounts, record }) {
   Meteor.methods({
+    [METHOD_AUTH_OPTIONS]() {
+      const publicAccounts = readPublicAccounts(Meteor)
+      const providers = readConfiguredProviders(Meteor)
+      return {
+        selfRegister: publicAccounts.selfRegister,
+        providers: {
+          google: publicAccounts.selfRegister && providers.google,
+          facebook: publicAccounts.selfRegister && providers.facebook,
+        },
+        heroImage: publicAccounts.heroImage,
+        prefillDemo: publicAccounts.prefillDemo,
+      }
+    },
+
+    async [METHOD_SELF_REGISTER](params) {
+      check(params, { email: String, name: String, password: String })
+      const publicAccounts = readPublicAccounts(Meteor)
+      if (!publicAccounts.selfRegister) {
+        throw new Meteor.Error('self-register-disabled', 'Self-registration is disabled')
+      }
+
+      const email = requireEmail(Meteor, params.email)
+      const name = requireNonEmpty(Meteor, params.name, 'invalid-name', 'Name is required')
+      const password = requirePassword(Meteor, params.password)
+      const existing = await findUserByEmail(Accounts, Meteor, email)
+      if (existing) {
+        throw new Meteor.Error('email-taken', 'An account with that email already exists')
+      }
+
+      const userId = await createPasswordUser(Accounts, { email, password, name })
+      await addUserRoles(Roles, userId, publicAccounts.selfRegisterRoles)
+      await writeAudit(record, {
+        action: 'selfRegister',
+        docId: userId,
+        document: { email, name, roles: publicAccounts.selfRegisterRoles },
+        fields: ['email', 'name', 'roles'],
+      })
+      return { id: userId }
+    },
+
     async [METHOD_USERS_INSERT](params) {
       check(params, {
         email: String,

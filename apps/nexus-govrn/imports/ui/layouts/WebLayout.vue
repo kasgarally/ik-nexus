@@ -28,6 +28,13 @@ const hasContext = computed(() =>
 );
 const routePageKey = computed(() => String(route.name || route.path));
 const routeContextKey = computed(() => route.fullPath);
+
+function navItemLink(item) {
+  if (!item.path || item.path === "#") {
+    return { href: "#" };
+  }
+  return { to: item.path };
+}
 </script>
 <template>
   <!-- Your existing root component owns the single v-app. -->
@@ -73,7 +80,7 @@ const routeContextKey = computed(() => route.fullPath);
         <v-list-item
           v-for="item in section.items"
           :key="section.key + '-' + item.key"
-          :to="item.path"
+          v-bind="navItemLink(item)"
           :exact="item.path === '/'"
           :title="label('nav.' + item.key, item.fallback)"
           :prepend-icon="item.icon"
@@ -134,10 +141,10 @@ const routeContextKey = computed(() => route.fullPath);
       :aria-label="label('themeToggle', 'Toggle colour theme')"
       @click="theme.toggle()"
     />
-    <div class="app-user">
+    <router-link class="app-user text-decoration-none" to="/account">
       <v-avatar color="primary" variant="tonal" size="36">KA</v-avatar>
       <span class="app-user-name">Karmil Asgarally</span>
-    </div>
+    </router-link>
   </v-app-bar>
   <v-main class="app-main">
     <div id="main-content" class="app-page" tabindex="-1">

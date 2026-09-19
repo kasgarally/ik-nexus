@@ -27,6 +27,13 @@ const cards = computed(() => {
       icon: 'mdi-account-group-outline',
       to: '/settings/accounts',
     },
+    {
+      key: 'security',
+      title: t('auth.securityTitle'),
+      subtitle: t('auth.securityHint'),
+      icon: 'mdi-shield-key-outline',
+      to: '/account',
+    },
   ]
 })
 </script>

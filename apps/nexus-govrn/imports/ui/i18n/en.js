@@ -16,6 +16,7 @@ export default {
       regulator: 'Regulator',
       governance: 'Governance',
       erp: 'ERP',
+      demo: 'Demos',
     },
   },
   listsTest: {

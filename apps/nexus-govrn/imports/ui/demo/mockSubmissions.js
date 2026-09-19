@@ -1,4 +1,7 @@
-// Fictional display data. Selection uses the URL, not a module-level singleton.
+/**
+ * Author: Karmil Asgarally - INTELLEKTRA © 2026
+ * Fictional submissions for the register preview
+ */
 export const submissions = [
   { id: 'REG-2026-0152', firm: 'Northbridge Bank', type: 'Annual return', due: '31 Mar 2026', status: 'Submitted', period: 'Q1 2026' },
   { id: 'REG-2026-0151', firm: 'Rivermere Investments', type: 'Quarterly return', due: '30 Sep 2026', status: 'Pending review', period: 'Q2 2026' },

@@ -6,6 +6,7 @@ import { Accounts } from 'meteor/accounts-base'
 import { check, Match } from 'meteor/check'
 import { Meteor } from 'meteor/meteor'
 import { Roles } from 'meteor/roles'
+import { ServiceConfiguration } from 'meteor/service-configuration'
 import { Accounts as NexusAccounts } from '@nexus/accounts'
 import { Applog } from '@nexus/applog'
 
@@ -17,5 +18,6 @@ export function registerNexusAccounts() {
     check,
     Match,
     record: Applog.record,
+    ServiceConfiguration,
   })
 }

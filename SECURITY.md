@@ -64,10 +64,10 @@ OWASP Top 10:2021, applied to this monorepo. Treat each row as a build checklist
 | **A04 Insecure Design** | Feature ships without an access model | `Files.defineOwner` requires role strings even when `allowAnonymous` is true, so the flag can be turned off. Parent document must exist before upload. Setup is a one-shot singleton. New sub-apps (Risks, Controls) must declare roles **before** they grow methods. |
 | **A05 Security Misconfiguration** | Debug flags, default accounts, or open CORS in production | `public.devSeedAdmin` must be omitted or `false` in production. Generated `settings.json` is gitignored. `insecure` is not a product package. Docker does not copy `.env` / PEMs into the image context. |
 | **A06 Vulnerable and Outdated Components** | Known-bad npm / Meteor deps | Pin with `pnpm-lock.yaml` (packages) and each app’s `package-lock.json`. CI uses frozen / `npm ci` installs. Do not add a dependency to skip writing a ten-line helper. |
-| **A07 Identification and Authentication Failures** | Weak passwords, session confusion, role mix-ups | First admin is created only by `setup.complete`. Minimum password length is enforced server-side. File upload sessions are bound to `userId` when the caller is logged in. Anonymous upload is only for owners that opted in. |
+| **A07 Identification and Authentication Failures** | Weak passwords, session confusion, role mix-ups | First admin is created only by `setup.complete`. Minimum password length is enforced server-side. Client `createUser` is forbidden. Self-register is a gated method. Optional TOTP after enroll. File upload sessions are bound to `userId` when the caller is logged in. Anonymous upload is only for owners that opted in. |
 | **A08 Software and Data Integrity Failures** | Tampered lockfile, untrusted `eval`, unsigned artifacts | Commit lockfiles. Do not `eval` client input. Meteor methods are the write path; do not expose a generic “run this modifier” API. |
 | **A09 Security Logging Failures** | No trail of who changed which document | `@nexus/applog` wraps `*Async` writes. Failed audit inserts log to the console and do not fail the business write — still investigate those console errors. Redact secrets from snapshots. Do not log passwords. |
-| **A10 Server-Side Request Forgery** | Server fetches a caller-supplied URL | Do not fetch client-supplied URLs in methods. Logo/icon are data URLs with an `image/` prefix and size cap, not remote URLs the server retrieves. `locales.translate` fetches a **fixed** Google Translate host with checked text and data-locale codes — never a caller URL. |
+| **A10 Server-Side Request Forgery** | Server fetches a caller-supplied URL | Do not fetch client-supplied URLs in methods. Logo/icon are data URLs with an `image/` prefix and size cap, not remote URLs the server retrieves. `locales.translate` fetches a **fixed** Google Translate host with checked text and data-locale codes — never a caller URL. Sign-in `heroImage` is a **client** CSS background only. |
 
 Additional cheat sheets that apply here: **File Upload**, **Session Management**, **MongoDB**, **XSS**. When a change touches uploads, DDP, or HTML, read the matching OWASP cheat sheet and implement the control in named helpers.
 
@@ -111,7 +111,10 @@ async 'risks.update'(params) {
 
 - **First user** comes from `@nexus/setup` (`setup.complete` creates the password user and grants `superadmin` and `admin`). There is no committed default password for production.
 - **Dev seed** (`public.devSeedAdmin`) is a local convenience. Production settings must not enable it.
-- **meteor-roles** strings are the authorization source. Files use `files.<ownerType>.upload` / `.download` / `.remove`. Lists and applog read/write gates use `superadmin` / `admin` until a product needs finer roles.
+- **meteor-roles** strings are the authorization source. Files use `files.<ownerType>.upload` / `.download` / `.remove`. Lists and applog read/write gates use `superadmin` / `admin` until a product needs finer roles. The platform catalog also has `user` for gated self-register; setup does not grant it.
+- **Client account creation is closed.** `Accounts.config({ forbidClientAccountCreation: true })`. Signup, when a product enables `public.accounts.selfRegister`, goes through `accounts.selfRegister` and may only grant catalog roles that are not `superadmin` / `admin`.
+- **OAuth secrets** (`oauth.google`, `oauth.facebook`) stay out of `Meteor.settings.public`. Empty credentials skip `ServiceConfiguration` and hide those buttons.
+- **Optional TOTP** (`accounts-2fa`) is enrolled on `/account`. Password login works without a code until the user enables it. Suspend still rejects password, 2FA, and OAuth.
 - Do not invent a second permission system in Vue (`v-if="isAdmin"` is presentation only).
 
 ## Publications and data exposure
@@ -169,7 +172,7 @@ Demo owner `demo` in GovRN is anonymous on purpose for `/files-test`. Do not cop
 | `ROOT_URL` | HTTPS in production. See [docker/README.md](docker/README.md#production--digitalocean). |
 | Dev seed credentials | [`demoSeedData.js`](apps/nexus-govrn/imports/api/demoSeedData.js) is for local `meteor reset` only. Never enable `devSeedAdmin` on a public host. |
 
-Do not put company secrets, license keys, or Mongo URIs in `Meteor.settings.public`. That object is sent to every client. Do not bake `settings.json` or relay credentials into [`docker/Dockerfile`](docker/Dockerfile). Do not commit a PM2-style file that lists live SendGrid or Twilio keys — treat any historical copy as leaked and rotate those values.
+Do not put company secrets, license keys, Mongo URIs, or OAuth client secrets in `Meteor.settings.public`. That object is sent to every client. `public.accounts.heroImage` may be a public path or a stock-photo URL; it is not a secret. Do not bake `settings.json` or relay credentials into [`docker/Dockerfile`](docker/Dockerfile). Do not commit a PM2-style file that lists live SendGrid or Twilio keys — treat any historical copy as leaked and rotate those values.
 
 ### Locale settings
 

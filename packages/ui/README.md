@@ -16,6 +16,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Create the i18n instance](#create-the-i18n-instance)
 - [UI and data locales](#ui-and-data-locales)
 - [Use NLocaleSelect](#use-nlocaleselect)
+- [Use NLocaleIcon](#use-nlocaleicon)
 - [Translatable fields](#translatable-fields)
 - [File upload components](#file-upload-components)
 - [List components](#list-components)
@@ -23,6 +24,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Modal and remove confirm](#modal-and-remove-confirm)
 - [Admin configuration card](#admin-configuration-card)
 - [Settings and accounts](#settings-and-accounts)
+- [Sign-in and account security](#sign-in-and-account-security)
 - [Setup wizard](#setup-wizard)
 - [Docker](#docker)
 - [Testing](#testing)
@@ -31,10 +33,11 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 ## What this package owns
 
 - `NLocaleSelect` — language menu from `locales.ui` (hidden when fewer than two codes; RTL for Arabic)
+- `NLocaleIcon` — circular icon button with the current UI code (`EN`); same menu and persistence as `NLocaleSelect`
 - `NTranslatableTextField` / `NTranslatableTextarea` — `v-text-field` / `v-textarea` for a data-locale map; tabs plus translate (fill empty or replace all)
 - `NFileUpload` — many files (`document` list or `images` grid + lightbox)
 - `NFileReplace` — one file (`document` field or clickable `avatar`); uploads the new file, then deletes the previous
-- `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` / `lists.*` / `setup.*` strings and Vuetify `$vuetify` catalogs
+- `createNexusI18n` — vue-i18n factory with core `locale.*` / `files.*` / `lists.*` / `setup.*` / `auth.*` strings and Vuetify `$vuetify` catalogs
 - `NListItemsEditor` — table of items for one `listKey`, add/edit modal, delete confirm
 - `NListSelect` — `v-select` of active items; `v-model` is the stable `code`
 - `NDatePicker` — readonly text field that opens `v-date-picker`; `v-model` is `YYYY-MM-DD`
@@ -47,7 +50,8 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `NSettingsHeading` — Settings / Accounts page heading
 - `NAccountsRegister` — admin user table
 - `NAccountForm` — create/edit user, reset password, suspend, assign roles
-- Helpers: `normalizeLocales`, `assertRequiredDataLocale`, `REQUIRED_DATA_LOCALE`, `resolveLocalized`, `emptyLocalizedMap`, `coerceLocalized`, `localeDisplayName`, `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `NEXUS_TRANSLATE_KEY`, `useOwnerFiles`, `useListItems`, `useAccountsUsers`
+- `NSignIn` / `NForgotPassword` / `NResetPassword` / `NAccountSecurity` — password sign-in, reset, optional TOTP (injected helpers, no `meteor/*`)
+- Helpers: `normalizeLocales`, `assertRequiredDataLocale`, `REQUIRED_DATA_LOCALE`, `resolveLocalized`, `emptyLocalizedMap`, `coerceLocalized`, `localeDisplayName`, `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `NEXUS_TRANSLATE_KEY`, `NEXUS_AUTH_KEY`, `useOwnerFiles`, `useListItems`, `useAccountsUsers`
 
 Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`. First-run install lives in `@nexus/setup`.
 
@@ -75,6 +79,7 @@ src/
     fields/NTranslatableToolbar.vue
     fields/useTranslatableInput.js
     locale/NLocaleSelect.vue
+    locale/NLocaleIcon.vue
     files/NFileUpload.vue
     files/NFileReplace.vue
     files/NFileRow.vue
@@ -94,7 +99,12 @@ src/
     accounts/NSettingsHeading.vue
     accounts/NAccountsRegister.vue
     accounts/NAccountForm.vue
+    auth/NSignIn.vue
+    auth/NForgotPassword.vue
+    auth/NResetPassword.vue
+    auth/NAccountSecurity.vue
     setup/NSetupWizard.vue
+  auth/inject.js
 ```
 
 Public imports stay `@nexus/ui`. Server-only locale helpers: `@nexus/ui/locales` (or `@nexus/ui/src/i18n/locales.js`).
@@ -172,6 +182,18 @@ import { NLocaleSelect } from '@nexus/ui'
 ```
 
 The menu lists every code in `ui`. It does not change document maps — those follow `data` on the form.
+
+## Use NLocaleIcon
+
+```js
+import { NLocaleIcon } from '@nexus/ui'
+```
+
+```html
+<n-locale-icon />
+```
+
+Same `locales.ui` list, `localStorage` key, and hide-when-one-code rule as `NLocaleSelect`. The activator is a circular `v-btn` (same shape as a theme icon). The current UI locale is the two-letter code on the face (`EN`, `FR`, `AR`). Use this in compact app bars; keep `NLocaleSelect` where a labelled control is clearer.
 
 ## Translatable fields
 
@@ -320,7 +342,19 @@ import { NAccountForm, NAccountsRegister, NSettingsHeading, NSettingsWorkspace }
 
 The Meteor app mounts these from `imports/ui/settings/` on `/settings` and `/settings/accounts`. They call `@nexus/accounts` helpers. There is no `meteor/*` in the SFCs. Vue `v-if` on admin roles is display only.
 
-`NAccountForm` assigns roles with a multi `v-combobox` of names from `allAssignableRoleNames()` (platform plus each sub-app catalog). The chips are the role ids (`books.create`, `superadmin`). Sub-app labels do not live in this package — register the catalog from the sub-app folder.
+`NAccountForm` assigns roles with a multi `v-combobox` of names from `allAssignableRoleNames()` (platform plus each sub-app catalog). The chips are the role ids (`books.create`, `superadmin`). Sub-app labels do not live in this package — register the catalog from the sub-app folder. Admin “reset password” here is set-password for another user, not the email forgot-password flow.
+
+## Sign-in and account security
+
+```js
+import { NAccountSecurity, NForgotPassword, NResetPassword, NSignIn } from '@nexus/ui'
+```
+
+The Meteor app mounts these on `/signin`, `/forgot-password`, `/reset-password/:token`, and `/account`. Provide `NEXUS_AUTH_KEY` with `authOptions`, `loginWithPassword`, `forgotPassword`, `resetPassword`, `selfRegister`, OAuth, and 2FA helpers from `@nexus/accounts`. There is no `meteor/*` in the SFCs.
+
+`NSignIn` shows signup and Google/Facebook only when `authOptions()` says `selfRegister` and that provider is configured. Email/password stay empty unless `prefillDemo` is true. After `no-2fa-code`, the TOTP field appears. `NAccountSecurity` is for any signed-in user.
+
+i18n keys live under `auth.*`. The split hero image is app layout + `settings.public.accounts.heroImage`, not this package.
 
 ## Setup wizard
 

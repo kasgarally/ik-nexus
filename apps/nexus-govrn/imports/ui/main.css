@@ -134,6 +134,10 @@ body {
   align-items: center;
   margin-inline: 16px 24px;
   white-space: nowrap;
+  color: inherit;
+}
+.app-page-narrow {
+  max-width: 560px;
 }
 .app-main {
   background: rgb(var(--v-theme-background));

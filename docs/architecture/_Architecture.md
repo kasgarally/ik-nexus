@@ -19,6 +19,7 @@ This folder is the design story. Package READMEs are the public API. [`PACKAGES.
   - [Files](files.md)
   - [Setup](setup.md)
   - [Accounts](accounts.md)
+  - [Auth](auth.md)
   - [Applog](applog.md)
 - [Package injection](#package-injection)
 - [What stays in the app](#what-stays-in-the-app)
@@ -72,6 +73,7 @@ GovRN registration order (client and server): **Files → Lists → Setup → Ac
 | [Files](files.md) | GridFS (`nexus_files` / `nexus_fs`), `defineOwner`, DDP chunks, HTTP download, `NFileUpload` / `NFileReplace`. |
 | [Setup](setup.md) | First-run singleton `nexus_setup`, wizard vs `devSeedAdmin`, public branding. |
 | [Accounts](accounts.md) | User CRUD, suspend, role catalogs. Settings screens in `@nexus/ui`. |
+| [Auth](auth.md) | Split sign-in, password reset, optional TOTP, gated self-register. GovRN is invite-only. |
 | [Applog](applog.md) | Append-only audit, collection wrappers, `runAsSystem`, superadmin-only read. |
 
 ## Package injection

@@ -2,7 +2,7 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * vue-i18n factory with Vuetify catalogs
  *
- * Core keys (ui.* / locale.* / files.* / lists.* / pickers.* / setup.* / settings.* / accounts.*) and $vuetify live here.
+ * Core keys (ui.* / locale.* / files.* / lists.* / pickers.* / setup.* / settings.* / accounts.* / auth.*) and $vuetify live here.
  * Each app passes its own message packs, storageKey, and normalized locales.
  */
 import { createI18n } from 'vue-i18n'
@@ -80,11 +80,23 @@ export function setAppLocale(localeRef, code, storageKey = DEFAULT_STORAGE_KEY, 
 }
 
 function mergeLocaleMessages(core, extra, vuetify) {
-  return {
-    ...core,
-    ...extra,
-    $vuetify: vuetify,
+  const merged = { ...core }
+  for (const [key, value] of Object.entries(extra)) {
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      merged[key] &&
+      typeof merged[key] === 'object' &&
+      !Array.isArray(merged[key])
+    ) {
+      merged[key] = { ...merged[key], ...value }
+      continue
+    }
+    merged[key] = value
   }
+  merged.$vuetify = vuetify
+  return merged
 }
 
 function messagesForUi(ui, extra, defaultUi) {

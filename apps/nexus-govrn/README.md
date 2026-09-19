@@ -12,7 +12,9 @@ Meteor 3 + Vue 3 product app. First boot is gated by `/onboarding` until `nexus_
   - [Stale process on port 3000](#stale-process-on-port-3000)
 - [Settings](#settings)
   - [Locale settings](#locale-settings)
+  - [Accounts settings](#accounts-settings)
 - [Accounts UI](#accounts-ui)
+- [Demo UI](#demo-ui)
 - [Dev seed](#dev-seed)
 - [Libraries used](#libraries-used)
 - [Developer guide](#developer-guide)
@@ -78,6 +80,24 @@ GovRN ships three UI languages and three data languages so the picker and the tr
 
 All four keys are mandatory. `defaultData` must be `en` and `data` must include `en` (the minimum stored map is `{ en }`). `defaultUi` must be in `ui`, `defaultData` must be in `data`, and every `data` code must appear in `ui`. Invalid settings fail startup. With `data: ["en"]` only, translatable fields render a single control (no tabs, no translate) and `locales.translate` is refused.
 
+### Accounts settings
+
+GovRN is invite-only. `public.accounts.selfRegister` stays `false`, so `/signin` hides signup and Google/Facebook. Admin-created users only.
+
+```jsonc
+"accounts": {
+  "selfRegister": false,
+  "selfRegisterRoles": ["user"],
+  "heroImage": "https://images.unsplash.com/photo-1486406149926-2bddad0bc895?auto=format&fit=crop&w=1600&q=80"
+}
+```
+
+`heroImage` is a CSS background the **browser** loads: a full Unsplash (or other `http(s)`) URL, or a file you drop in `public/` (for example `public/auth-hero.jpg` and `"heroImage": "/auth-hero.jpg"`). The Meteor server does not fetch that URL.
+
+OAuth client id/secret stay in server-only `oauth.google` / `oauth.facebook`, never in `public`. Leave them empty until another product turns `selfRegister` on. `selfRegisterRoles` defaults to `["user"]` and must not include `superadmin` or `admin`.
+
+Forgot-password emails use Meteor Accounts. Without `MAIL_URL`, the reset link is printed on the **server console**. Open `/reset-password/:token` from that URL. Optional TOTP is enrolled on `/account` by any signed-in user.
+
 - **UI** — `NLocaleSelect` and vue-i18n chrome. Hidden when `ui` has fewer than two codes. A stored locale that is not in `ui` falls back to `defaultUi`. Missing catalogs (for example `es`) stay on `defaultUi` English chrome until a pack is added.
 - **Data** — keys stored on list titles and Books prose (`title`, `description`, `author`, `aboutAuthor`, `publisher`). Lists persist whatever is in `data`, including codes with no UI pack. Other Book fields stay scalars.
 
@@ -86,6 +106,12 @@ Books prose fields (`title`, `description`, `author`, `aboutAuthor`, `publisher`
 ## Accounts UI
 
 `/settings` is core app UI in [`imports/ui/settings/`](imports/ui/settings/README.md), not a cloneable sub-app. Named views mount `@nexus/ui` widgets; DDP is `@nexus/accounts`.
+
+`/signin`, `/forgot-password`, `/reset-password/:token`, and `/account` mount `NSignIn` / reset / `NAccountSecurity`. Helpers are provided from [`imports/ui/authProvide.js`](imports/ui/authProvide.js). Sign-in design: [`docs/architecture/auth.md`](../../docs/architecture/auth.md).
+
+## Demo UI
+
+Layout and widget previews (files, lists, submissions chrome, governance, invoice) live in [`imports/ui/demo/`](imports/ui/demo/README.md). They are not product sub-apps. Paths such as `/files-test` and `/submissions` are unchanged.
 
 ## Dev seed
 
@@ -104,4 +130,4 @@ Books prose fields (`title`, `description`, `author`, `aboutAuthor`, `publisher`
 
 ## Developer guide
 
-How the app is assembled (locales, lists, fields, files, setup, accounts, applog): [`docs/architecture/_Architecture.md`](../../docs/architecture/_Architecture.md). Package wiring and `registerWithMeteor`: [`PACKAGES.md`](../../PACKAGES.md).
+How the app is assembled (locales, lists, fields, files, setup, accounts, auth, applog): [`docs/architecture/_Architecture.md`](../../docs/architecture/_Architecture.md). Package wiring and `registerWithMeteor`: [`PACKAGES.md`](../../PACKAGES.md).

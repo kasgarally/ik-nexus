@@ -2,6 +2,11 @@
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
  * @nexus/ui public exports
  */
+export { NEXUS_AUTH_KEY, safeNextPath, useNexusAuth } from './auth/inject.js'
+export { default as NAccountSecurity } from './components/auth/NAccountSecurity.vue'
+export { default as NForgotPassword } from './components/auth/NForgotPassword.vue'
+export { default as NResetPassword } from './components/auth/NResetPassword.vue'
+export { default as NSignIn } from './components/auth/NSignIn.vue'
 export { default as NAccountForm } from './components/accounts/NAccountForm.vue'
 export { default as NAccountsRegister } from './components/accounts/NAccountsRegister.vue'
 export { default as NSettingsHeading } from './components/accounts/NSettingsHeading.vue'
@@ -19,6 +24,7 @@ export { default as NListItemForm } from './components/lists/NListItemForm.vue'
 export { default as NListItemsEditor } from './components/lists/NListItemsEditor.vue'
 export { default as NListSelect } from './components/lists/NListSelect.vue'
 export { useListItems } from './components/lists/useListItems.js'
+export { default as NLocaleIcon } from './components/locale/NLocaleIcon.vue'
 export { default as NLocaleSelect } from './components/locale/NLocaleSelect.vue'
 export { default as NDatePicker } from './components/pickers/NDatePicker.vue'
 export { default as NTimePicker } from './components/pickers/NTimePicker.vue'

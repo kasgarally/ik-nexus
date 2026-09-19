@@ -3,7 +3,7 @@
  * In-memory role catalogs registered by each sub-app
  */
 import { ADMIN_ROLES } from '@nexus/setup'
-import { PLATFORM_CATALOG_KEY } from './constants.js'
+import { PLATFORM_CATALOG_KEY, USER_ROLE } from './constants.js'
 
 const catalogs = new Map()
 
@@ -12,6 +12,7 @@ registerRoleCatalog({
   roles: [
     { name: 'superadmin', group: PLATFORM_CATALOG_KEY },
     { name: 'admin', group: PLATFORM_CATALOG_KEY },
+    { name: USER_ROLE, group: PLATFORM_CATALOG_KEY },
   ],
 })
 

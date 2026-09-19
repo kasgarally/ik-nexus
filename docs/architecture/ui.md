@@ -38,13 +38,14 @@ Layouts, router, Vuetify theme, and product collections stay in the app. GridFS 
 |-----|-------------|---------|
 | `NEXUS_LOCALES_KEY` | `createNexusI18n` → `app.use(i18n)` | Translatable fields, list form |
 | `NEXUS_TRANSLATE_KEY` | App `provide` → `Meteor.callAsync('locales.translate')` | Translate icon (optional) |
-| `NEXUS_LOCALE_STORAGE_KEY` | `createNexusI18n` | `NLocaleSelect` persistence |
+| `NEXUS_AUTH_KEY` | App `provide` → `@nexus/accounts` wrappers | `NSignIn`, reset, `NAccountSecurity` |
+| `NEXUS_LOCALE_STORAGE_KEY` | `createNexusI18n` | `NLocaleSelect` / `NLocaleIcon` persistence |
 
 If translate is not provided, the icon is hidden. If locales are missing, helpers fall back to English-only `defaultLocales()`.
 
 ## i18n
 
-`createNexusI18n({ locales, storageKey, messages })` merges core `locale.*` / `files.*` / `lists.*` / `setup.*` / `settings.*` / `accounts.*` strings and Vuetify `$vuetify` catalogs with the app’s packs. `fallbackLocale` is `defaultUi`. `NLocaleSelect` lists `locales.ui` and is hidden when that list has fewer than two codes. Arabic sets `dir="rtl"`.
+`createNexusI18n({ locales, storageKey, messages })` merges core `locale.*` / `files.*` / `lists.*` / `setup.*` / `settings.*` / `accounts.*` / `auth.*` strings and Vuetify `$vuetify` catalogs with the app’s packs. `fallbackLocale` is `defaultUi`. `NLocaleSelect` lists `locales.ui` and is hidden when that list has fewer than two codes. Arabic sets `dir="rtl"`.
 
 Server code that only needs `normalizeLocales` must import `@nexus/ui/src/i18n/locales.js` (GovRN: `appLocales.js`), not the Vue barrel.
 
@@ -54,19 +55,20 @@ See [Locales](locales.md) for UI vs data.
 
 | Group | Components | Talks to |
 |-------|------------|----------|
-| Locale | `NLocaleSelect` | vue-i18n + `localStorage` |
+| Locale | `NLocaleSelect`, `NLocaleIcon` | vue-i18n + `localStorage` |
 | Maps | `NTranslatableTextField`, `NTranslatableTextarea` | [Translatable fields](translatable-fields.md) |
 | Lists | `NListSelect`, `NListItemsEditor`, `NListItemForm` | [Lists](lists.md) |
 | Files | `NFileUpload`, `NFileReplace` | [Files](files.md) |
 | Setup | `NSetupWizard` | [Setup](setup.md) |
 | Accounts | `NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm` | [Accounts](accounts.md) |
+| Auth | `NSignIn`, `NForgotPassword`, `NResetPassword`, `NAccountSecurity` | [Auth](auth.md) |
 | Chrome | `NModal`, `NRemoveIcon`, `NAdminConfigCard`, `NDatePicker`, `NTimePicker` | App only |
 
 Colour and shape are not owned here. Set Vuetify `defaults` in the app (`vuetify.config.js`).
 
 ## How the app mounts it
 
-GovRN [`imports/ui/main.js`](../../apps/nexus-govrn/imports/ui/main.js) registers packages, then `createApp` → `app.use(i18n)` → `provide(NEXUS_TRANSLATE_KEY)` → `mount`. Rspack must compile package SFCs (`symlinks: false`). See [`PACKAGES.md`](../../PACKAGES.md).
+GovRN [`imports/ui/main.js`](../../apps/nexus-govrn/imports/ui/main.js) registers packages, then `createApp` → `app.use(i18n)` → `provide(NEXUS_TRANSLATE_KEY)` and `provide(NEXUS_AUTH_KEY)` → `mount`. Rspack must compile package SFCs (`symlinks: false`). See [`PACKAGES.md`](../../PACKAGES.md).
 
 ## What not to do
 

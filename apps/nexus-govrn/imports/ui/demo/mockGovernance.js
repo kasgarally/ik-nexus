@@ -1,4 +1,7 @@
-// Fictional snapshot; top-level totals describe the wider sample portfolio.
+/**
+ * Author: Karmil Asgarally - INTELLEKTRA © 2026
+ * Fictional governance snapshot for the layout preview
+ */
 export const metrics = [
   { title: 'Open risks', value: '24', icon: 'mdi-alert-outline', colour: 'error', change: '20%', direction: 'mdi-arrow-down', trendColour: 'success', comparison: 'vs. last month' },
   { title: 'Overdue actions', value: '7', icon: 'mdi-clock-outline', colour: 'error', change: '3', direction: 'mdi-arrow-up', trendColour: 'error', comparison: 'vs. last month' },

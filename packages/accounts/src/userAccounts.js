@@ -54,3 +54,20 @@ export async function replaceUserRoles(Roles, userId, roles) {
   }
   return Roles.setUserRoles(userId, roles)
 }
+
+export async function addUserRoles(Roles, userId, roles) {
+  if (typeof Roles.addUsersToRolesAsync === 'function') {
+    return Roles.addUsersToRolesAsync(userId, roles)
+  }
+  return Roles.addUsersToRoles(userId, roles)
+}
+
+export async function rolesForUserId(Roles, userId) {
+  if (typeof Roles.getRolesForUserAsync === 'function') {
+    return Roles.getRolesForUserAsync(userId)
+  }
+  if (typeof Roles.getRolesForUser === 'function') {
+    return Roles.getRolesForUser(userId)
+  }
+  return []
+}

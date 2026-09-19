@@ -16,6 +16,7 @@ export default {
       regulator: 'الجهة الرقابية',
       governance: 'الحوكمة',
       erp: 'تخطيط الموارد',
+      demo: 'عروض تجريبية',
     },
   },
   listsTest: {

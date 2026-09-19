@@ -17,6 +17,28 @@
       "ui": ["en", "fr", "ar"],
       "defaultData": "en",
       "data": ["en", "fr", "ar"]
+    },
+
+    // Sign-in. selfRegister false = invite-only (admin creates users).
+    // heroImage: Unsplash URL or a file under public/ (e.g. "/auth-hero.jpg").
+    // Other products: "selfRegister": true and fill oauth.google / oauth.facebook.
+    "accounts": {
+      "selfRegister": false,
+      "selfRegisterRoles": ["user"],
+      // "heroImage": "https://images.unsplash.com/photo-1486406149926-2bddad0bc895?auto=format&fit=crop&w=1600&q=80",
+      "heroImage": "/auth-hero.jpg"
+    }
+  },
+
+  // Never put these in public. Leave empty until you have real app credentials.
+  "oauth": {
+    "google": {
+      "clientId": "",
+      "secret": ""
+    },
+    "facebook": {
+      "appId": "",
+      "secret": ""
     }
   }
 }

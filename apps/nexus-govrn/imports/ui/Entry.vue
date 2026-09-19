@@ -15,17 +15,19 @@ const headers = computed(() => [
 </script>
 
 <template>
-  <v-card class="mb-4">
-    <v-card-title>{{ t('home.title') }}</v-card-title>
-    <v-card-text>{{ t('home.body') }}</v-card-text>
-    <v-card-actions>
-      <v-btn color="primary" to="/workspace">{{ t('home.openWorkspace') }}</v-btn>
-      <v-btn variant="outlined" to="/signin">{{ t('home.signin') }}</v-btn>
-    </v-card-actions>
-  </v-card>
+  <div>
+    <v-card class="mb-4">
+      <v-card-title>{{ t('home.title') }}</v-card-title>
+      <v-card-text>{{ t('home.body') }}</v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" to="/workspace">{{ t('home.openWorkspace') }}</v-btn>
+        <v-btn variant="outlined" to="/signin">{{ t('home.signin') }}</v-btn>
+      </v-card-actions>
+    </v-card>
 
-  <v-card>
-    <v-card-title>{{ t('home.vuetifyChrome') }}</v-card-title>
-    <v-data-table :headers="headers" :items="[]" />
-  </v-card>
+    <v-card>
+      <v-card-title>{{ t('home.vuetifyChrome') }}</v-card-title>
+      <v-data-table :headers="headers" :items="[]" />
+    </v-card>
+  </div>
 </template>

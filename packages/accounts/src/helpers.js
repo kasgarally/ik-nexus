@@ -3,7 +3,9 @@
  * Client helpers for account admin DDP
  */
 import {
+  METHOD_AUTH_OPTIONS,
   METHOD_ROLES_SET,
+  METHOD_SELF_REGISTER,
   METHOD_USERS_INSERT,
   METHOD_USERS_REMOVE,
   METHOD_USERS_SET_PASSWORD,
@@ -52,6 +54,16 @@ export function setSuspended(params) {
 export function setRoles(params) {
   const { Meteor } = getMeteorApis()
   return Meteor.callAsync(METHOD_ROLES_SET, params)
+}
+
+export function authOptions() {
+  const { Meteor } = getMeteorApis()
+  return Meteor.callAsync(METHOD_AUTH_OPTIONS)
+}
+
+export function selfRegister(params) {
+  const { Meteor } = getMeteorApis()
+  return Meteor.callAsync(METHOD_SELF_REGISTER, params)
 }
 
 export function getUsersCollection() {

@@ -1,22 +1,18 @@
 /**
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
- * Vue Router routes
+ * Vue Router: core app routes plus settings, Books, and ui/demo previews
  */
+import { Meteor } from 'meteor/meteor'
 import { createRouter, createWebHistory } from 'vue-router'
 import { Setup } from '@nexus/setup'
+import AccountSecurity from './AccountSecurity.vue'
 import Auth from './Auth.vue'
-import Context from './Context.vue'
-import Entry from './Entry.vue'
-import FilesTest from './FilesTest.vue'
-import ListsTest from './ListsTest.vue'
+import ForgotPassword from './ForgotPassword.vue'
+import ResetPassword from './ResetPassword.vue'
 import Onboarding from './Onboarding.vue'
-import WebLayout from './layouts/WebLayout.vue'
-import SubmissionsHeading from './SubmissionsHeading.vue'
-import SubmissionsRegister from './SubmissionsRegister.vue'
-import SubmissionContext from './SubmissionContext.vue'
-import GovernanceDashboard from './GovernanceDashboard.vue'
-import InvoicePage from './InvoicePage.vue'
+import Entry from './Entry.vue'
 import { bookRoutes } from '/imports/apps/Books/client/routes.js'
+import { demoRoutes } from './demo/routes.js'
 import { settingsRoutes } from './settings/routes.js'
 
 export const router = createRouter({
@@ -50,50 +46,26 @@ export const router = createRouter({
       meta: { layout: 'auth' },
     },
     {
-      path: '/files-test',
-      name: 'filesTest',
-      component: FilesTest,
-      meta: { layout: 'web' },
+      path: '/forgot-password',
+      name: 'forgotPassword',
+      component: ForgotPassword,
+      meta: { layout: 'auth' },
     },
     {
-      path: '/lists-test',
-      name: 'listsTest',
-      component: ListsTest,
-      meta: { layout: 'web' },
+      path: '/reset-password/:token',
+      name: 'resetPassword',
+      component: ResetPassword,
+      meta: { layout: 'auth' },
     },
     {
-      path: '/workspace',
-      name: 'workspace',
-      components: {
-        default: Entry,
-        context: Context,
-      },
-      meta: { layout: 'web', context: true },
-    },
-    {
-      path: '/submissions',
-      name: 'submissions',
-      components: {
-        default: SubmissionsRegister,
-        heading: SubmissionsHeading,
-        context: SubmissionContext,
-      },
-      meta: { layout: 'web' },
-    },
-    {
-      path: '/governance',
-      name: 'governance',
-      component: GovernanceDashboard,
-      meta: { layout: 'web' },
-    },
-    {
-      path: '/receivables/invoices/new',
-      name: 'invoice',
-      component: InvoicePage,
-      meta: { layout: 'web' },
+      path: '/account',
+      name: 'account',
+      component: AccountSecurity,
+      meta: { layout: 'web', requiresAuth: true },
     },
     ...settingsRoutes,
     ...bookRoutes,
+    ...demoRoutes,
   ],
 })
 
@@ -110,6 +82,11 @@ router.beforeEach(async (to) => {
     if (to.path !== '/onboarding') {
       return { path: '/onboarding' }
     }
+  }
+
+  const signedIn = Boolean(Meteor.userId())
+  if (to.meta.requiresAuth && !signedIn) {
+    return { path: '/signin', query: { next: to.fullPath } }
   }
   return true
 })
