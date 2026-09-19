@@ -9,7 +9,8 @@
  * Defaults: ./settings.jsonc → ./settings.json (cwd).
  */
 import { readFileSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { resolve, normalize } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 export function stripJsonc(source) {
   let output = ''
@@ -67,8 +68,25 @@ export function stripJsonc(source) {
   return output
 }
 
-const sourcePath = resolve(process.cwd(), process.argv[2] || 'settings.jsonc')
-const targetPath = resolve(process.cwd(), process.argv[3] || 'settings.json')
-const parsed = JSON.parse(stripJsonc(readFileSync(sourcePath, 'utf8')))
-writeFileSync(targetPath, `${JSON.stringify(parsed, null, 2)}\n`)
-console.log(`Wrote ${targetPath}`)
+export function readSettingsJsonc(sourcePath) {
+  return JSON.parse(stripJsonc(readFileSync(sourcePath, 'utf8')))
+}
+
+function sameFilesystemPath(left, right) {
+  const a = normalize(left)
+  const b = normalize(right)
+  return process.platform === 'win32'
+    ? a.toLowerCase() === b.toLowerCase()
+    : a === b
+}
+
+const invokedDirectly = process.argv[1]
+  && sameFilesystemPath(fileURLToPath(import.meta.url), resolve(process.argv[1]))
+
+if (invokedDirectly) {
+  const sourcePath = resolve(process.cwd(), process.argv[2] || 'settings.jsonc')
+  const targetPath = resolve(process.cwd(), process.argv[3] || 'settings.json')
+  const parsed = readSettingsJsonc(sourcePath)
+  writeFileSync(targetPath, `${JSON.stringify(parsed, null, 2)}\n`)
+  console.log(`Wrote ${targetPath}`)
+}

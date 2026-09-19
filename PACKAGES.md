@@ -75,7 +75,7 @@ flowchart TB
 | Path | Role | Tool |
 |------|------|------|
 | [`packages/*`](packages/ui) | Shared JS libraries (`@nexus/…`) | `pnpm install` at the **repo root** |
-| [`apps/*`](apps/nexus-govrn) | Meteor products (GovRN today) | `meteor npm install` **in that app** |
+| [`apps/*`](apps/nexus-govrn) | Meteor products (e.g. `nexus-govrn`) | `meteor npm install` **in that app** |
 | [`services/`](services/README.md) | Python/Arelle, DevOps sidecars | venv / Compose — **not** packages |
 | [`docker/`](docker/README.md) | Compose stacks and the Meteor image | copies `packages/` then `meteor npm ci` |
 | [`tooling/`](tooling/penpot/README.md) | Local development aids such as Penpot | isolated Compose stacks — **not** packages |

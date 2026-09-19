@@ -160,11 +160,14 @@ Demo owner `demo` in GovRN is anonymous on purpose for `/files-test`. Do not cop
 |------|------|
 | [`apps/*/settings.json`](apps/nexus-govrn) | Generated, gitignored. Author [`settings.jsonc`](apps/nexus-govrn/settings.jsonc). |
 | `.env`, `*.pem`, `*.key`, `credentials.json` | gitignored. Docker certs: only `.gitkeep` is committed. |
+| [`docker/apps/*.local.env`](docker/apps/nexus-govrn.local.env.example) | Gitignored overlay. Holds `METEOR_SETTINGS`, `MAIL_URL`, `TWILIO_*`, optional hosted `MONGO_URL`. The committed `*.env` is public stack keys only. |
+| Manual droplet env ([`deploy/env/meteor-app.env.example`](deploy/env/meteor-app.env.example)) | Copy to `~/etc/<app>.env` on the server (mode `0600`), not in git. PM2 must not list live keys. See [`deploy/README.md`](deploy/README.md). |
+| `docker/data/` | Gitignored host bind mount for in-stack Mongo. Not a Docker named volume. |
 | Penpot secrets and backups | `tooling/penpot/.env` and `tooling/penpot/backups/` are gitignored. Never commit an MCP key or its token-bearing URL. |
 | `ROOT_URL` | HTTPS in production. See [docker/README.md](docker/README.md#production--digitalocean). |
 | Dev seed credentials | [`demoSeedData.js`](apps/nexus-govrn/imports/api/demoSeedData.js) is for local `meteor reset` only. Never enable `devSeedAdmin` on a public host. |
 
-Do not put company secrets, license keys, or Mongo URIs in `Meteor.settings.public`. That object is sent to every client.
+Do not put company secrets, license keys, or Mongo URIs in `Meteor.settings.public`. That object is sent to every client. Do not bake `settings.json` or relay credentials into [`docker/Dockerfile`](docker/Dockerfile). Do not commit a PM2-style file that lists live SendGrid or Twilio keys — treat any historical copy as leaked and rotate those values.
 
 ## Client UI (Vue)
 
@@ -182,10 +185,13 @@ Do not put company secrets, license keys, or Mongo URIs in `Meteor.settings.publ
 
 ## Docker and production
 
-- The image is a `meteor build` bundle, not a copy of host `node_modules`. Builder reinstalls with `meteor npm ci`.
-- [`.dockerignore`](.dockerignore) keeps `.git`, `.meteor/local`, `node_modules`, caches, and TLS PEMs out of the context.
+- The image is a `meteor build` bundle, not a copy of host `node_modules`. Builder reinstalls with `meteor npm ci`. Settings and secrets are **not** copied into the image.
+- [`.dockerignore`](.dockerignore) keeps `.git`, `.meteor/local`, `node_modules`, caches, TLS PEMs, `docker/apps/*.local.env`, and `docker/data/` out of the context.
 - NGINX terminates TLS. HTTP redirects to HTTPS when certs exist. Production `ROOT_URL` must be the public `https://` URL.
-- Mongo data lives on a named volume. `docker:down --volumes` wipes it — do not run that on a host that holds real data unless the operator asked.
+- `METEOR_SETTINGS` is injected at `docker:up` / `docker:build` from `settings.jsonc` into the gitignored overlay. `docker:up` fails if `ROOT_URL` is a public `https://` host and `public.devSeedAdmin` is true.
+- In-stack Mongo is Compose profile `local-mongo` with a host bind mount (`MONGO_DATA_DIR`). Hosted `MONGO_URL` (Atlas) skips those services entirely. DigitalOcean Spaces is object storage and is not a WiredTiger data directory.
+- `docker:down --volumes` does not delete a bind-mounted Mongo folder. Wipe that host path only when the operator asked.
+- Bare-metal Ubuntu (no Compose): [`deploy/README.md`](deploy/README.md). Same secret rules. Bind `mongod` to localhost, replica set `rs0`, and do not commit a PM2 ecosystem file that contains `MAIL_URL` or Twilio tokens.
 - [Penpot tooling](tooling/penpot/README.md) binds only to `127.0.0.1` and uses HTTP-only development flags. It is not a production stack and must not be exposed to the network.
 - Penpot MCP keys are personal credentials. Keep them in user-local Cursor configuration or an approved password manager, start with read-only tools, and disconnect the active browser plugin when design writes are not intended.
 
@@ -197,7 +203,7 @@ Do not put company secrets, license keys, or Mongo URIs in `Meteor.settings.publ
 - Do not log passwords, bcrypt, resume tokens, or raw `services`.
 - Do not enable `allowAnonymous` on a product owner type to “make the demo work”.
 - Do not fetch caller-supplied URLs on the server.
-- Do not commit PEMs, `.env`, or `settings.json`.
+- Do not commit PEMs, `.env`, `docker/apps/*.local.env`, or `settings.json`.
 - Do not commit Penpot MCP keys, token-bearing MCP URLs, database dumps, or asset-volume backups.
 - Do not treat a Vue `v-if` as authorization.
 - Do not “minify” access checks into an unreadable boolean chain. Extract `canUploadToOwner` and keep the `why` comment.

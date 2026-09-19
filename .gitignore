@@ -94,7 +94,7 @@ __pycache__/
 .Python
 .venv/
 venv/
-ENV/
+/ENV/
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
@@ -109,6 +109,14 @@ ENV/
 docker/certs/**/*.pem
 docker/certs/**/*.crt
 docker/certs/**/*.key
+
+# --- Docker runtime overlay and local Mongo bind mounts ---
+docker/apps/*.local.env
+docker/data/
+
+# --- Manual deploy secrets (keep committed examples) ---
+deploy/**/*.env
+!deploy/**/*.env.example
 
 # --- Local design tooling ---
 tooling/penpot/.env

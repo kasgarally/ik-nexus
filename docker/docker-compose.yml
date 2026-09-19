@@ -1,13 +1,14 @@
 # Author: Karmil Asgarally - INTELLEKTRA © 2026
-# Per-app NGINX + Meteor + Mongo stack
+# Per-app NGINX + Meteor stack (local Mongo is the local-mongo profile)
 name: ${APP_NAME}
 
 services:
   mongo:
+    profiles: ["local-mongo"]
     image: mongo:7
     command: ["--replSet", "rs0", "--bind_ip_all"]
     volumes:
-      - mongo-data:/data/db
+      - ${MONGO_DATA_DIR}:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand('ping').ok ? 0 : 1)"]
       interval: 5s
@@ -16,6 +17,7 @@ services:
       start_period: 15s
 
   mongo-init:
+    profiles: ["local-mongo"]
     image: mongo:7
     depends_on:
       mongo:
@@ -32,15 +34,20 @@ services:
       dockerfile: docker/Dockerfile
       args:
         APP_NAME: ${APP_NAME}
+    env_file:
+      - path: ./apps/${APP_NAME}.local.env
+        required: false
     environment:
       ROOT_URL: ${ROOT_URL}
       PORT: "3000"
-      MONGO_URL: mongodb://mongo:27017/${MONGO_DB}?replicaSet=rs0
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/${MONGO_DB}?replicaSet=rs0}
     depends_on:
       mongo:
         condition: service_healthy
+        required: false
       mongo-init:
         condition: service_completed_successfully
+        required: false
     expose:
       - "3000"
     healthcheck:
@@ -63,6 +70,3 @@ services:
     depends_on:
       meteor:
         condition: service_healthy
-
-volumes:
-  mongo-data:

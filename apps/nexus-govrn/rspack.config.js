@@ -7,25 +7,28 @@ const { defineConfig } = require('@meteorjs/rspack');
 const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = defineConfig(Meteor => {
+  const nexusAliases = {
+    '@nexus/accounts': path.resolve(__dirname, 'node_modules/@nexus/accounts'),
+    '@nexus/applog': path.resolve(__dirname, 'node_modules/@nexus/applog'),
+    '@nexus/files': path.resolve(__dirname, 'node_modules/@nexus/files'),
+    '@nexus/lists': path.resolve(__dirname, 'node_modules/@nexus/lists'),
+    '@nexus/setup': path.resolve(__dirname, 'node_modules/@nexus/setup'),
+  };
   return {
-    ...Meteor.isClient && {
-      resolve: {
-        // file: installs @nexus/ui as a junction to packages/ui. Leave it
-        // unresolved as a real path so vue / vue-i18n / vuetify walk up
-        // through node_modules/@nexus/ui to this app's node_modules.
-        symlinks: false,
-        alias: {
+    resolve: {
+      // file: junctions resolve into /packages. Server and client both need
+      // the app node_modules copy — Docker does not copy package node_modules.
+      symlinks: false,
+      alias: {
+        ...nexusAliases,
+        ...Meteor.isClient && {
           '@mdi/font': path.resolve(__dirname, 'node_modules/@mdi/font'),
-          '@nexus/accounts': path.resolve(__dirname, 'node_modules/@nexus/accounts'),
-          '@nexus/applog': path.resolve(__dirname, 'node_modules/@nexus/applog'),
-          '@nexus/files': path.resolve(__dirname, 'node_modules/@nexus/files'),
-          '@nexus/lists': path.resolve(__dirname, 'node_modules/@nexus/lists'),
-          '@nexus/setup': path.resolve(__dirname, 'node_modules/@nexus/setup'),
-          // meteor test-client-rspack asks for this path; it is not a package
           'node_modules/buffer/': path.resolve(__dirname, 'imports/bufferStub.js'),
           'node_modules/buffer': path.resolve(__dirname, 'imports/bufferStub.js'),
         },
       },
+    },
+    ...Meteor.isClient && {
       plugins: [new VueLoaderPlugin()],
       module: {
         rules: [

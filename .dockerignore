@@ -18,3 +18,5 @@
 docker/certs/**/*.pem
 docker/certs/**/*.crt
 docker/certs/**/*.key
+docker/apps/*.local.env
+docker/data
