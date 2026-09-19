@@ -1,6 +1,6 @@
 <!--
 Author: Karmil Asgarally - INTELLEKTRA © 2026
-First-run vertical stepper: company, address, branding, admin, review
+First-run vertical stepper: company, address, branding, first admin, review
 -->
 <script setup>
 import { computed, ref } from 'vue'

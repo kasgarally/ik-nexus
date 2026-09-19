@@ -16,7 +16,7 @@ Company fields live here, not in Meteor settings. The password is never stored o
 - [registerWithMeteor](#registerwithmeteor)
 - [Document shape](#document-shape)
 - [DDP methods](#ddp-methods)
-- [Publication](#publication)
+- [Publications](#publications)
 - [Images](#images)
 - [Testing](#testing)
 - [What this package does not do](#what-this-package-does-not-do)
@@ -25,9 +25,9 @@ Company fields live here, not in Meteor settings. The password is never stored o
 ## What this package owns
 
 - Metadata collection `nexus_setup` (one document)
-- DDP methods `setup.complete` / `setup.isComplete`
-- Publication `setup.public` (branding fields only)
-- Client helpers `Setup.complete`, `Setup.isComplete`, `Setup.subscribePublic`, `Setup.loginWithPassword`
+- DDP methods `setup.complete` / `setup.isComplete` / `setup.update`
+- Publications `setup.public` (branding) and `setup.current` (admin company fields)
+- Client helpers `Setup.complete`, `Setup.isComplete`, `Setup.update`, `Setup.subscribePublic`, `Setup.subscribeCurrent`, `Setup.loginWithPassword`
 
 This package must **not** import `meteor/*`. The app injects Meteor APIs.
 
@@ -97,6 +97,7 @@ Calling it twice throws. Client inserts/updates/removes on `nexus_setup` are den
 |--------|-----|-------|
 | `setup.complete` | Anyone, only if no document | Validates payload, creates the first user, inserts the singleton. Second call throws `setup-already-complete`. |
 | `setup.isComplete` | Anyone | `{ complete: boolean }` |
+| `setup.update` | `superadmin` / `admin` | Company, address, and branding only. Never writes `admin`, `firstAdminUserId`, `installedAt`, or system snapshots. Empty logo/icon strings `$unset` those fields. Throws `setup-not-complete` if the singleton is missing. |
 
 ```javascript
 await Setup.complete({
@@ -106,12 +107,16 @@ await Setup.complete({
 })
 ```
 
-## Publication
+## Publications
 
-`setup.public` needs no login. It projects only `companyName`, `logoDataUrl`, and `iconDataUrl`. Address, system info, and `firstAdminUserId` stay off DDP.
+`setup.public` needs no login. It projects only `companyName`, `logoDataUrl`, and `iconDataUrl`.
+
+`setup.current` is `superadmin` / `admin` only. It adds `legalName`, `website`, `phone`, `email`, `address`, `installedAt`, and `updatedAt`. `firstAdminUserId`, `meteorRelease`, and `nodeVersion` stay off DDP.
 
 ```javascript
 Setup.subscribePublic()
+Setup.subscribeCurrent()
+await Setup.update({ companyName: 'Acme', address: { city: 'Port Louis' } })
 ```
 
 ## Images
@@ -124,7 +129,7 @@ From the repo root: `pnpm --filter @nexus/setup test`. Suite lives in `tests/`. 
 
 ## What this package does not do
 
-- Re-opening the wizard after complete
+- Re-opening the wizard after complete (admins edit through `setup.update` / `NSetupForm`)
 - Collection2 / SimpleSchema
 - License server
 - GridFS for logo or icon

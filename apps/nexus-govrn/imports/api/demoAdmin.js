@@ -69,7 +69,7 @@ async function ensureDemoSetup(firstAdminUserId) {
   })
 }
 
-async function findUserByEmail(email) {
+export async function findUserByEmail(email) {
   if (typeof Accounts.findUserByEmailAsync === 'function') {
     return Accounts.findUserByEmailAsync(email)
   }
@@ -79,7 +79,7 @@ async function findUserByEmail(email) {
   return Meteor.users.findOneAsync({ 'emails.address': email })
 }
 
-async function createPasswordUser({ email, password, name }) {
+export async function createPasswordUser({ email, password, name }) {
   const options = {
     email,
     password,

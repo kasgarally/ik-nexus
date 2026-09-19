@@ -1,8 +1,14 @@
 /**
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
- * Client helpers: complete, status, public subscribe, login
+ * Client helpers: complete, update, status, subscribe, login
  */
-import { METHOD_COMPLETE, METHOD_IS_COMPLETE, PUBLICATION_PUBLIC } from './constants.js'
+import {
+  METHOD_COMPLETE,
+  METHOD_IS_COMPLETE,
+  METHOD_UPDATE,
+  PUBLICATION_CURRENT,
+  PUBLICATION_PUBLIC,
+} from './constants.js'
 import { getMeteorApis } from './register.js'
 
 export function isComplete() {
@@ -15,9 +21,19 @@ export function complete(params) {
   return Meteor.callAsync(METHOD_COMPLETE, params)
 }
 
+export function update(params) {
+  const { Meteor } = getMeteorApis()
+  return Meteor.callAsync(METHOD_UPDATE, params)
+}
+
 export function subscribePublic(callbacks) {
   const { Meteor } = getMeteorApis()
   return Meteor.subscribe(PUBLICATION_PUBLIC, callbacks)
+}
+
+export function subscribeCurrent(callbacks) {
+  const { Meteor } = getMeteorApis()
+  return Meteor.subscribe(PUBLICATION_CURRENT, callbacks)
 }
 
 export function loginWithPassword(email, password) {

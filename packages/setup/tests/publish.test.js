@@ -8,16 +8,15 @@ import { registerPublication } from '../src/publish.js'
 describe('@nexus/setup publication', () => {
   it('publishes only companyName logoDataUrl and iconDataUrl for current', () => {
     const find = vi.fn().mockReturnValue('cursor')
-    let publishHandler
+    const handlers = {}
     const Meteor = {
       publish(name, handler) {
-        expect(name).toBe('setup.public')
-        publishHandler = handler
+        handlers[name] = handler
       },
     }
 
-    registerPublication({ Meteor, setupCollection: { find } })
-    const cursor = publishHandler.call({})
+    registerPublication({ Meteor, Roles: {}, setupCollection: { find } })
+    const cursor = handlers['setup.public'].call({})
 
     expect(cursor).toBe('cursor')
     expect(find).toHaveBeenCalledWith(

@@ -27,7 +27,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - [Sign-in and account security](#sign-in-and-account-security)
 - [Actions](#actions)
 - [Organisation](#organisation)
-- [Setup wizard](#setup-wizard)
+- [Setup](#setup)
 - [Docker](#docker)
 - [Testing](#testing)
 - [Later: publish to npm](#later-publish-to-npm)
@@ -45,6 +45,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `NDatePicker` — readonly text field that opens `v-date-picker`; `v-model` is `YYYY-MM-DD`
 - `NTimePicker` — readonly text field that opens `v-time-picker`; `v-model` is `HH:mm`
 - `NSetupWizard` — first-run `v-stepper-vertical` (company, address, branding, first admin, review)
+- `NSetupForm` — admin editor for the same company, address, and branding fields after first run
 - `NModal` — `v-dialog` with title, close, default slot, optional activator; expose `open` / `close`
 - `NRemoveIcon` — error delete icon plus a Vuetify confirm dialog (no SweetAlert)
 - `NAdminConfigCard` — context-pane card of admin list/setup links (`title` + `items`)
@@ -56,7 +57,7 @@ Shared Vue 3 components and i18n bootstrap for NEXUS Meteor apps. Source is cons
 - `NUserOrLabelField` — directory user or external label (`v-combobox`)
 - `NActionForm` / `NActionStatusForm` / `NActionStatusTimeline` / `NActionsList` — shared action widgets (unmounted until Risks)
 - `NOrgTreeEditor` / `NOrgNodeForm` — organisation tree (Settings)
-- Helpers: `normalizeLocales`, `assertRequiredDataLocale`, `REQUIRED_DATA_LOCALE`, `resolveLocalized`, `emptyLocalizedMap`, `coerceLocalized`, `localeDisplayName`, `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `NEXUS_TRANSLATE_KEY`, `NEXUS_AUTH_KEY`, `useOwnerFiles`, `useListItems`, `useAccountsUsers`, `useOwnerActions`, `useActionStatuses`, `useDirectoryUsers`, `useOrgTree`
+- Helpers: `normalizeLocales`, `assertRequiredDataLocale`, `REQUIRED_DATA_LOCALE`, `resolveLocalized`, `emptyLocalizedMap`, `coerceLocalized`, `localeDisplayName`, `setAppLocale`, `supportedLocales`, `applyDocumentLocale`, `readStoredLocale`, `persistLocale`, `NEXUS_TRANSLATE_KEY`, `NEXUS_AUTH_KEY`, `useOwnerFiles`, `useListItems`, `useAccountsUsers`, `useOwnerActions`, `useActionStatuses`, `useDirectoryUsers`, `useOrgTree`, `useSetupCurrent`
 
 Layouts and Vuetify theme/defaults stay in each app. GridFS and DDP live in `@nexus/files`. Select-list items live in `@nexus/lists`. First-run install lives in `@nexus/setup`.
 
@@ -121,6 +122,9 @@ src/
     org/NOrgTreeNode.vue
     org/useOrgTree.js
     setup/NSetupWizard.vue
+    setup/NSetupForm.vue
+    setup/useSetupCurrent.js
+    setup/readSetupImage.js
   auth/inject.js
 ```
 
@@ -160,7 +164,7 @@ resolve: {
 
 Do not alias `vuetify` to its package root — that breaks `vuetify/styles` and other subpaths.
 
-The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md). Call `Lists.registerWithMeteor` before `NListItemsEditor` / `NListSelect`. See [`packages/lists/README.md`](../lists/README.md). Call `Setup.registerWithMeteor` before `NSetupWizard`. See [`packages/setup/README.md`](../setup/README.md). Call `Accounts.registerWithMeteor` on `@nexus/accounts` before `NAccountsRegister` / `NAccountForm`. See [`packages/accounts/README.md`](../accounts/README.md). Call `Actions.registerWithMeteor` before `NActionsList` / `NActionForm`. See [`packages/actions/README.md`](../actions/README.md). Call `Org.registerWithMeteor` before `NOrgTreeEditor`. See [`packages/org/README.md`](../org/README.md).
+The app must call `Files.registerWithMeteor` (and `defineOwner`) before mounting these file components. See [`packages/files/README.md`](../files/README.md). Call `Lists.registerWithMeteor` before `NListItemsEditor` / `NListSelect`. See [`packages/lists/README.md`](../lists/README.md). Call `Setup.registerWithMeteor` before `NSetupWizard` / `NSetupForm`. See [`packages/setup/README.md`](../setup/README.md). Call `Accounts.registerWithMeteor` on `@nexus/accounts` before `NAccountsRegister` / `NAccountForm`. See [`packages/accounts/README.md`](../accounts/README.md). Call `Actions.registerWithMeteor` before `NActionsList` / `NActionForm`. See [`packages/actions/README.md`](../actions/README.md). Call `Org.registerWithMeteor` before `NOrgTreeEditor`. See [`packages/org/README.md`](../org/README.md).
 
 ## Create the i18n instance
 
@@ -359,7 +363,7 @@ import { NAdminConfigCard } from '@nexus/ui'
 import { NAccountForm, NAccountsRegister, NSettingsHeading, NSettingsWorkspace } from '@nexus/ui'
 ```
 
-The Meteor app mounts these from `imports/ui/settings/` on `/settings` and `/settings/accounts`. They call `@nexus/accounts` helpers. There is no `meteor/*` in the SFCs. Vue `v-if` on admin roles is display only.
+The Meteor app mounts these from `imports/ui/settings/` on `/settings` and `/settings/accounts`. They call `@nexus/accounts` helpers. There is no `meteor/*` in the SFCs. Vue `v-if` on admin roles is display only. The workspace also links to `/settings/setup` (`NSetupForm`) and `/settings/org`.
 
 `NAccountForm` assigns roles with a multi `v-combobox` of names from `allAssignableRoleNames()` (platform plus each sub-app catalog). The chips are the role ids (`books.create`, `superadmin`). Sub-app labels do not live in this package — register the catalog from the sub-app folder. Admin “reset password” here is set-password for another user, not the email forgot-password flow.
 
@@ -397,17 +401,20 @@ GovRN mounts `NOrgTreeEditor` on `/settings/org`. `type` is a free string. Paren
 
 i18n keys live under `org.*` (editor) and `settings.orgTitle` / `settings.orgSubtitle` (workspace card).
 
-## Setup wizard
+## Setup
 
 ```js
-import { NSetupWizard } from '@nexus/ui'
+import { NSetupForm, NSetupWizard } from '@nexus/ui'
 ```
 
 ```html
 <n-setup-wizard @completed="onCompleted" />
+<n-setup-form />
 ```
 
-Five vertical steps: company (name required), address, logo/icon file inputs as data URLs, first admin, then review and submit. On success the wizard calls `Setup.complete`, signs in with `Setup.loginWithPassword`, and emits `completed`. There is no `meteor/*` in the SFC.
+`NSetupWizard` is five vertical steps: company (name required), address, logo/icon file inputs as data URLs, first admin, then review and submit. On success it calls `Setup.complete`, signs in with `Setup.loginWithPassword`, and emits `completed`.
+
+`NSetupForm` is the post-onboarding editor for the same company, address, and branding fields. It subscribes to `setup.current` and saves with `Setup.update`. There is no first-admin step and no `meteor/*` in either SFC. GovRN mounts the form on `/settings/setup`. i18n keys reuse `setup.companyName` and friends; the workspace card uses `settings.setupTitle` / `settings.setupSubtitle`.
 
 ## Docker
 

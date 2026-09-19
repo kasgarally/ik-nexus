@@ -43,7 +43,7 @@ Assume a caller can open the browser console, call any DDP method by name, subsc
 
 | Surface | What an attacker tries | House response |
 |--------|------------------------|----------------|
-| DDP methods | Call `nexusFiles.start`, `lists.insert`, `setup.complete` without rights | `check` + login/role gates + one-shot setup |
+| DDP methods | Call `nexusFiles.start`, `lists.insert`, `setup.complete` / `setup.update` without rights | `check` + login/role gates + one-shot setup |
 | Publications | Subscribe to `applog.recent` or another user’s files | Empty cursor unless role + filter match |
 | HTTP | Guess a file id, path traversal | Prefix parse rejects `/` in the id; anonymous owners only until authenticated HTTP exists |
 | First-run | Complete setup after install, or weak password | `setup-already-complete`; minimum password length; client writes denied |
@@ -62,7 +62,7 @@ OWASP Top 10:2021, applied to this monorepo. Treat each row as a build checklist
 | **A02 Cryptographic Failures** | Passwords, tokens, or TLS handled badly | Passwords go through `accounts-base` only — never stored on `nexus_setup` or in applog snapshots. Production terminates TLS at NGINX (`fullchain.pem` / `privkey.pem`, gitignored). No secrets in committed JSON. |
 | **A03 Injection** | Untrusted input reaches Mongo, HTTP, or HTML | `check` / `Match` on DDP arguments. Selectors are structured objects, never string-built queries. Vue interpolates by default; do not `v-html` untrusted content. File names used in `Content-Disposition` are sanitized. |
 | **A04 Insecure Design** | Feature ships without an access model | `Files.defineOwner` requires role strings even when `allowAnonymous` is true, so the flag can be turned off. Optional `authorize` is the real gate for action files (parent `canRead`/`canWrite` or assignee). Parent document must exist before upload. Setup is a one-shot singleton. New sub-apps (Risks, Controls) must declare roles **before** they grow methods. There is no global `risks.reader`. |
-| **A05 Security Misconfiguration** | Debug flags, default accounts, or open CORS in production | `public.devSeedAdmin` must be omitted or `false` in production. Generated `settings.json` is gitignored. `insecure` is not a product package. Docker does not copy `.env` / PEMs into the image context. |
+| **A05 Security Misconfiguration** | Debug flags, default accounts, or open CORS in production | `public.devSeedAdmin` and `public.devSeedUsers` must be omitted or `false` in production. Generated `settings.json` is gitignored. `insecure` is not a product package. Docker does not copy `.env` / PEMs into the image context. |
 | **A06 Vulnerable and Outdated Components** | Known-bad npm / Meteor deps | Pin with `pnpm-lock.yaml` (packages) and each app’s `package-lock.json`. CI uses frozen / `npm ci` installs. Do not add a dependency to skip writing a ten-line helper. |
 | **A07 Identification and Authentication Failures** | Weak passwords, session confusion, role mix-ups | First admin is created only by `setup.complete`. Minimum password length is enforced server-side. Client `createUser` is forbidden. Self-register is a gated method. Optional TOTP after enroll. File upload sessions are bound to `userId` when the caller is logged in. Anonymous upload is only for owners that opted in. |
 | **A08 Software and Data Integrity Failures** | Tampered lockfile, untrusted `eval`, unsigned artifacts | Commit lockfiles. Do not `eval` client input. Meteor methods are the write path; do not expose a generic “run this modifier” API. |
@@ -110,7 +110,7 @@ async 'risks.update'(params) {
 ## Authentication and roles
 
 - **First user** comes from `@nexus/setup` (`setup.complete` creates the password user and grants `superadmin` and `admin`). There is no committed default password for production.
-- **Dev seed** (`public.devSeedAdmin`) is a local convenience. Production settings must not enable it.
+- **Dev seed** (`public.devSeedAdmin`, `public.devSeedUsers`) is a local convenience. Production settings must not enable either flag.
 - **meteor-roles** strings are the authorization source. Files use `files.<ownerType>.upload` / `.download` / `.remove` unless an `authorize` hook is the real gate. Lists, org, and applog read/write gates use `superadmin` / `admin` until a product needs finer roles. The platform catalog also has `user` for gated self-register; setup does not grant it. An action assignee (`byWhoUserId`) is **not** a role.
 - **Client account creation is closed.** `Accounts.config({ forbidClientAccountCreation: true })`. Signup, when a product enables `public.accounts.selfRegister`, goes through `accounts.selfRegister` and may only grant catalog roles that are not `superadmin` / `admin`.
 - **OAuth secrets** (`oauth.google`, `oauth.facebook`) stay out of `Meteor.settings.public`. Empty credentials skip `ServiceConfiguration` and hide those buttons.
@@ -132,9 +132,10 @@ A publication is a query the server runs **as that user**. Returning `Collection
 | `accounts.users` | `superadmin` / `admin` | `emails`, `profile.name`, `createdAt`, `suspendedAt` — never `services` |
 | `accounts.directory` | Any logged-in user | `_id`, `profile.name`, `emails`, `profile.orgNodeId`; omit suspended; never `services` |
 | `setup.public` | Anyone (needed before login) | **Only** `companyName`, `logoDataUrl`, `iconDataUrl` |
+| `setup.current` | `superadmin` / `admin` | Company, address, branding, `installedAt`, `updatedAt` — never `firstAdminUserId`, `meteorRelease`, `nodeVersion` |
 | `applog.recent` | `superadmin` / `admin` | Capped (default 50, max 200) |
 
-Address, `firstAdminUserId`, and system versions on `nexus_setup` stay off DDP. GridFS bytes go over HTTP, not DDP.
+Address on `nexus_setup` is published only on `setup.current` (admin). `firstAdminUserId` and system versions stay off DDP. GridFS bytes go over HTTP, not DDP.
 
 ## File uploads and GridFS
 
@@ -154,6 +155,7 @@ Demo owner `demo` in GovRN is anonymous on purpose for `/files-test`. Do not cop
 ## First-run setup
 
 - `setup.complete` is open only while `nexus_setup` is missing. A second call throws `setup-already-complete`.
+- `setup.update` is `superadmin` / `admin` only. It writes company, address, and branding — never password, `firstAdminUserId`, `installedAt`, or system snapshots.
 - Password is passed to `Accounts`; it is **not** stored on the setup document.
 - Logo and icon are **data URLs**, not GridFS: must start with `data:image/`, size-capped (400 KB logo, 100 KB icon). The server does not fetch a remote image URL.
 - `setup.public` is the only unauthenticated publication of company branding.
@@ -177,7 +179,7 @@ Demo owner `demo` in GovRN is anonymous on purpose for `/files-test`. Do not cop
 | `docker/data/` | Gitignored host bind mount for in-stack Mongo. Not a Docker named volume. |
 | Penpot secrets and backups | `tooling/penpot/.env` and `tooling/penpot/backups/` are gitignored. Never commit an MCP key or its token-bearing URL. |
 | `ROOT_URL` | HTTPS in production. See [docker/README.md](docker/README.md#production--digitalocean). |
-| Dev seed credentials | [`demoSeedData.js`](apps/nexus-govrn/imports/api/demoSeedData.js) is for local `meteor reset` only. Never enable `devSeedAdmin` on a public host. |
+| Dev seed credentials | [`demoSeedData.js`](apps/nexus-govrn/imports/api/demoSeedData.js) is for local `meteor reset` only. Never enable `devSeedAdmin` or `devSeedUsers` on a public host. |
 
 Do not put company secrets, license keys, Mongo URIs, or OAuth client secrets in `Meteor.settings.public`. That object is sent to every client. `public.accounts.heroImage` may be a public path or a stock-photo URL; it is not a secret. Do not bake `settings.json` or relay credentials into [`docker/Dockerfile`](docker/Dockerfile). Do not commit a PM2-style file that lists live SendGrid or Twilio keys — treat any historical copy as leaked and rotate those values.
 
@@ -208,7 +210,7 @@ Do not put company secrets, license keys, Mongo URIs, or OAuth client secrets in
 - The image is a `meteor build` bundle, not a copy of host `node_modules`. Builder reinstalls with `meteor npm ci`. Settings and secrets are **not** copied into the image.
 - [`.dockerignore`](.dockerignore) keeps `.git`, `.meteor/local`, `node_modules`, caches, TLS PEMs, `docker/apps/*.local.env`, and `docker/data/` out of the context.
 - NGINX terminates TLS. HTTP redirects to HTTPS when certs exist. Production `ROOT_URL` must be the public `https://` URL.
-- `METEOR_SETTINGS` is injected at `docker:up` / `docker:build` from `settings.jsonc` into the gitignored overlay. `docker:up` fails if `ROOT_URL` is a public `https://` host and `public.devSeedAdmin` is true.
+- `METEOR_SETTINGS` is injected at `docker:up` / `docker:build` from `settings.jsonc` into the gitignored overlay. `docker:up` fails if `ROOT_URL` is a public `https://` host and `public.devSeedAdmin` or `public.devSeedUsers` is true.
 - In-stack Mongo is Compose profile `local-mongo` with a host bind mount (`MONGO_DATA_DIR`). Hosted `MONGO_URL` (Atlas) skips those services entirely. DigitalOcean Spaces is object storage and is not a WiredTiger data directory.
 - `docker:down --volumes` does not delete a bind-mounted Mongo folder. Wipe that host path only when the operator asked.
 - Bare-metal Ubuntu (no Compose): [`deploy/README.md`](deploy/README.md). Same secret rules. Bind `mongod` to localhost, replica set `rs0`, and do not commit a PM2 ecosystem file that contains `MAIL_URL` or Twilio tokens.

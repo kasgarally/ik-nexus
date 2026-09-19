@@ -1,6 +1,6 @@
 <!--
 Author: Karmil Asgarally - INTELLEKTRA © 2026
-Settings named-view heading
+Settings named-view heading for workspace, accounts, org, and company
 -->
 <script setup>
 import { computed } from 'vue'
@@ -18,12 +18,16 @@ const { t } = useI18n()
 const isAccountsList = computed(() => props.page === 'accounts')
 const isAccountDetail = computed(() => props.page === 'account')
 const isOrg = computed(() => props.page === 'org')
+const isSetup = computed(() => props.page === 'setup')
 const title = computed(() => {
   if (isAccountsList.value || isAccountDetail.value) {
     return t('settings.accountsTitle')
   }
   if (isOrg.value) {
     return t('settings.orgTitle')
+  }
+  if (isSetup.value) {
+    return t('settings.setupTitle')
   }
   return t('settings.title')
 })
@@ -33,6 +37,9 @@ const subtitle = computed(() => {
   }
   if (isOrg.value) {
     return t('settings.orgSubtitle')
+  }
+  if (isSetup.value) {
+    return t('settings.setupSubtitle')
   }
   return t('settings.subtitle')
 })
@@ -62,7 +69,7 @@ const subtitle = computed(() => {
         {{ t('settings.accountsTitle') }}
       </v-btn>
       <v-btn
-        v-else-if="isOrg"
+        v-else-if="isOrg || isSetup"
         variant="outlined"
         prepend-icon="mdi-arrow-left"
         to="/settings"

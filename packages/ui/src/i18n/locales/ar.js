@@ -108,6 +108,13 @@ export default {
     submit: 'إكمال الإعداد',
     empty: '—',
     fixSteps: 'أكمل حقول الشركة والمسؤول المطلوبة',
+    editTitle: 'بيانات الشركة',
+    editSubtitle: 'تحديث اسم الشركة والعنوان والشعار والأيقونة.',
+    save: 'حفظ',
+    saved: 'تم الحفظ',
+    removeLogo: 'إزالة الشعار',
+    removeIcon: 'إزالة الأيقونة',
+    loading: 'جارٍ تحميل بيانات الشركة…',
   },
   settings: {
     title: 'الإعدادات',
@@ -116,6 +123,8 @@ export default {
     accountsSubtitle: 'إنشاء المستخدمين وإعادة تعيين كلمات المرور وتعليق الحسابات وتعيين الأدوار.',
     orgTitle: 'المنظمة',
     orgSubtitle: 'الأقسام والإدارات والفرق.',
+    setupTitle: 'الشركة',
+    setupSubtitle: 'الاسم والعنوان والشعار والأيقونة.',
     notAuthorized: 'تحتاج إلى دور مسؤول لإدارة الإعدادات.',
   },
   accounts: {

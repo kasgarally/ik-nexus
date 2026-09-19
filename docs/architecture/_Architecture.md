@@ -77,7 +77,7 @@ GovRN registration order (client and server): **Files → Lists → Setup → Ac
 | [Lists](lists.md) | `nexus_lists`: stable `code` + title map. `NListSelect` / `NListItemsEditor`. `Lists.title`. |
 | [@nexus/ui](ui.md) | `N` prefix, no `meteor/*`, inject keys, i18n factory, which widgets exist. |
 | [Files](files.md) | GridFS (`nexus_files` / `nexus_fs`), `defineOwner`, DDP chunks, HTTP download, `NFileUpload` / `NFileReplace`. |
-| [Setup](setup.md) | First-run singleton `nexus_setup`, wizard vs `devSeedAdmin`, public branding. |
+| [Setup](setup.md) | First-run singleton `nexus_setup`, wizard vs `devSeedAdmin`, public branding, admin company editor. |
 | [Accounts](accounts.md) | User CRUD, suspend, role catalogs, `accounts.directory`, `setOrg`. Settings screens in `@nexus/ui`. |
 | [Auth](auth.md) | Split sign-in, password reset, optional TOTP, gated self-register. GovRN is invite-only. |
 | [Org](org.md) | Generic `nexus_org` tree; `profile.orgNodeId`. |

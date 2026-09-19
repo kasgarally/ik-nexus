@@ -248,8 +248,14 @@ function isPublicHttpsRootUrl(rootUrl) {
 }
 
 function assertSafeProductionSettings(values, settings) {
-  if (isPublicHttpsRootUrl(values.ROOT_URL) && settings?.public?.devSeedAdmin === true) {
+  if (!isPublicHttpsRootUrl(values.ROOT_URL)) {
+    return;
+  }
+  if (settings?.public?.devSeedAdmin === true) {
     fail('public.devSeedAdmin must be false when ROOT_URL is a public https URL.');
+  }
+  if (settings?.public?.devSeedUsers === true) {
+    fail('public.devSeedUsers must be false when ROOT_URL is a public https URL.');
   }
 }
 

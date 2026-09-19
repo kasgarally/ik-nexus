@@ -108,6 +108,13 @@ export default {
     submit: 'Terminer la configuration',
     empty: '—',
     fixSteps: 'Renseignez les champs société et administrateur obligatoires',
+    editTitle: 'Détails de la société',
+    editSubtitle: 'Mettre à jour le nom, l’adresse, le logo et l’icône.',
+    save: 'Enregistrer',
+    saved: 'Enregistré',
+    removeLogo: 'Retirer le logo',
+    removeIcon: 'Retirer l’icône',
+    loading: 'Chargement des détails de la société…',
   },
   settings: {
     title: 'Paramètres',
@@ -116,6 +123,8 @@ export default {
     accountsSubtitle: 'Créer des utilisateurs, réinitialiser les mots de passe, suspendre et attribuer des rôles.',
     orgTitle: 'Organisation',
     orgSubtitle: 'Divisions, départements et équipes.',
+    setupTitle: 'Société',
+    setupSubtitle: 'Nom, adresse, logo et icône.',
     notAuthorized: 'Un rôle administrateur est requis pour gérer les paramètres.',
   },
   accounts: {

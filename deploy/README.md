@@ -464,7 +464,7 @@ Required keys (see [`deploy/env/meteor-app.env.example`](env/meteor-app.env.exam
 | `ROOT_URL` | Public `https://` URL. Must match the certificate and NGINX `server_name`. |
 | `PORT` | `3000` unless this host already uses that port. NGINX proxies here. |
 | `MONGO_URL` | Local replica or Atlas. Include `replicaSet` for a self-hosted set. |
-| `METEOR_SETTINGS` | One line of JSON. `public.devSeedAdmin` must be `false` or omitted. |
+| `METEOR_SETTINGS` | One line of JSON. `public.devSeedAdmin` and `public.devSeedUsers` must be `false` or omitted. |
 | `MAIL_URL` | SMTP (`smtps://…`) when you enable mail. |
 | `TWILIO_*` | SMS when you enable it. |
 
@@ -516,7 +516,7 @@ node --env-file=$HOME/etc/${APP_NAME}.env main.js
 
 ## First-run settings
 
-Production `apps/$APP_NAME/settings.jsonc` must **not** enable `public.devSeedAdmin`. Apps that use `@nexus/setup` send the first operator to `/onboarding` (`setup.complete`). Demo `admin@localhost` is for local `meteor reset` only.
+Production `apps/$APP_NAME/settings.jsonc` must **not** enable `public.devSeedAdmin` or `public.devSeedUsers`. Apps that use `@nexus/setup` send the first operator to `/onboarding` (`setup.complete`). Demo `admin@localhost` and extra `@localhost` users are for local `meteor reset` only.
 
 Confirm from the droplet (this prints **keys**, not values):
 
@@ -593,7 +593,7 @@ Do not share one Mongo database between products unless that is an explicit desi
 ## What not to do
 
 - Do not commit `~/etc/$APP_NAME.env`, PEMs, or a PM2 file that lists live `MAIL_URL` / `TWILIO_*` / Mongo passwords.
-- Do not enable `public.devSeedAdmin` on a public `ROOT_URL`.
+- Do not enable `public.devSeedAdmin` or `public.devSeedUsers` on a public `ROOT_URL`.
 - Do not bind `mongod` to `0.0.0.0` or publish 27017 on UFW.
 - Do not point `dbPath` at DigitalOcean Spaces.
 - Do not `ufw enable` before `ufw allow OpenSSH`.

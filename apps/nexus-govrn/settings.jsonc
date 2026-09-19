@@ -9,6 +9,10 @@
     // Production: omit this key or set false.
     "devSeedAdmin": true,
 
+    // Seeds nine extra @localhost users (password) after setup exists.
+    // Production: omit this key or set false.
+    "devSeedUsers": true,
+
     // UI picker vs stored maps. data must be a subset of ui.
     // defaultData must be "en". data must include "en" (minimum: ["en"]).
     // With only ["en"], forms have no locale tabs and locales.translate is refused.

@@ -1,6 +1,6 @@
 <!--
 Author: Karmil Asgarally - INTELLEKTRA © 2026
-Settings landing cards for accounts and later destinations
+Settings landing cards for company, accounts, org, and security
 -->
 <script setup>
 import { computed } from 'vue'
@@ -20,6 +20,13 @@ const cards = computed(() => {
     return props.items
   }
   return [
+    {
+      key: 'setup',
+      title: t('settings.setupTitle'),
+      subtitle: t('settings.setupSubtitle'),
+      icon: 'mdi-domain',
+      to: '/settings/setup',
+    },
     {
       key: 'accounts',
       title: t('settings.accountsTitle'),

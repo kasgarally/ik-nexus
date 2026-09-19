@@ -108,6 +108,13 @@ export default {
     submit: 'Complete setup',
     empty: '—',
     fixSteps: 'Fill in the required company and admin fields',
+    editTitle: 'Company details',
+    editSubtitle: 'Update the company name, address, logo, and icon.',
+    save: 'Save',
+    saved: 'Saved',
+    removeLogo: 'Remove logo',
+    removeIcon: 'Remove icon',
+    loading: 'Loading company details…',
   },
   settings: {
     title: 'Settings',
@@ -116,6 +123,8 @@ export default {
     accountsSubtitle: 'Create users, reset passwords, suspend accounts, and assign roles.',
     orgTitle: 'Organisation',
     orgSubtitle: 'Divisions, departments, and teams.',
+    setupTitle: 'Company',
+    setupSubtitle: 'Name, address, logo, and icon.',
     notAuthorized: 'You need an admin role to manage settings.',
   },
   accounts: {

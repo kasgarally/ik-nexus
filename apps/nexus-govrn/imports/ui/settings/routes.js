@@ -7,6 +7,7 @@ import VewAccount from './VewAccount.vue'
 import VewAccounts from './VewAccounts.vue'
 import VewOrg from './VewOrg.vue'
 import VewSettings from './VewSettings.vue'
+import VewSetup from './VewSetup.vue'
 
 export const settingsRoutes = [
   {
@@ -42,6 +43,15 @@ export const settingsRoutes = [
     components: {
       heading: ScrSettingsHeading,
       default: VewOrg,
+    },
+    meta: { layout: 'web' },
+  },
+  {
+    path: '/settings/setup',
+    name: 'settingsSetup',
+    components: {
+      heading: ScrSettingsHeading,
+      default: VewSetup,
     },
     meta: { layout: 'web' },
   },

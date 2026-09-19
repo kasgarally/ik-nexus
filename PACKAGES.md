@@ -92,11 +92,11 @@ Today the workspace is eight members. Each has its own README for the public API
 
 | Folder | npm name | What it owns | Meteor injection? |
 |--------|----------|--------------|-------------------|
-| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets including Settings/accounts (`NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm`), organisation (`NOrgTreeEditor`), sign-in (`NSignIn`, `NResetPassword`, `NAccountSecurity`), translatable fields (`NTranslatableTextField`, `NTranslatableTextarea`), and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
+| [`packages/ui`](packages/ui/README.md) | `@nexus/ui` | Vue 3 widgets including Settings/accounts (`NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm`), company (`NSetupForm`), organisation (`NOrgTreeEditor`), sign-in (`NSignIn`, `NResetPassword`, `NAccountSecurity`), translatable fields (`NTranslatableTextField`, `NTranslatableTextarea`), and `createNexusI18n` | No. Peer Vue / Vuetify / vue-i18n from the **app**. |
 | [`packages/files`](packages/files/README.md) | `@nexus/files` | `nexus_files` + GridFS bucket `nexus_fs`, DDP upload/remove, `GET /nexus-files/:fileId`, `Files.defineOwner` | Yes. `Files.registerWithMeteor` |
 | [`packages/applog`](packages/applog/README.md) | `@nexus/applog` | Append-only `nexus_applog`; wraps `insertAsync` / `updateAsync` / `removeAsync`; `Applog.record` / `runAsSystem`. `applog.recent` is **superadmin** only | Yes. `Applog.registerWithMeteor` |
 | [`packages/lists`](packages/lists/README.md) | `@nexus/lists` | `nexus_lists` items (`listKey` + stable `code` + `title` map; always `title.en`) | Yes. `Lists.registerWithMeteor` |
-| [`packages/setup`](packages/setup/README.md) | `@nexus/setup` | Singleton `nexus_setup` (`_id: 'current'`), first admin user, public branding publication | Yes. `Setup.registerWithMeteor` |
+| [`packages/setup`](packages/setup/README.md) | `@nexus/setup` | Singleton `nexus_setup` (`_id: 'current'`), first admin user, public branding, admin `setup.update` / `setup.current` | Yes. `Setup.registerWithMeteor` |
 | [`packages/accounts`](packages/accounts/README.md) | `@nexus/accounts` | User CRUD, gated self-register, password reset, optional TOTP wrappers, suspend, role assignment via `meteor/roles`; `registerRoleCatalog`; `accounts.directory`; `accounts.users.setOrg` | Yes. `Accounts.registerWithMeteor` |
 | [`packages/org`](packages/org/README.md) | `@nexus/org` | `nexus_org` tree (`parentId`, free `type`, title map); admin writes; descendant helpers | Yes. `Org.registerWithMeteor` |
 | [`packages/actions`](packages/actions/README.md) | `@nexus/actions` | `nexus_actions` / `nexus_action_status`; `defineOwner` with `canRead` / `canWrite`; assignee derivation | Yes. `Actions.registerWithMeteor` |
@@ -316,7 +316,7 @@ UI widgets assume the matching Meteor package is already registered:
 
 - `NFileUpload` / `NFileReplace` → `Files.registerWithMeteor` + `Files.defineOwner`
 - `NListItemsEditor` / `NListSelect` → `Lists.registerWithMeteor`
-- `NSetupWizard` → `Setup.registerWithMeteor`
+- `NSetupWizard` / `NSetupForm` → `Setup.registerWithMeteor`
 - `NActionsList` / `NActionForm` → `Actions.registerWithMeteor` (and `Actions.defineOwner` when a parent exists)
 
 ## Dependencies and peerDependencies

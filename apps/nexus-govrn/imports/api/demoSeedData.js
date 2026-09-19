@@ -1,6 +1,6 @@
 /**
  * Author: Karmil Asgarally - INTELLEKTRA © 2026
- * Local-only demo company and admin. Edit this file to change seed data.
+ * Local-only demo company, admin, extra users, and org. Edit this file to change seed data.
  */
 export const demoAdmin = {
   name: 'Demo Admin',
@@ -8,6 +8,20 @@ export const demoAdmin = {
   password: 'admin',
   roles: ['superadmin', 'admin'],
 }
+
+export const DEMO_USER_PASSWORD = 'password'
+
+export const demoUsers = [
+  { name: 'Ada Lovelace', email: 'ada@localhost', roles: ['user'] },
+  { name: 'Ben Carter', email: 'ben@localhost', roles: ['user'] },
+  { name: 'Chen Wei', email: 'chen@localhost', roles: ['user'] },
+  { name: 'Dana Okonkwo', email: 'dana@localhost', roles: ['user'] },
+  { name: 'Elena Rossi', email: 'elena@localhost', roles: ['user'] },
+  { name: 'Farid Rahman', email: 'farid@localhost', roles: ['user'] },
+  { name: 'Grace Nakamura', email: 'grace@localhost', roles: ['user', 'admin'] },
+  { name: 'Hiro Tanaka', email: 'hiro@localhost', roles: ['user'] },
+  { name: 'Imani Nkrumah', email: 'imani@localhost', roles: ['user'] },
+]
 
 export const demoSetup = {
   companyName: 'Nexus GovRN (dev)',

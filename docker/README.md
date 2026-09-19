@@ -179,15 +179,15 @@ The image does **not** contain `settings.json`, SMTP credentials, Twilio tokens,
 
 | File | Git | Holds |
 |------|-----|--------|
-| `docker/apps/<app>.env` (example: [`nexus-govrn.env`](apps/nexus-govrn.env)) | committed | `APP_NAME`, ports, `ROOT_URL`, `MONGO_DB`, default `MONGO_DATA_DIR` |
-| `docker/apps/<app>.local.env.example` | committed | Empty `MAIL_URL` / `TWILIO_*` plus commented `MONGO_URL` / `MONGO_DATA_DIR` |
-| `docker/apps/<app>.local.env` | **gitignored** | `METEOR_SETTINGS`, `MAIL_URL`, `TWILIO_*`, optional hosted `MONGO_URL` |
+| `docker/apps/<app>.env` (example: [`nexus-govrn.env`](apps/nexus-govrn.env)) | committed | `APP_NAME`, ports, `ROOT_URL`, `MONGO_DB`, default `MONGO_DATA_DIR`. Never `METEOR_SETTINGS`. |
+| `docker/apps/<app>.local.env.example` | committed | Template only. Empty `MAIL_URL` / `TWILIO_*` plus commented `MONGO_URL` / `MONGO_DATA_DIR`. The runner does not write settings here. |
+| `docker/apps/<app>.local.env` | **gitignored** | What the Meteor container actually loads (`env_file`). `METEOR_SETTINGS` (one long last line), `MAIL_URL`, `TWILIO_*`, optional hosted `MONGO_URL` |
 
-On first `docker:up` or `docker:build`, the runner copies the example to `docker/apps/<app>.local.env` if that overlay is missing. It then minifies `apps/<app>/settings.jsonc` and upserts a single `METEOR_SETTINGS=...` line without wiping other keys. Do not minify that JSON by hand — `$` and quotes in `.env` files are easy to break.
+Compose interpolates ports and `ROOT_URL` from the committed `.env`. The Meteor service `env_file` is **only** `.local.env`. On first `docker:up` or `docker:build`, the runner copies the example to `.local.env` if that overlay is missing. It then minifies `apps/<app>/settings.jsonc` and upserts a single `METEOR_SETTINGS=...` line without wiping other keys. Scroll to the end of `.local.env` — the JSON is one wrapped line and is easy to miss. Do not minify that JSON by hand — `$` and quotes in `.env` files are easy to break.
 
 `MAIL_URL` and `TWILIO_*` are ordinary process environment. The container receives them; a Meteor app can use them when it implements mail or SMS.
 
-`public.devSeedAdmin` in settings must be `false` (or omitted) on a public `https://` `ROOT_URL`. The runner refuses `docker:up` in that case. `https://localhost` is not treated as production.
+`public.devSeedAdmin` and `public.devSeedUsers` in settings must be `false` (or omitted) on a public `https://` `ROOT_URL`. The runner refuses `docker:up` in that case. `https://localhost` is not treated as production.
 
 Never commit a PM2-style file that lists live SendGrid or Twilio keys. Treat any such historical values as leaked and rotate them.
 
@@ -323,6 +323,6 @@ Put secrets only in `docker/apps/<app>.local.env`:
 - `MAIL_URL` / `TWILIO_*` when you need them
 - `METEOR_SETTINGS` is rewritten from that app’s `settings.jsonc` on every `docker:up`
 
-Production `settings.jsonc` must not enable `public.devSeedAdmin`. Then `npm run docker:up -- <app>`. HTTP on port 80 redirects to HTTPS on 443.
+Production `settings.jsonc` must not enable `public.devSeedAdmin` or `public.devSeedUsers`. Then `npm run docker:up -- <app>`. HTTP on port 80 redirects to HTTPS on 443.
 
 If the droplet cannot run Docker, use the bare-metal path instead: [`../deploy/README.md`](../deploy/README.md) (apt NGINX, Mongo 8 replica, UFW, Certbot, PM2).

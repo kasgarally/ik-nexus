@@ -39,6 +39,7 @@ export function registerWithMeteor(apis) {
   })
   registerPublication({
     Meteor: apis.Meteor,
+    Roles: apis.Roles,
     setupCollection,
   })
 

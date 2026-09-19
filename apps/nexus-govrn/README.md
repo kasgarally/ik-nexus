@@ -105,7 +105,7 @@ Books prose fields (`title`, `description`, `author`, `aboutAuthor`, `publisher`
 
 ## Accounts UI
 
-`/settings` is core app UI in [`imports/ui/settings/`](imports/ui/settings/README.md), not a cloneable sub-app. Named views mount `@nexus/ui` widgets; DDP is `@nexus/accounts` and `@nexus/org` (`/settings/org`).
+`/settings` is core app UI in [`imports/ui/settings/`](imports/ui/settings/README.md), not a cloneable sub-app. Named views mount `@nexus/ui` widgets; DDP is `@nexus/accounts`, `@nexus/org` (`/settings/org`), and `@nexus/setup` (`/settings/setup`).
 
 `/signin`, `/forgot-password`, `/reset-password/:token`, and `/account` mount `NSignIn` / reset / `NAccountSecurity`. Helpers are provided from [`imports/ui/authProvide.js`](imports/ui/authProvide.js). Sign-in design: [`docs/architecture/auth.md`](../../docs/architecture/auth.md).
 
@@ -115,9 +115,11 @@ Layout and widget previews (files, lists, submissions chrome, governance, invoic
 
 ## Dev seed
 
-[`imports/api/demoSeedData.js`](imports/api/demoSeedData.js) holds the demo company, address, logo/icon data URLs, `admin@localhost` credentials, and the dummy `nexus_org` tree. Change that file when the seed payload should change; [`demoAdmin.js`](imports/api/demoAdmin.js) and [`demoOrg.js`](imports/api/demoOrg.js) apply it. Org seed runs only when `nexus_org` is empty.
+[`imports/api/demoSeedData.js`](imports/api/demoSeedData.js) holds the demo company, address, logo/icon data URLs, `admin@localhost` credentials, extra demo users, and the dummy `nexus_org` tree. Change that file when the seed payload should change; [`demoAdmin.js`](imports/api/demoAdmin.js), [`demoUsers.js`](imports/api/demoUsers.js), and [`demoOrg.js`](imports/api/demoOrg.js) apply it. Org seed runs only when `nexus_org` is empty.
 
-`public.devSeedAdmin: true` inserts `nexus_setup` (if missing) and the demo admin. Production must omit the key or set it `false`.
+`public.devSeedAdmin: true` inserts `nexus_setup` (if missing) and the demo admin (`admin@localhost` / `admin`).
+
+`public.devSeedUsers: true` inserts nine extra `@localhost` accounts after setup exists (local `meteor` and the Docker image both honor the flag). Password for all nine is `password`. Eight have the `user` role; `grace@localhost` also has `admin` (not `superadmin`) so you can compare admin vs superadmin. Restart the Meteor process (or recreate the Docker meteor container) after a first enable of the flag. Production must omit both keys or set them `false`.
 
 ## Libraries used
 

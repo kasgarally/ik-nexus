@@ -39,7 +39,9 @@ export { default as NLocaleIcon } from './components/locale/NLocaleIcon.vue'
 export { default as NLocaleSelect } from './components/locale/NLocaleSelect.vue'
 export { default as NDatePicker } from './components/pickers/NDatePicker.vue'
 export { default as NTimePicker } from './components/pickers/NTimePicker.vue'
+export { default as NSetupForm } from './components/setup/NSetupForm.vue'
 export { default as NSetupWizard } from './components/setup/NSetupWizard.vue'
+export { useSetupCurrent } from './components/setup/useSetupCurrent.js'
 export {
   applyDocumentLocale,
   assertRequiredDataLocale,

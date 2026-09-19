@@ -59,7 +59,7 @@ See [Locales](locales.md) for UI vs data.
 | Maps | `NTranslatableTextField`, `NTranslatableTextarea` | [Translatable fields](translatable-fields.md) |
 | Lists | `NListSelect`, `NListItemsEditor`, `NListItemForm` | [Lists](lists.md) |
 | Files | `NFileUpload`, `NFileReplace` | [Files](files.md) |
-| Setup | `NSetupWizard` | [Setup](setup.md) |
+| Setup | `NSetupWizard`, `NSetupForm` | [Setup](setup.md) — Settings `/settings/setup` |
 | Accounts | `NSettingsWorkspace`, `NAccountsRegister`, `NAccountForm` | [Accounts](accounts.md) |
 | Auth | `NSignIn`, `NForgotPassword`, `NResetPassword`, `NAccountSecurity` | [Auth](auth.md) |
 | Actions | `NUserOrLabelField`, `NActionForm`, `NActionStatusForm`, `NActionStatusTimeline`, `NActionsList` | [Actions](actions.md) — unmounted until Risks |
